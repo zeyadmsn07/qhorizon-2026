@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 from sklearn.svm import SVC
 
+from src.config import FAST_MODE
+
 
 def _apply_entanglement(n_wires: int, topology: str, layer_idx: int) -> None:
     if topology == "none" or n_wires < 2:
@@ -178,10 +180,13 @@ def train_predict_vqc(
 
     best_val_loss = float("inf")
     best_state = None
-    patience = 12
-    batch_size = params.get("batch_size", 64)
+    max_epochs = params.get("max_epochs", 20 if FAST_MODE else 55)
+    batch_size = params.get("batch_size", 128)
+    val_every = params.get("val_every", 2)
+    patience_checks = max(2, 12 // val_every)
 
-    for _ in range(params.get("max_epochs", 75)):
+    # Validating every val_every epochs halves 1500-sample validation evaluations without altering early stopping
+    for epoch in range(max_epochs):
         model.train()
         perm = torch.randperm(len(Xt))
         for i in range(0, len(Xt), batch_size):
@@ -191,17 +196,18 @@ def train_predict_vqc(
             loss.backward()
             optimizer.step()
 
-        model.eval()
-        with torch.no_grad():
-            v_loss = criterion(model(Xv), yv).item()
-        if v_loss < best_val_loss - 1e-5:
-            best_val_loss = v_loss
-            best_state = {k: v.clone() for k, v in model.state_dict().items()}
-            patience = 12
-        else:
-            patience -= 1
-            if patience == 0:
-                break
+        if (epoch % val_every == 0) or (epoch == max_epochs - 1):
+            model.eval()
+            with torch.no_grad():
+                v_loss = criterion(model(Xv), yv).item()
+            if v_loss < best_val_loss - 1e-5:
+                best_val_loss = v_loss
+                best_state = {k: v.clone() for k, v in model.state_dict().items()}
+                patience_checks = max(2, 12 // val_every)
+            else:
+                patience_checks -= 1
+                if patience_checks == 0:
+                    break
 
     if best_state is not None:
         model.load_state_dict(best_state)
