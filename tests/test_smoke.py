@@ -42,3 +42,13 @@ class TestBaselineSmoke(unittest.TestCase):
         qv1, qt1, _, _ = train_predict_vqc(q_cfg, d, seed=100)
         qv2, qt2, _, _ = train_predict_vqc(q_cfg, d, seed=100)
         self.assertTrue(np.allclose(qv1, qv2, atol=1e-7) and np.allclose(qt1, qt2, atol=1e-7))
+
+    def test_disjoint_tune_seeds_and_saved_predictions(self):
+        import json
+        from src.config import ALL_SEEDS, TUNE_SEEDS
+        self.assertTrue(set(TUNE_SEEDS).isdisjoint(set(ALL_SEEDS)))
+        tlog = Path("results/smoke/tuning_log.json")
+        if tlog.exists():
+            entries = json.loads(tlog.read_text(encoding="utf-8"))
+            self.assertGreater(len(entries), 0)
+            self.assertIn("chosen_config", entries[0])
