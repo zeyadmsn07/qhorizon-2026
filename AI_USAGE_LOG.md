@@ -1,5 +1,7 @@
 # AI Usage Log
 
+Engineering rules and initial workflow blueprints are archived in [`docs/ai/AGENTS.md`](docs/ai/AGENTS.md) and [`docs/ai/WORKFLOW.md`](docs/ai/WORKFLOW.md).
+
 All major AI-assisted steps are logged here for transparency, as required by Q//Horizon 2026 rules.
 
 | Date | Phase/Branch | AI Tool | Purpose | Human Verification |
@@ -11,3 +13,4 @@ All major AI-assisted steps are logged here for transparency, as required by Q//
 | 2026-11-25 | Phase 4 (Full Sweep) / `gold-experiments` | Local CPU Execution (`run_all.py`) | Executed full 10-seed, 20-config hyperparameter benchmark across all 5 experiment tables (440 runs, 9231.16s) | Verified all 5 full-seed CSVs with zero NaNs and restored `FAST_MODE = True` for judge reproducibility |
 | 2026-11-25 | Phase 5 / `plots-and-readme` | Gemini & Python Automation | Created 300-DPI error-bar plotting suite (`src/plot_results.py`), master notebook (`Q_Horizon_Benchmark.ipynb`), and final competition `README.md` with 10-seed verdicts | Verified all 5 PNG plots render cleanly from the 10-seed CSVs and confirmed `FAST_MODE = True` on `main` |
 | 2026-11-25 | Improvement Phase 0 / `repo-snapshot-and-baseline` | Gemini | Snapshotted v1 10-seed CSVs/PNGs to `results/v1_original_10seed/`, added `docs/KNOWN_ISSUES.md`, `docs/env_v1.txt`, and `tests/test_smoke.py` | Ran `unittest discover -s tests -v` (all 3 baseline smoke checks passed; zero model files modified) |
+| 2026-11-25 | Improvement Phase 1 / `reproducible-runs-and-cleanup` | Gemini | Replaced `FAST_MODE` with `--mode {smoke,fast,full}`, isolated `results/<mode>/` dirs, added `src/make_tables.py`, shipped `data_cache/htru2.csv` + `DATA_LICENSE.md`, moved AI docs to `docs/ai/` | Verified `make_tables` reproduces v1 tables, ran determinism test, and verified `run_all.py --mode smoke` inside a fresh clean venv |

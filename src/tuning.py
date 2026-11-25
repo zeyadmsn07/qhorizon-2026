@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.model_selection import ParameterSampler
-
-from src.config import N_TUNING_CONFIGS, SEEDS
+from src.config import ModeConfig, get_mode_config
 from src.data import sample_and_preprocess
 from src.metrics import evaluate_predictions
 from src.models_classical import fit_predict_classical
@@ -9,128 +8,54 @@ from src.models_quantum import train_predict_quantum_kernel_svm, train_predict_v
 
 SEARCH_SPACES = {
     "Dummy": [{}],
-    "LogReg": {
-        "C": np.logspace(-3, 3, 50),
-        "class_weight": [None, "balanced"],
-    },
-    "RBF-SVM": {
-        "C": np.logspace(-2, 3, 50),
-        "gamma": np.logspace(-3, 1, 50),
-        "class_weight": [None, "balanced", {0: 1, 1: 5}, {0: 1, 1: 10}],
-    },
-    "RandomForest": {
-        "n_estimators": [50, 100, 200],
-        "max_depth": [3, 5, 8, None],
-        "min_samples_leaf": [1, 3, 8],
-        "class_weight": [None, "balanced", "balanced_subsample"],
-    },
-    "Tiny-MLP": {
-        # Fixed at 41 params for an equal parameter-budget comparison against VQC
-        "hidden_dim": [4],
-        "lr": [1e-3, 3e-3, 1e-2, 3e-2],
-        "weight_decay": [0.0, 1e-4, 1e-2],
-        "pos_weight_mult": [0.5, 1.0, 1.5],
-        "batch_size": [32, 64],
-    },
-    "Q1-VQC": {
-        # Input angle bandwidth alpha is the primary quantum performance lever
-        "alpha": [0.25, 0.5, 1.0, 1.5, 2.5],
-        "lr": [0.005, 0.01, 0.02, 0.04],
-        "weight_decay": [0.0, 1e-4, 1e-3],
-        "pos_weight_mult": [0.5, 1.0, 1.5],
-        "batch_size": [128],
-    },
-    "Q2-QuantumKernel": {
-        "alpha": np.logspace(-1.0, 0.5, 30),
-        "depth": [1, 2],
-        "C": np.logspace(-2, 3, 40),
-        "class_weight": [None, "balanced", {0: 1, 1: 5}, {0: 1, 1: 10}],
-    },
+    "LogReg": {"C": np.logspace(-3, 3, 50), "class_weight": [None, "balanced"]},
+    "RBF-SVM": {"C": np.logspace(-2, 3, 50), "gamma": np.logspace(-3, 1, 50), "class_weight": [None, "balanced", {0: 1, 1: 5}, {0: 1, 1: 10}]},
+    "RandomForest": {"n_estimators": [50, 100, 200], "max_depth": [3, 5, 8, None], "min_samples_leaf": [1, 3, 8], "class_weight": [None, "balanced", "balanced_subsample"]},
+    "Tiny-MLP": {"hidden_dim": [4], "lr": [1e-3, 3e-3, 1e-2, 3e-2], "weight_decay": [0.0, 1e-4, 1e-2], "pos_weight_mult": [0.5, 1.0, 1.5], "batch_size": [32, 64]},
+    "Q1-VQC": {"alpha": [0.25, 0.5, 1.0, 1.5, 2.5], "lr": [0.005, 0.01, 0.02, 0.04], "weight_decay": [0.0, 1e-4, 1e-3], "pos_weight_mult": [0.5, 1.0, 1.5], "batch_size": [128]},
+    "Q2-QuantumKernel": {"alpha": np.logspace(-1.0, 0.5, 30), "depth": [1, 2], "C": np.logspace(-2, 3, 40), "class_weight": [None, "balanced", {0: 1, 1: 5}, {0: 1, 1: 10}]},
 }
 
-
 def _canonical_key(family: str, n_train: int, fixed_overrides: dict) -> tuple:
-    norm_overrides = dict(fixed_overrides)
+    no = dict(fixed_overrides)
     if family == "Q1-VQC":
-        # Normalize defaults so functionally identical overrides share cache entries
-        norm_overrides.setdefault("encoding", "angle")
-        norm_overrides.setdefault("entanglement", "ring")
-        norm_overrides.setdefault("n_layers", 2)
-        norm_overrides.setdefault("reupload", False)
-    items = tuple(sorted((k, tuple(v) if isinstance(v, (list, tuple)) else v) for k, v in norm_overrides.items()))
-    return (family, n_train, items)
+        no.setdefault("encoding", "angle"); no.setdefault("entanglement", "ring"); no.setdefault("n_layers", 2); no.setdefault("reupload", False)
+    return (family, n_train, tuple(sorted((k, tuple(v) if isinstance(v, (list, tuple)) else v) for k, v in no.items())))
 
-
-def _run_once(family: str, params: dict, data: dict, seed: int) -> dict:
-    init_grad_norm = float("nan")
+def _run_once(family: str, params: dict, data: dict, seed: int, mode_cfg: ModeConfig) -> dict:
+    p = dict(params)
+    if family == "Q1-VQC": p.setdefault("max_epochs", mode_cfg.vqc_max_epochs)
+    if family == "Tiny-MLP": p.setdefault("max_epochs", mode_cfg.mlp_max_epochs)
+    grad = float("nan")
     if family in {"Dummy", "LogReg", "RBF-SVM", "RandomForest", "Tiny-MLP"}:
-        vs, ts, npa, sec = fit_predict_classical(family, params, data, seed)
+        vs, ts, npa, sec = fit_predict_classical(family, p, data, seed)
     elif family == "Q1-VQC":
-        vs, ts, npa, sec, init_grad_norm, _ = train_predict_vqc(params, data, seed, return_model=True)
-    elif family == "Q2-QuantumKernel":
-        vs, ts, npa, sec = train_predict_quantum_kernel_svm(params, data, seed)
+        vs, ts, npa, sec, grad, _ = train_predict_vqc(p, data, seed, return_model=True)
     else:
-        raise ValueError(f"Unknown family: {family}")
+        vs, ts, npa, sec = train_predict_quantum_kernel_svm(p, data, seed)
+    m = evaluate_predictions(data["y_val"], vs, data["y_test"], ts, npa, sec)
+    m["init_grad_norm"] = grad
+    return m
 
-    metrics = evaluate_predictions(data["y_val"], vs, data["y_test"], ts, npa, sec)
-    metrics["init_grad_norm"] = init_grad_norm
-    return metrics
-
-
-def tune_and_evaluate_10_seeds(
-    splits: dict,
-    n_train: int,
-    family: str,
-    fixed_overrides: dict | None = None,
-    label: str | None = None,
-    cache: dict | None = None,
-) -> list[dict]:
-    # Shared validation random search enforces strict equal-budget fairness across all model families
+def tune_and_evaluate_10_seeds(splits: dict, n_train: int, family: str, fixed_overrides: dict | None = None, label: str | None = None, cache: dict | None = None, mode_cfg: ModeConfig | None = None) -> list[dict]:
+    mode_cfg = mode_cfg or get_mode_config()
     fixed_overrides = fixed_overrides or {}
     label = label or family
-
     key = _canonical_key(family, n_train, fixed_overrides)
     if cache is not None and key in cache:
-        cached_entry = cache[key]
-        records = []
-        for rec in cached_entry["records"]:
-            r = dict(rec)
-            r["model"] = label
-            records.append(r)
-        return records
-
+        return [{**r, "model": label} for r in cache[key]["records"]]
     space = SEARCH_SPACES[family]
-    if isinstance(space, list):
-        candidates = [{**c, **fixed_overrides} for c in space]
-    else:
-        sampler = ParameterSampler(space, n_iter=N_TUNING_CONFIGS, random_state=42)
-        candidates = [{**c, **fixed_overrides} for c in sampler]
-
-    ref_data = sample_and_preprocess(splits, n_train=n_train, seed=SEEDS[0])
-    best_cfg = candidates[0]
-    best_val_pr = -1.0
-
-    for cfg in candidates:
-        res = _run_once(family, cfg, ref_data, seed=SEEDS[0])
-        if res["val_pr_auc"] > best_val_pr:
-            best_val_pr = res["val_pr_auc"]
-            best_cfg = cfg
-
-    records = []
-    for s in SEEDS:
+    cands = [{**c, **fixed_overrides} for c in (space if isinstance(space, list) else ParameterSampler(space, n_iter=mode_cfg.n_tuning_configs, random_state=42))]
+    ref = sample_and_preprocess(splits, n_train=n_train, seed=mode_cfg.eval_seeds[0])
+    best_cfg = max(cands, key=lambda c: _run_once(family, c, ref, mode_cfg.eval_seeds[0], mode_cfg)["val_pr_auc"])
+    recs = []
+    for s in mode_cfg.eval_seeds:
         d = sample_and_preprocess(splits, n_train=n_train, seed=s)
-        metrics = _run_once(family, best_cfg, d, seed=s)
-        metrics.update({"model": label, "family": family, "n_train": n_train, "seed": s})
-        records.append(metrics)
-
-    if cache is not None:
-        cache[key] = {"records": records, "best_cfg": best_cfg}
-
-    return records
-
+        m = _run_once(family, best_cfg, d, s, mode_cfg)
+        m.update({"model": label, "family": family, "n_train": n_train, "seed": s})
+        recs.append(m)
+    if cache is not None: cache[key] = {"records": recs, "best_cfg": best_cfg}
+    return recs
 
 def get_best_config(cache: dict, family: str, n_train: int, fixed_overrides: dict | None = None) -> dict:
-    key = _canonical_key(family, n_train, fixed_overrides or {})
-    if key in cache:
-        return dict(cache[key]["best_cfg"])
-    raise KeyError(f"No tuned config found in cache for key: {key}")
+    return dict(cache[_canonical_key(family, n_train, fixed_overrides or {})]["best_cfg"])

@@ -3,7 +3,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from src.config import RESULTS_DIR
+from src.config import get_results_dir
+RESULTS_DIR = get_results_dir('smoke')
 from src.data import get_locked_splits, sample_and_preprocess
 from src.metrics import evaluate_predictions
 from src.models_classical import fit_predict_classical

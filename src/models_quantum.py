@@ -5,9 +5,6 @@ import torch
 import torch.nn as nn
 from sklearn.svm import SVC
 
-from src.config import FAST_MODE
-
-
 def _apply_entanglement(n_wires: int, topology: str, layer_idx: int) -> None:
     if topology == "none" or n_wires < 2:
         return
@@ -180,7 +177,7 @@ def train_predict_vqc(
 
     best_val_loss = float("inf")
     best_state = None
-    max_epochs = params.get("max_epochs", 20 if FAST_MODE else 55)
+    max_epochs = params.get("max_epochs", 55)
     batch_size = params.get("batch_size", 128)
     val_every = params.get("val_every", 2)
     patience_checks = max(2, 12 // val_every)
