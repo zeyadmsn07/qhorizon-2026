@@ -92,6 +92,15 @@ def plot_gold_c_sweep(res_dir: Path) -> None:
         col = pal[i % len(pal)]
         ax.plot(ns, [c[0] for c in cis], marker="o", linewidth=2, color=col, label=m)
         ax.fill_between(ns, [c[1] for c in cis], [c[2] for c in cis], color=col, alpha=0.14)
+    lin_p = res_dir / "linearity_check.csv"
+    if lin_p.exists():
+        ldf = pd.read_csv(lin_p)
+        fp = ldf[ldf["n_train"] > 5000]
+        if not fp.empty:
+            c_svm = float(fp[fp["model"] == "RBF-SVM"]["test_pr_auc"].iloc[0])
+            c_lr = float(fp[fp["model"] == "LogReg (9p)"]["test_pr_auc"].iloc[0])
+            ax.axhline(c_svm, color="#111827", linestyle="--", linewidth=1.2, label=f"Full-Pool RBF Ceiling ({c_svm:.3f})")
+            ax.axhline(c_lr, color="#6B7280", linestyle=":", linewidth=1.2, label=f"Full-Pool LogReg ({c_lr:.3f})")
     ax.set_xticks(sorted(df["n_train"].unique())); ax.set_ylim(0.45, 0.99)
     ax.set_xlabel("Training Set Size (N_train)"); ax.set_ylabel("Test PR-AUC (95% Bootstrap CI)")
     ax.set_title("Gold C: Sample Efficiency Sweep with Two-Level 95% CIs")
