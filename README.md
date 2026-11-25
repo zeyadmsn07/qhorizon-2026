@@ -45,7 +45,7 @@ Locked stratified holdouts (`3,000` test, `1,500` val), disjoint tuning seeds (`
 ## 4. Depth of Insight ([`docs/insights.md`](docs/insights.md))
 1. **Why Quantum Doesn't Win on HTRU2 (Near-Linearity):** Even on all `13,398` pool samples, 9-parameter `LogReg` (`0.9378` PR-AUC) nearly matches `RBF-SVM` (`0.9050`), leaving `< 0.01` PR-AUC headroom for nonlinear feature maps.
 2. **Kernel Concentration & Alignment:** Across `alpha`, `Q2-QuantumKernel` peaks at `alpha=0.1`, `d=1` (`0.9199` PR-AUC, `KTA=0.4261`, rank `1.8`), while larger `alpha` concentrates off-diagonal overlaps.
-3. **Harder Nonlinear 8D Benchmark (`ConcentricShell-8D`):** Pre-screened with `RBF - LogReg = +0.7889 >= 0.05`, linear `LogReg` fails (`0.1125`), whereas `Q2-QuantumKernel` (`0.7900`) and `Q1-VQC` (`0.1302`) learn strong nonlinear boundaries alongside `Tiny-MLP` (`0.3457`) and `RBF-SVM` (`0.8741`).
+3. **Harder Nonlinear 8D Benchmark (`ConcentricShell-8D`):** Pre-screened with `RBF - LogReg = +0.7889 >= 0.05`, linear `LogReg` fails (`0.1125`), whereas `Q2-QuantumKernel` (`0.7900`) and `Q1-VQC` (`0.1302`) are evaluated alongside `Tiny-MLP` (`0.3457`) and `RBF-SVM` (`0.8741`).
 4. **Hardware Cost ([`results/fast/hardware_cost_table.csv`](results/fast/hardware_cost_table.csv)):** `Q1-VQC` scales as `O(N)` (`3,000` test circuits), while `Q2-QuantumKernel` needs `124,750` train pairs + `1.5M` test pairs. At `<= 8` qubits, all circuits are CPU-simulable; **no quantum advantage is claimed**.
 
 ## 5. Limitations
@@ -61,8 +61,6 @@ python analyze_results.py --results-dir results/fast
 python -m src.plot_results --results-dir results/fast
 python scripts/check_submission.py      # automated submission audit
 ```
-# Measured Wall-Clock Runtimes
-
 - `--mode smoke`: 449.98 s
 - `--mode fast`: 749.21 s (12.49 min)
 - `v1 10-seed sweep`: 9231.16 s (153.85 min)

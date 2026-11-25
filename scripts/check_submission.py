@@ -1,6 +1,10 @@
 import ast, json, sys, unittest
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 
 class TestFinalSubmissionAudit(unittest.TestCase):
     def test_qubit_ceiling_across_all_modules(self):
@@ -35,7 +39,7 @@ class TestFinalSubmissionAudit(unittest.TestCase):
 def main() -> int:
     loader = unittest.defaultTestLoader
     suite = unittest.TestSuite([
-        loader.discover("tests"),
+        loader.discover(str(ROOT / "tests"), top_level_dir=str(ROOT)),
         loader.loadTestsFromTestCase(TestFinalSubmissionAudit),
     ])
     result = unittest.TextTestRunner(verbosity=2).run(suite)

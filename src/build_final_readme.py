@@ -11,7 +11,7 @@ def build_final_readme(res_dir: Path) -> None:
     lin = pd.read_csv(res_dir / "linearity_check.csv")
     ka = pd.read_csv(res_dir / "kernel_analysis.csv")
     nl = pd.read_csv(res_dir / "nonlinear_dataset_summary.csv")
-    rt = Path("docs/measured_runtimes.md").read_text(encoding="utf-8").strip() if Path("docs/measured_runtimes.md").exists() else ""
+    rt = "\n".join(ln for ln in Path("docs/measured_runtimes.md").read_text(encoding="utf-8").splitlines() if not ln.startswith("# ")).strip() if Path("docs/measured_runtimes.md").exists() else ""
     team_lines = [ln for ln in Path("docs/TEAM.md").read_text(encoding="utf-8").splitlines() if not ln.startswith("# ")]
     team_md = "\n".join(team_lines).strip()
     rel = res_dir.as_posix()
@@ -61,7 +61,7 @@ Locked stratified holdouts (`3,000` test, `1,500` val), disjoint tuning seeds (`
 ## 4. Depth of Insight ([`docs/insights.md`](docs/insights.md))
 1. **Why Quantum Doesn't Win on HTRU2 (Near-Linearity):** Even on all `13,398` pool samples, 9-parameter `LogReg` (`{lr_fp:.4f}` PR-AUC) nearly matches `RBF-SVM` (`{svm_fp:.4f}`), leaving `< 0.01` PR-AUC headroom for nonlinear feature maps.
 2. **Kernel Concentration & Alignment:** Across `alpha`, `Q2-QuantumKernel` peaks at `alpha={b_ka['alpha']}`, `d={int(b_ka['depth'])}` (`{b_ka['q_test_pr_auc']:.4f}` PR-AUC, `KTA={b_ka['kta']:.4f}`, rank `{b_ka['eff_rank']:.1f}`), while larger `alpha` concentrates off-diagonal overlaps.
-3. **Harder Nonlinear 8D Benchmark (`ConcentricShell-8D`):** Pre-screened with `RBF - LogReg = +{nl['precheck_rbf_minus_logreg'].iloc[0]:.4f} >= 0.05`, linear `LogReg` fails (`{nl_max.loc['LogReg', 'mean_pr_auc']:.4f}`), whereas `Q2-QuantumKernel` (`{nl_max.loc['Q2-QuantumKernel (8q)', 'mean_pr_auc']:.4f}`) and `Q1-VQC` (`{nl_max.loc['Q1-VQC (Headline)', 'mean_pr_auc']:.4f}`) learn strong nonlinear boundaries alongside `Tiny-MLP` (`{nl_max.loc['Tiny-MLP (41p)', 'mean_pr_auc']:.4f}`) and `RBF-SVM` (`{nl_max.loc['RBF-SVM', 'mean_pr_auc']:.4f}`).
+3. **Harder Nonlinear 8D Benchmark (`ConcentricShell-8D`):** Pre-screened with `RBF - LogReg = +{nl['precheck_rbf_minus_logreg'].iloc[0]:.4f} >= 0.05`, linear `LogReg` fails (`{nl_max.loc['LogReg', 'mean_pr_auc']:.4f}`), whereas `Q2-QuantumKernel` (`{nl_max.loc['Q2-QuantumKernel (8q)', 'mean_pr_auc']:.4f}`) and `Q1-VQC` (`{nl_max.loc['Q1-VQC (Headline)', 'mean_pr_auc']:.4f}`) are evaluated alongside `Tiny-MLP` (`{nl_max.loc['Tiny-MLP (41p)', 'mean_pr_auc']:.4f}`) and `RBF-SVM` (`{nl_max.loc['RBF-SVM', 'mean_pr_auc']:.4f}`).
 4. **Hardware Cost ([`{rel}/hardware_cost_table.csv`]({rel}/hardware_cost_table.csv)):** `Q1-VQC` scales as `O(N)` (`3,000` test circuits), while `Q2-QuantumKernel` needs `124,750` train pairs + `1.5M` test pairs. At `<= 8` qubits, all circuits are CPU-simulable; **no quantum advantage is claimed**.
 
 ## 5. Limitations
