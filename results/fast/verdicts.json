@@ -1,6 +1,6 @@
 {
   "best_classical": "Tiny-MLP (41p)",
-  "headline_vqc": "Q1-VQC (8q Ring L=2)",
+  "headline_vqc": "Q1-VQC (Bipartite_SignLinear_41p)",
   "hypotheses": {
     "H1a": {
       "mean_delta": 0.04629919129307706,
@@ -14,14 +14,14 @@
       "direction": "greater"
     },
     "H1b": {
-      "mean_delta": 0.055793507098696495,
-      "ci_lo": 0.03032499611537464,
-      "ci_hi": 0.0833671022970529,
+      "mean_delta": 0.0131366280219359,
+      "ci_lo": -0.0008242731180611935,
+      "ci_hi": 0.02387631221535926,
       "wilcoxon_p": NaN,
       "min_attainable_p": 0.25,
       "n_seeds": 3,
-      "comparison": "Tiny-MLP (41p) vs. Q1-VQC (8q Ring L=2)",
-      "verdict": "Supported",
+      "comparison": "Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p)",
+      "verdict": "Inconclusive",
       "direction": "greater"
     },
     "H1c": {
@@ -80,9 +80,9 @@
       "direction": "tied"
     },
     "H4b_2000": {
-      "mean_delta": -0.001045371584002049,
-      "ci_lo": -0.006793780296475147,
-      "ci_hi": 0.005008921048640385,
+      "mean_delta": -0.0009041475113196196,
+      "ci_lo": -0.0022873858763257297,
+      "ci_hi": 0.0003955789356861288,
       "wilcoxon_p": NaN,
       "min_attainable_p": 0.25,
       "n_seeds": 3,
@@ -91,20 +91,20 @@
       "direction": "tied"
     },
     "H4b_500": {
-      "mean_delta": -0.004612635392606923,
-      "ci_lo": -0.015963618286101915,
-      "ci_hi": 0.006142965213990557,
+      "mean_delta": -0.0020544779609243577,
+      "ci_lo": -0.004755023120146579,
+      "ci_hi": 0.0005271323744852107,
       "wilcoxon_p": NaN,
       "min_attainable_p": 0.25,
       "n_seeds": 3,
       "comparison": "Shots=500 vs. Analytic (tied)",
-      "verdict": "Inconclusive",
+      "verdict": "Practically tied",
       "direction": "tied"
     },
     "H4b_100": {
-      "mean_delta": -0.02428992424286669,
-      "ci_lo": -0.04095089191037151,
-      "ci_hi": -0.00934207927079537,
+      "mean_delta": -0.00461083076219837,
+      "ci_lo": -0.010964830916871261,
+      "ci_hi": 0.0017476782190397246,
       "wilcoxon_p": NaN,
       "min_attainable_p": 0.25,
       "n_seeds": 3,
@@ -164,7 +164,17 @@
       "delta_hi": 0.0,
       "status": "Reference"
     },
-    "Q1-VQC (8q Ring L=2)": {
+    "Q1-VQC (Bipartite_SignLinear_41p)": {
+      "mean": 0.910410590817809,
+      "ci_lo": 0.8821463386068821,
+      "ci_hi": 0.9353050183385747,
+      "collapse": "0/3",
+      "delta_vs_best": -0.0131366280219359,
+      "delta_lo": -0.023876312215359265,
+      "delta_hi": 0.0008242731180611922,
+      "status": "Inconclusive"
+    },
+    "Q1-VQC (Ring L=2, Fragile v1)": {
       "mean": 0.8677537117410483,
       "ci_lo": 0.8285466466414172,
       "ci_hi": 0.9059932478190188,

@@ -54,13 +54,13 @@ def save_pred_npz(out_dir: Path, family: str, label: str, n_train: int, seed: in
 def _canonical_key(family: str, n_train: int, fixed_overrides: dict) -> tuple:
     no = dict(fixed_overrides)
     if family == "Q1-VQC":
-        no.setdefault("encoding", "angle"); no.setdefault("entanglement", "ring"); no.setdefault("n_layers", 2); no.setdefault("reupload", False)
+        no.setdefault("encoding", "angle"); no.setdefault("entanglement", "ring"); no.setdefault("n_layers", 2); no.setdefault("reupload", False); no.setdefault("init_mode", "small_normal"); no.setdefault("sign_offset", False); no.setdefault("readout", "mean_z"); no.setdefault("n_restarts", 1)
     if family == "Tiny-MLP":
         no.setdefault("hidden_dim", 4)
     return (family, n_train, tuple(sorted((k, tuple(v) if isinstance(v, (list, tuple)) else v) for k, v in no.items())))
 
 
-def _run_once(family: str, params: dict, data: dict, seed: int, mode_cfg: ModeConfig):
+def _run_once(family: str, params: dict, data: dict, seed: int, mode_cfg: ModeConfig, diag_path: Path | None = None):
     p = dict(params)
     if family == "Q1-VQC": p.setdefault("max_epochs", mode_cfg.vqc_max_epochs)
     if family == "Tiny-MLP": p.setdefault("max_epochs", mode_cfg.mlp_max_epochs)
@@ -68,7 +68,7 @@ def _run_once(family: str, params: dict, data: dict, seed: int, mode_cfg: ModeCo
     if family in {"Dummy", "LogReg", "RBF-SVM", "RandomForest", "Tiny-MLP"}:
         vs, ts, npa, sec = fit_predict_classical(family, p, data, seed)
     elif family == "Q1-VQC":
-        vs, ts, npa, sec, grad, _ = train_predict_vqc(p, data, seed, return_model=True)
+        vs, ts, npa, sec, grad, _ = train_predict_vqc(p, data, seed, return_model=True, diag_path=diag_path)
     else:
         vs, ts, npa, sec = train_predict_quantum_kernel_svm(p, data, seed)
     m = evaluate_predictions(data["y_val"], vs, data["y_test"], ts, npa, sec)
@@ -133,7 +133,8 @@ def tune_and_evaluate_10_seeds(
     recs, preds = [], []
     for s in mode_cfg.eval_seeds:
         d = sample_and_preprocess(splits, n_train=n_train, seed=s)
-        m, vs, ts = _run_once(family, best_cfg, d, s, mode_cfg)
+        dp = (out_dir / "diagnostics" / f"{_safe(label)}__N{n_train}__seed{s}.json") if family == "Q1-VQC" else None
+        m, vs, ts = _run_once(family, best_cfg, d, s, mode_cfg, diag_path=dp)
         pack = (d["y_val"], vs, d["y_test"], ts, m["threshold"])
         rel = save_pred_npz(out_dir, family, label, n_train, s, *pack)
         m.update({"model": label, "family": family, "n_train": n_train, "seed": s, "pred_file": rel})

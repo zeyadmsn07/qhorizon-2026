@@ -1,5 +1,874 @@
 [
   {
+    "family": "Q1-VQC",
+    "label": "Ring_L2_Baseline",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2
+    },
+    "chosen_mean_val_pr_auc": 0.8501328882197273,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2
+        },
+        "per_seed_val_pr_auc": [
+          0.8501328882197273
+        ],
+        "mean_val_pr_auc": 0.8501328882197273,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2
+        },
+        "per_seed_val_pr_auc": [
+          0.07900604210247854
+        ],
+        "mean_val_pr_auc": 0.07900604210247854,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2
+        },
+        "per_seed_val_pr_auc": [
+          0.4546337605466433
+        ],
+        "mean_val_pr_auc": 0.4546337605466433,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2
+        },
+        "per_seed_val_pr_auc": [
+          0.09703999377422538
+        ],
+        "mean_val_pr_auc": 0.09703999377422538,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Init_WideNormal_0.5",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "init_mode": "wide_normal"
+    },
+    "chosen_mean_val_pr_auc": 0.8762075778710315,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "wide_normal"
+        },
+        "per_seed_val_pr_auc": [
+          0.8762075778710315
+        ],
+        "mean_val_pr_auc": 0.8762075778710315,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "wide_normal"
+        },
+        "per_seed_val_pr_auc": [
+          0.3001453578194779
+        ],
+        "mean_val_pr_auc": 0.3001453578194779,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "wide_normal"
+        },
+        "per_seed_val_pr_auc": [
+          0.4523500141970526
+        ],
+        "mean_val_pr_auc": 0.4523500141970526,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "wide_normal"
+        },
+        "per_seed_val_pr_auc": [
+          0.4755887880525677
+        ],
+        "mean_val_pr_auc": 0.4755887880525677,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Init_Uniform_Pi",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "init_mode": "uniform_pi"
+    },
+    "chosen_mean_val_pr_auc": 0.8523603149333084,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "uniform_pi"
+        },
+        "per_seed_val_pr_auc": [
+          0.8523603149333084
+        ],
+        "mean_val_pr_auc": 0.8523603149333084,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "uniform_pi"
+        },
+        "per_seed_val_pr_auc": [
+          0.8049968873520262
+        ],
+        "mean_val_pr_auc": 0.8049968873520262,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "uniform_pi"
+        },
+        "per_seed_val_pr_auc": [
+          0.7300317344699615
+        ],
+        "mean_val_pr_auc": 0.7300317344699615,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "init_mode": "uniform_pi"
+        },
+        "per_seed_val_pr_auc": [
+          0.5335010896266584
+        ],
+        "mean_val_pr_auc": 0.5335010896266584,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "SignAware_Offset_Pi2",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "sign_offset": true
+    },
+    "chosen_mean_val_pr_auc": 0.8667639645162624,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "sign_offset": true
+        },
+        "per_seed_val_pr_auc": [
+          0.8667639645162624
+        ],
+        "mean_val_pr_auc": 0.8667639645162624,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "sign_offset": true
+        },
+        "per_seed_val_pr_auc": [
+          0.8347544986756715
+        ],
+        "mean_val_pr_auc": 0.8347544986756715,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "sign_offset": true
+        },
+        "per_seed_val_pr_auc": [
+          0.7252854041776121
+        ],
+        "mean_val_pr_auc": 0.7252854041776121,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "sign_offset": true
+        },
+        "per_seed_val_pr_auc": [
+          0.7149096020970066
+        ],
+        "mean_val_pr_auc": 0.7149096020970066,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Readout_Linear8_41p",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "readout": "linear_z"
+    },
+    "chosen_mean_val_pr_auc": 0.8485780822454906,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.8485780822454906
+        ],
+        "mean_val_pr_auc": 0.8485780822454906,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.07055599994179917
+        ],
+        "mean_val_pr_auc": 0.07055599994179917,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.8119047945298831
+        ],
+        "mean_val_pr_auc": 0.8119047945298831,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.10438368122565744
+        ],
+        "mean_val_pr_auc": 0.10438368122565744,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Readout_SingleZ0",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "readout": "single_z0"
+    },
+    "chosen_mean_val_pr_auc": 0.8293721729460023,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "single_z0"
+        },
+        "per_seed_val_pr_auc": [
+          0.8293721729460023
+        ],
+        "mean_val_pr_auc": 0.8293721729460023,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "single_z0"
+        },
+        "per_seed_val_pr_auc": [
+          0.10729018375581827
+        ],
+        "mean_val_pr_auc": 0.10729018375581827,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "single_z0"
+        },
+        "per_seed_val_pr_auc": [
+          0.7013141386553925
+        ],
+        "mean_val_pr_auc": 0.7013141386553925,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "readout": "single_z0"
+        },
+        "per_seed_val_pr_auc": [
+          0.40121446971231006
+        ],
+        "mean_val_pr_auc": 0.40121446971231006,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Epochs100_Patience20",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "max_epochs": 35,
+      "patience": 20
+    },
+    "chosen_mean_val_pr_auc": 0.8391784171095278,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "max_epochs": 35,
+          "patience": 20
+        },
+        "per_seed_val_pr_auc": [
+          0.8391784171095278
+        ],
+        "mean_val_pr_auc": 0.8391784171095278,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "max_epochs": 35,
+          "patience": 20
+        },
+        "per_seed_val_pr_auc": [
+          0.27920606875092846
+        ],
+        "mean_val_pr_auc": 0.27920606875092846,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "max_epochs": 35,
+          "patience": 20
+        },
+        "per_seed_val_pr_auc": [
+          0.5393333239609378
+        ],
+        "mean_val_pr_auc": 0.5393333239609378,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "max_epochs": 35,
+          "patience": 20
+        },
+        "per_seed_val_pr_auc": [
+          0.21640066092049012
+        ],
+        "mean_val_pr_auc": 0.21640066092049012,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Restarts_k3_ValSelected",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "ring",
+      "n_layers": 2,
+      "n_restarts": 3
+    },
+    "chosen_mean_val_pr_auc": 0.8460286502496739,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "n_restarts": 3
+        },
+        "per_seed_val_pr_auc": [
+          0.8460286502496739
+        ],
+        "mean_val_pr_auc": 0.8460286502496739,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "n_restarts": 3
+        },
+        "per_seed_val_pr_auc": [
+          0.08207618914571076
+        ],
+        "mean_val_pr_auc": 0.08207618914571076,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "n_restarts": 3
+        },
+        "per_seed_val_pr_auc": [
+          0.4546337605466433
+        ],
+        "mean_val_pr_auc": 0.4546337605466433,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "ring",
+          "n_layers": 2,
+          "n_restarts": 3
+        },
+        "per_seed_val_pr_auc": [
+          0.13996281603770355
+        ],
+        "mean_val_pr_auc": 0.13996281603770355,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Bipartite_SignLinear_41p",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
+    },
+    "chosen_mean_val_pr_auc": 0.9077972884801413,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.9077972884801413
+        ],
+        "mean_val_pr_auc": 0.9077972884801413,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.45169236880073305
+        ],
+        "mean_val_pr_auc": 0.45169236880073305,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.6780019542842647
+        ],
+        "mean_val_pr_auc": 0.6780019542842647,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.22832128642063593
+        ],
+        "mean_val_pr_auc": 0.22832128642063593,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
     "family": "Dummy",
     "label": "Dummy",
     "n_train": 500,
@@ -297,97 +1166,6 @@
           0.9133042623625509
         ],
         "mean_val_pr_auc": 0.9133042623625509,
-        "std_val_pr_auc": 0.0
-      }
-    ]
-  },
-  {
-    "family": "Q1-VQC",
-    "label": "Q1-VQC (8q Ring L=2)",
-    "n_train": 500,
-    "tune_seeds": [
-      200
-    ],
-    "n_candidates": 4,
-    "chosen_config": {
-      "weight_decay": 0.0001,
-      "pos_weight_mult": 0.5,
-      "lr": 0.02,
-      "batch_size": 128,
-      "alpha": 0.25,
-      "encoding": "angle",
-      "entanglement": "ring",
-      "n_layers": 2
-    },
-    "chosen_mean_val_pr_auc": 0.8501328882197273,
-    "chosen_std_val_pr_auc": 0.0,
-    "candidates": [
-      {
-        "config": {
-          "weight_decay": 0.0001,
-          "pos_weight_mult": 0.5,
-          "lr": 0.02,
-          "batch_size": 128,
-          "alpha": 0.25,
-          "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
-        },
-        "per_seed_val_pr_auc": [
-          0.8501328882197273
-        ],
-        "mean_val_pr_auc": 0.8501328882197273,
-        "std_val_pr_auc": 0.0
-      },
-      {
-        "config": {
-          "weight_decay": 0.0,
-          "pos_weight_mult": 1.5,
-          "lr": 0.005,
-          "batch_size": 128,
-          "alpha": 0.5,
-          "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
-        },
-        "per_seed_val_pr_auc": [
-          0.07900604210247854
-        ],
-        "mean_val_pr_auc": 0.07900604210247854,
-        "std_val_pr_auc": 0.0
-      },
-      {
-        "config": {
-          "weight_decay": 0.0,
-          "pos_weight_mult": 0.5,
-          "lr": 0.01,
-          "batch_size": 128,
-          "alpha": 2.5,
-          "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
-        },
-        "per_seed_val_pr_auc": [
-          0.4546337605466433
-        ],
-        "mean_val_pr_auc": 0.4546337605466433,
-        "std_val_pr_auc": 0.0
-      },
-      {
-        "config": {
-          "weight_decay": 0.0,
-          "pos_weight_mult": 1.5,
-          "lr": 0.005,
-          "batch_size": 128,
-          "alpha": 1.0,
-          "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
-        },
-        "per_seed_val_pr_auc": [
-          0.09703999377422538
-        ],
-        "mean_val_pr_auc": 0.09703999377422538,
         "std_val_pr_auc": 0.0
       }
     ]
@@ -1808,7 +2586,7 @@
   },
   {
     "family": "Q1-VQC",
-    "label": "Q1-VQC (8q)",
+    "label": "Q1-VQC (Bipartite_SignLinear_41p)",
     "n_train": 100,
     "tune_seeds": [
       200
@@ -1821,10 +2599,12 @@
       "batch_size": 128,
       "alpha": 0.25,
       "encoding": "angle",
-      "entanglement": "ring",
-      "n_layers": 2
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
     },
-    "chosen_mean_val_pr_auc": 0.16892505751741563,
+    "chosen_mean_val_pr_auc": 0.8449247591812095,
     "chosen_std_val_pr_auc": 0.0,
     "candidates": [
       {
@@ -1835,13 +2615,15 @@
           "batch_size": 128,
           "alpha": 0.25,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.16892505751741563
+          0.8449247591812095
         ],
-        "mean_val_pr_auc": 0.16892505751741563,
+        "mean_val_pr_auc": 0.8449247591812095,
         "std_val_pr_auc": 0.0
       },
       {
@@ -1852,13 +2634,15 @@
           "batch_size": 128,
           "alpha": 0.5,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.05213127176999395
+          0.05295454444519716
         ],
-        "mean_val_pr_auc": 0.05213127176999395,
+        "mean_val_pr_auc": 0.05295454444519716,
         "std_val_pr_auc": 0.0
       },
       {
@@ -1869,13 +2653,15 @@
           "batch_size": 128,
           "alpha": 2.5,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.13104610852873516
+          0.08768363430363232
         ],
-        "mean_val_pr_auc": 0.13104610852873516,
+        "mean_val_pr_auc": 0.08768363430363232,
         "std_val_pr_auc": 0.0
       },
       {
@@ -1886,13 +2672,15 @@
           "batch_size": 128,
           "alpha": 1.0,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.0712128592472189
+          0.06350191202354162
         ],
-        "mean_val_pr_auc": 0.0712128592472189,
+        "mean_val_pr_auc": 0.06350191202354162,
         "std_val_pr_auc": 0.0
       }
     ]
@@ -2155,7 +2943,7 @@
   },
   {
     "family": "Q1-VQC",
-    "label": "Q1-VQC (8q)",
+    "label": "Q1-VQC (Bipartite_SignLinear_41p)",
     "n_train": 200,
     "tune_seeds": [
       200
@@ -2168,10 +2956,12 @@
       "batch_size": 128,
       "alpha": 0.25,
       "encoding": "angle",
-      "entanglement": "ring",
-      "n_layers": 2
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
     },
-    "chosen_mean_val_pr_auc": 0.7765585828415895,
+    "chosen_mean_val_pr_auc": 0.8913468609602759,
     "chosen_std_val_pr_auc": 0.0,
     "candidates": [
       {
@@ -2182,13 +2972,15 @@
           "batch_size": 128,
           "alpha": 0.25,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.7765585828415895
+          0.8913468609602759
         ],
-        "mean_val_pr_auc": 0.7765585828415895,
+        "mean_val_pr_auc": 0.8913468609602759,
         "std_val_pr_auc": 0.0
       },
       {
@@ -2199,13 +2991,15 @@
           "batch_size": 128,
           "alpha": 0.5,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.05423599217970669
+          0.06562493352898299
         ],
-        "mean_val_pr_auc": 0.05423599217970669,
+        "mean_val_pr_auc": 0.06562493352898299,
         "std_val_pr_auc": 0.0
       },
       {
@@ -2216,13 +3010,15 @@
           "batch_size": 128,
           "alpha": 2.5,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.18515582755370258
+          0.14984597703526686
         ],
-        "mean_val_pr_auc": 0.18515582755370258,
+        "mean_val_pr_auc": 0.14984597703526686,
         "std_val_pr_auc": 0.0
       },
       {
@@ -2233,13 +3029,15 @@
           "batch_size": 128,
           "alpha": 1.0,
           "encoding": "angle",
-          "entanglement": "ring",
-          "n_layers": 2
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
         },
         "per_seed_val_pr_auc": [
-          0.07861759078972053
+          0.08423966536056346
         ],
-        "mean_val_pr_auc": 0.07861759078972053,
+        "mean_val_pr_auc": 0.08423966536056346,
         "std_val_pr_auc": 0.0
       }
     ]
