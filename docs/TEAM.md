@@ -1,7 +1,5 @@
-# Team Roles & Verification Responsibilities
+# Team Roles & Verification Record
 
-| Team Member | Role | Modules & Claims Verified |
+| Member | Role | Verified Deliverables |
 | :--- | :--- | :--- |
-| Zeyad Mohamed Nada | Team Lead & QML Architect | Leakage-free data pipeline, equal-budget multi-seed tuner, quantum circuit/encoding ablations, statistical CI verdicts |
-| *(Teammate 2 Name)* | *(Classical Baselines & Metrics)* | *(Verified classical models, parameter accounting, and threshold selection on validation)* |
-| *(Teammate 3 Name)* | *(Report, Figures & Reproducibility)* | *(Verified clean-venv execution, Colab notebook parity, and 4-page report tables)* |
+| **Zeyad Mohamed Nada** | Team Lead & QML Benchmark Architect | Verified train-only Yeo-Johnson splits (`src/data.py`), disjoint multi-seed tuning (`src/tuning.py`), VQC symmetry/readout ablations (`src/vqc_study.py`), two-level bootstrap CIs (`src/stats.py`), linearity/kernel/nonlinear-8D analyses, and clean-venv reproducibility |
