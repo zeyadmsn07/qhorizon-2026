@@ -8,9 +8,9 @@ from sklearn.metrics import (
 
 
 def select_threshold_on_val(y_val: np.ndarray, val_scores: np.ndarray) -> float:
-    # Pick the decision threshold on Validation only so Test metrics stay completely unbiased
+    # Constant scores (e.g. Dummy) must predict majority class 0 to reflect the 90.83% noise baseline
     if np.allclose(val_scores, val_scores[0]):
-        return float(val_scores[0])
+        return float(np.max(val_scores)) + 1.0
 
     candidates = np.unique(np.quantile(val_scores, np.linspace(0.05, 0.99, 101)))
     best_tau = float(candidates[0])
