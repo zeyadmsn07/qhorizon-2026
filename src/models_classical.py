@@ -77,7 +77,7 @@ def fit_predict_classical(
             min_samples_leaf=params["min_samples_leaf"],
             class_weight=params["class_weight"],
             random_state=seed,
-            n_jobs=-1,
+            n_jobs=1,
         )
         clf.fit(X_train, y_train)
         val_scores = clf.predict_proba(X_val)[:, 1]

@@ -3,143 +3,116 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from src.config import RESULTS_DIR
+from src.config import COLLAPSE_PR_AUC, RESULTS_DIR
+from src.stats import two_level_bootstrap_pr_auc
 
 plt.rcParams.update({
-    "figure.dpi": 300, "savefig.dpi": 300, "font.size": 10,
-    "axes.titlesize": 11.5, "axes.titleweight": "bold", "axes.labelsize": 10,
-    "axes.spines.top": False, "axes.spines.right": False,
+    "figure.dpi": 300, "savefig.dpi": 300, "font.size": 9.5, "axes.titlesize": 11,
+    "axes.titleweight": "bold", "axes.spines.top": False, "axes.spines.right": False,
     "axes.grid": True, "grid.alpha": 0.25, "grid.linestyle": "--",
 })
 
 
-def _sstd(s: pd.Series) -> float:
-    return 0.0 if len(s) < 2 else float(s.std(ddof=1))
+def _ci(res_dir: Path, sub: pd.DataFrame, col: str = "test_pr_auc") -> tuple[float, float, float]:
+    vals = sub[col].to_numpy(dtype=np.float64)
+    mv = float(np.mean(vals))
+    if col == "test_pr_auc" and "pred_file" in sub.columns and sub["pred_file"].notna().all():
+        p0 = res_dir / str(sub["pred_file"].iloc[0])
+        if p0.exists():
+            ord_s = sub.sort_values("seed")
+            yt = np.load(res_dir / str(ord_s["pred_file"].iloc[0]))["y_test"]
+            sc = [np.load(res_dir / str(p))["test_scores"] for p in ord_s["pred_file"]]
+            return two_level_bootstrap_pr_auc(yt, sc, n_boot=400)
+    sd = 0.0 if len(vals) < 2 else float(np.std(vals, ddof=1))
+    return mv, max(0.0, mv - sd), min(1.0, mv + sd)
 
 
 def plot_main_benchmark(res_dir: Path) -> None:
     df = pd.read_csv(res_dir / "main_benchmark.csv")
-    agg = df.groupby("model", sort=False)[["test_pr_auc", "test_mcc"]].agg(["mean", _sstd])
-    agg.columns = ["pr_m", "pr_s", "mcc_m", "mcc_s"]
-    agg = agg.sort_values("pr_m", ascending=True)
-    labels = agg.index.tolist()
-    y, h = np.arange(len(labels)), 0.36
-    c_pr = ["#D9534F" if m == "Dummy" else ("#2B7BBA" if "Q" in m else "#4A5568") for m in labels]
-    c_mc = ["#E69F9C" if m == "Dummy" else ("#6BAED6" if "Q" in m else "#A0AEC0") for m in labels]
-
-    fig, ax = plt.subplots(figsize=(9.5, 5.2))
-    ax.barh(y + h / 2, agg["pr_m"], height=h, xerr=agg["pr_s"], capsize=3, color=c_pr, label="Test PR-AUC (Primary)")
-    ax.barh(y - h / 2, agg["mcc_m"], height=h, xerr=agg["mcc_s"], capsize=3, color=c_mc, label="Test MCC")
-    for yi, (m, s) in enumerate(zip(agg["pr_m"], agg["pr_s"])):
-        ax.text(min(m + s + 0.015, 1.03), yi + h / 2, f"{m:.3f}", va="center", fontsize=8.5)
-    ax.axvline(0.0917, color="#D9534F", linestyle=":", linewidth=1.1, label="Pulsar Prevalence Floor (0.092)")
-    ax.set_yticks(y); ax.set_yticklabels(labels); ax.set_xlim(0, 1.12)
-    ax.set_xlabel("Score (Mean +/- Std across Eval Seeds, N_train = 500)")
-    ax.set_title("Main Benchmark: Classical Baselines vs. Quantum Models on UCI HTRU2")
+    rows = []
+    for m in df["model"].unique():
+        sub = df[df["model"] == m]
+        pm, plo, phi = _ci(res_dir, sub, "test_pr_auc")
+        mm, mlo, mhi = _ci(res_dir, sub, "test_mcc")
+        rows.append((m, pm, max(0.0, pm - plo), max(0.0, phi - pm), mm, max(0.0, mm - mlo), max(0.0, mhi - mm)))
+    rows.sort(key=lambda r: r[1])
+    lbls = [r[0] for r in rows]
+    y, h = np.arange(len(lbls)), 0.36
+    c1 = ["#D9534F" if m == "Dummy" else ("#2B7BBA" if "Q" in m else "#4A5568") for m in lbls]
+    c2 = ["#E69F9C" if m == "Dummy" else ("#6BAED6" if "Q" in m else "#A0AEC0") for m in lbls]
+    fig, ax = plt.subplots(figsize=(9.8, 5.4))
+    ax.barh(y + h / 2, [r[1] for r in rows], height=h, xerr=[[r[2] for r in rows], [r[3] for r in rows]], capsize=3, color=c1, label="Test PR-AUC (95% CI)")
+    ax.barh(y - h / 2, [r[4] for r in rows], height=h, xerr=[[r[5] for r in rows], [r[6] for r in rows]], capsize=3, color=c2, label="Test MCC")
+    marked = False
+    for yi, r in enumerate(rows):
+        ax.text(min(r[1] + r[3] + 0.015, 1.03), yi + h / 2, f"{r[1]:.3f}", va="center", fontsize=8.5)
+        cv = df[(df["model"] == r[0]) & (df["test_pr_auc"] < COLLAPSE_PR_AUC)]["test_pr_auc"]
+        if len(cv) > 0:
+            ax.scatter(cv, np.full(len(cv), yi + h / 2), facecolors="none", edgecolors="#B2182B", linewidths=1.5, s=42, zorder=5, label="Collapsed seed (<0.70)" if not marked else "")
+            marked = True
+    ax.axvline(0.0917, color="#D9534F", linestyle=":", linewidth=1.1, label="Pulsar Floor (0.092)")
+    ax.set_yticks(y); ax.set_yticklabels(lbls); ax.set_xlim(0, 1.14)
+    ax.set_xlabel("Score (Mean & Two-Level 95% Bootstrap CI, N_train = 500)")
+    ax.set_title("Main Benchmark: Classical vs. Quantum Models (Hollow = Collapsed Seed)")
     ax.legend(loc="lower right", frameon=True); fig.tight_layout()
     fig.savefig(res_dir / "main_benchmark.png"); plt.close(fig)
 
 
-def plot_gold_a_entanglement(res_dir: Path) -> None:
-    df = pd.read_csv(res_dir / "gold_a_entanglement.csv")
-    topos = [("none", "None (Product)", "#4A5568"), ("ring", "Ring", "#2B7BBA"), ("bipartite", "Bipartite (Profile <-> DM)", "#1B9E77")]
-    depths = [1, 2, 4]
-    x, w = np.arange(len(depths)), 0.25
-    fig, ax = plt.subplots(figsize=(8.8, 4.8))
-    for idx, (t, lbl, col) in enumerate(topos):
-        ms = [df[df["model"] == f"VQC_{t}_L{L}"]["test_pr_auc"].mean() for L in depths]
-        ss = [_sstd(df[df["model"] == f"VQC_{t}_L{L}"]["test_pr_auc"]) for L in depths]
-        bars = ax.bar(x + (idx - 1) * w, ms, width=w, yerr=ss, capsize=3, color=col, label=lbl)
-        for b, m in zip(bars, ms):
-            ax.text(b.get_x() + b.get_width() / 2, m + 0.012, f"{m:.3f}", ha="center", fontsize=8)
-    ax.set_xticks(x); ax.set_xticklabels([f"Depth L = {L}" for L in depths]); ax.set_ylim(0.50, 1.02)
-    ax.set_ylabel("Test PR-AUC"); ax.set_title("Gold A: Entanglement Topology & Circuit Depth Ablation")
+def plot_bar_table(res_dir: Path, csv_name: str, png_name: str, title: str, x_col: str = "model") -> None:
+    p = res_dir / csv_name
+    if not p.exists():
+        return
+    df = pd.read_csv(p)
+    df[x_col] = df[x_col].astype(str)
+    keys = list(df[x_col].unique())
+    prs = [_ci(res_dir, df[df[x_col] == k], "test_pr_auc") for k in keys]
+    mcs = [_ci(res_dir, df[df[x_col] == k], "test_mcc") for k in keys]
+    x, w = np.arange(len(keys)), 0.36
+    fig, ax = plt.subplots(figsize=(max(8.2, 1.15 * len(keys)), 4.8))
+    b1 = ax.bar(x - w / 2, [r[0] for r in prs], width=w, yerr=[[max(0.0, r[0] - r[1]) for r in prs], [max(0.0, r[2] - r[0]) for r in prs]], capsize=3, color="#2B7BBA", label="Test PR-AUC (95% CI)")
+    ax.bar(x + w / 2, [r[0] for r in mcs], width=w, yerr=[[max(0.0, r[0] - r[1]) for r in mcs], [max(0.0, r[2] - r[0]) for r in mcs]], capsize=3, color="#74C476", label="Test MCC")
+    for xi, (b, r, k) in enumerate(zip(b1, prs, keys)):
+        ax.text(b.get_x() + b.get_width() / 2, min(r[2] + 0.015, 1.03), f"{r[0]:.3f}", ha="center", fontsize=8)
+        cv = df[(df[x_col] == k) & (df["test_pr_auc"] < COLLAPSE_PR_AUC)]["test_pr_auc"]
+        if len(cv) > 0:
+            ax.scatter(np.full(len(cv), xi - w / 2), cv, facecolors="none", edgecolors="#B2182B", s=38, zorder=5)
+    ax.set_xticks(x); ax.set_xticklabels(keys, rotation=18 if len(keys) > 5 else 0, ha="right" if len(keys) > 5 else "center")
+    ax.set_ylim(0.30, 1.08); ax.set_ylabel("Score (95% Bootstrap CI)"); ax.set_title(title)
     ax.legend(loc="lower right", frameon=True); fig.tight_layout()
-    fig.savefig(res_dir / "gold_a_entanglement.png"); plt.close(fig)
-
-
-def plot_gold_b_encoding(res_dir: Path) -> None:
-    df = pd.read_csv(res_dir / "gold_b_encoding.csv")
-    order = ["3q_Amplitude_L5", "4q_AmplitudePlusNorm_L4", "8q_Angle_L2", "8q_Angle_Reupload_L2"]
-    disp = ["3q Amplitude (L=5)\n[Norm Discarded]", "4q Amp + Norm (L=4)\n[Norm on Wire 3]", "8q Angle (L=2)\n[Single]", "8q Angle Re-upload\n[Repeated]"]
-    agg = df.groupby("model")[["test_pr_auc", "test_mcc"]].agg(["mean", _sstd]).loc[order]
-    x, w = np.arange(len(order)), 0.35
-    fig, ax = plt.subplots(figsize=(9.0, 4.8))
-    b1 = ax.bar(x - w / 2, agg[("test_pr_auc", "mean")], width=w, yerr=agg[("test_pr_auc", "_sstd")], capsize=4, color="#2B7BBA", label="Test PR-AUC")
-    ax.bar(x + w / 2, agg[("test_mcc", "mean")], width=w, yerr=agg[("test_mcc", "_sstd")], capsize=4, color="#74C476", label="Test MCC")
-    for b, m in zip(b1, agg[("test_pr_auc", "mean")]):
-        ax.text(b.get_x() + b.get_width() / 2, m + 0.02, f"{m:.3f}", ha="center", fontsize=8.5, fontweight="bold")
-    ax.set_xticks(x); ax.set_xticklabels(disp); ax.set_ylim(0.40, 1.05)
-    ax.set_ylabel("Score"); ax.set_title("Gold B: Quantum Encoding Compression & Radial Norm Restoration")
-    ax.legend(loc="lower right", frameon=True); fig.tight_layout()
-    fig.savefig(res_dir / "gold_b_encoding.png"); plt.close(fig)
+    fig.savefig(res_dir / png_name); plt.close(fig)
 
 
 def plot_gold_c_sweep(res_dir: Path) -> None:
     df = pd.read_csv(res_dir / "gold_c_sweep.csv")
     fig, ax = plt.subplots(figsize=(8.8, 4.8))
-    palette = ["#1B9E77", "#4A5568", "#2B7BBA", "#D95F02", "#7570B3"]
-    for idx, m_name in enumerate([m for m in df["model"].unique() if m != "Dummy"]):
-        sub = df[df["model"] == m_name].groupby("n_train")["test_pr_auc"].agg(["mean", _sstd]).sort_index()
-        ns, ms, ss = sub.index.values, sub["mean"].values, sub["_sstd"].values
-        col = palette[idx % len(palette)]
-        ax.plot(ns, ms, marker="o", linewidth=2, color=col, label=m_name)
-        ax.fill_between(ns, ms - ss, ms + ss, color=col, alpha=0.14)
-    ax.set_xticks(sorted(df["n_train"].unique())); ax.set_ylim(0.50, 0.98)
-    ax.set_xlabel("Training Set Size (N_train)"); ax.set_ylabel("Test PR-AUC")
-    ax.set_title("Gold C: Sample Efficiency Across Training Regimes")
+    pal = ["#1B9E77", "#4A5568", "#2B7BBA", "#D95F02", "#7570B3"]
+    for i, m in enumerate([k for k in df["model"].unique() if k != "Dummy"]):
+        ns = sorted(df["n_train"].unique())
+        cis = [_ci(res_dir, df[(df["model"] == m) & (df["n_train"] == n)]) for n in ns]
+        col = pal[i % len(pal)]
+        ax.plot(ns, [c[0] for c in cis], marker="o", linewidth=2, color=col, label=m)
+        ax.fill_between(ns, [c[1] for c in cis], [c[2] for c in cis], color=col, alpha=0.14)
+    ax.set_xticks(sorted(df["n_train"].unique())); ax.set_ylim(0.45, 0.99)
+    ax.set_xlabel("Training Set Size (N_train)"); ax.set_ylabel("Test PR-AUC (95% Bootstrap CI)")
+    ax.set_title("Gold C: Sample Efficiency Sweep with Two-Level 95% CIs")
     ax.legend(loc="lower right", frameon=True); fig.tight_layout()
     fig.savefig(res_dir / "gold_c_sweep.png"); plt.close(fig)
-
-
-def plot_table_d_shots(res_dir: Path) -> None:
-    df = pd.read_csv(res_dir / "table_d_shots.csv")
-    df["shots"] = df["shots"].astype(str)
-    order = [s for s in ["analytic", "2000", "500", "100"] if s in set(df["shots"])]
-    agg = df.groupby("shots")[["test_pr_auc", "test_mcc"]].agg(["mean", _sstd]).loc[order]
-    x, w = np.arange(len(order)), 0.35
-    fig, ax = plt.subplots(figsize=(8.2, 4.5))
-    b1 = ax.bar(x - w / 2, agg[("test_pr_auc", "mean")], width=w, yerr=agg[("test_pr_auc", "_sstd")], capsize=4, color="#2B7BBA", label="Test PR-AUC")
-    ax.bar(x + w / 2, agg[("test_mcc", "mean")], width=w, yerr=agg[("test_mcc", "_sstd")], capsize=4, color="#6BAED6", label="Test MCC")
-    for b, m in zip(b1, agg[("test_pr_auc", "mean")]):
-        ax.text(b.get_x() + b.get_width() / 2, m + 0.02, f"{m:.3f}", ha="center", fontsize=8.5)
-    ax.set_xticks(x); ax.set_xticklabels(order); ax.set_ylim(0.40, 1.04)
-    ax.set_ylabel("Score"); ax.set_title("Table D: Finite Measurement Shot-Noise Degradation")
-    ax.legend(loc="lower left", frameon=True); fig.tight_layout()
-    fig.savefig(res_dir / "table_d_shots.png"); plt.close(fig)
-
-
-def plot_mlp_ablation(res_dir: Path) -> None:
-    p = res_dir / "mlp_ablation.csv"
-    if not p.exists():
-        return
-    df = pd.read_csv(p)
-    agg = df.groupby("model", sort=False)[["test_pr_auc", "test_mcc"]].agg(["mean", _sstd])
-    x, w = np.arange(len(agg)), 0.35
-    fig, ax = plt.subplots(figsize=(7.8, 4.4))
-    b1 = ax.bar(x - w / 2, agg[("test_pr_auc", "mean")], width=w, yerr=agg[("test_pr_auc", "_sstd")], capsize=4, color="#1B9E77", label="Test PR-AUC")
-    ax.bar(x + w / 2, agg[("test_mcc", "mean")], width=w, yerr=agg[("test_mcc", "_sstd")], capsize=4, color="#A0AEC0", label="Test MCC")
-    for b, m in zip(b1, agg[("test_pr_auc", "mean")]):
-        ax.text(b.get_x() + b.get_width() / 2, m + 0.015, f"{m:.3f}", ha="center", fontsize=8.5)
-    ax.set_xticks(x); ax.set_xticklabels(agg.index.tolist()); ax.set_ylim(0.65, 1.02)
-    ax.set_ylabel("Score"); ax.set_title("Tiny-MLP Width Ablation (21 vs. 41 vs. 81 Trainable Params)")
-    ax.legend(loc="lower right", frameon=True); fig.tight_layout()
-    fig.savefig(res_dir / "mlp_ablation.png"); plt.close(fig)
 
 
 def main(results_dir: Path | None = None) -> None:
     if results_dir is None:
         ap = argparse.ArgumentParser()
-        d_dir = RESULTS_DIR / "full" if (RESULTS_DIR / "full" / "main_benchmark.csv").exists() else RESULTS_DIR / "v1_original_10seed"
+        d_dir = RESULTS_DIR / "full" if (RESULTS_DIR / "full" / "main_benchmark.csv").exists() else RESULTS_DIR / "fast"
         ap.add_argument("--results-dir", type=Path, default=d_dir)
         results_dir = ap.parse_args().results_dir
     plot_main_benchmark(results_dir)
-    plot_gold_a_entanglement(results_dir)
-    plot_gold_b_encoding(results_dir)
+    plot_bar_table(results_dir, "gold_a_entanglement.csv", "gold_a_entanglement.png", "Gold A: Entanglement & Depth (95% CIs)")
+    plot_bar_table(results_dir, "gold_b_encoding.csv", "gold_b_encoding.png", "Gold B: Encoding & Radial Norm Restoration (95% CIs)")
     plot_gold_c_sweep(results_dir)
-    plot_table_d_shots(results_dir)
-    plot_mlp_ablation(results_dir)
-    print(f"Generated 300-DPI figures in {results_dir}")
+    plot_bar_table(results_dir, "table_d_shots.csv", "table_d_shots.png", "Table D: Finite Shot-Noise Degradation (95% CIs)", x_col="shots")
+    plot_bar_table(results_dir, "mlp_ablation.csv", "mlp_ablation.png", "Tiny-MLP Width Ablation (21 vs. 41 vs. 81 Params)")
+    plot_bar_table(results_dir, "vqc_stability_ablation.csv", "vqc_stability_ablation.png", "Phase 5: VQC Stability & Readout Ablation (95% CIs)")
+    print(f"Rendered 300-DPI CI figures in {results_dir}")
 
 
 if __name__ == "__main__":
