@@ -1,0 +1,1190 @@
+[
+  {
+    "family": "LogReg",
+    "label": "LogReg",
+    "n_train": 100,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "class_weight": "balanced",
+      "C": 104.81131341546852
+    },
+    "chosen_mean_val_pr_auc": 0.12760411592240434,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 104.81131341546852
+        },
+        "per_seed_val_pr_auc": [
+          0.12760411592240434
+        ],
+        "mean_val_pr_auc": 0.12760411592240434,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 1.5264179671752334
+        },
+        "per_seed_val_pr_auc": [
+          0.127471680905759
+        ],
+        "mean_val_pr_auc": 0.127471680905759,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": null,
+          "C": 19.306977288832496
+        },
+        "per_seed_val_pr_auc": [
+          0.12245435905241941
+        ],
+        "mean_val_pr_auc": 0.12245435905241941,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 0.49417133613238334
+        },
+        "per_seed_val_pr_auc": [
+          0.12744132538852124
+        ],
+        "mean_val_pr_auc": 0.12744132538852124,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "RBF-SVM",
+    "label": "RBF-SVM",
+    "n_train": 100,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "gamma": 0.04291934260128776,
+      "class_weight": "balanced",
+      "C": 47.14866363457394
+    },
+    "chosen_mean_val_pr_auc": 0.43902992383967204,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "gamma": 0.04291934260128776,
+          "class_weight": "balanced",
+          "C": 47.14866363457394
+        },
+        "per_seed_val_pr_auc": [
+          0.43902992383967204
+        ],
+        "mean_val_pr_auc": 0.43902992383967204,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 0.006551285568595509,
+          "class_weight": "balanced",
+          "C": 0.025595479226995357
+        },
+        "per_seed_val_pr_auc": [
+          0.13436190087886052
+        ],
+        "mean_val_pr_auc": 0.13436190087886052,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 1.8420699693267144,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 4.498432668969444
+        },
+        "per_seed_val_pr_auc": [
+          0.3365475144286375
+        ],
+        "mean_val_pr_auc": 0.3365475144286375,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 2.2229964825261934,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 3.5564803062231287
+        },
+        "per_seed_val_pr_auc": [
+          0.3294151860547735
+        ],
+        "mean_val_pr_auc": 0.3294151860547735,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Tiny-MLP",
+    "label": "Tiny-MLP (41p)",
+    "n_train": 100,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0,
+      "pos_weight_mult": 0.5,
+      "lr": 0.01,
+      "hidden_dim": 4,
+      "batch_size": 32
+    },
+    "chosen_mean_val_pr_auc": 0.13599136987337382,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 1.0,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.12638321677931233
+        ],
+        "mean_val_pr_auc": 0.12638321677931233,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.01,
+          "pos_weight_mult": 1.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 64
+        },
+        "per_seed_val_pr_auc": [
+          0.1273723339671095
+        ],
+        "mean_val_pr_auc": 0.1273723339671095,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.13599136987337382
+        ],
+        "mean_val_pr_auc": 0.13599136987337382,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.13225206601915135
+        ],
+        "mean_val_pr_auc": 0.13225206601915135,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q2-QuantumKernel",
+    "label": "Q2-QuantumKernel (8q)",
+    "n_train": 100,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "depth": 1,
+      "class_weight": {
+        "0": 1,
+        "1": 5
+      },
+      "alpha": 0.7573739175895008,
+      "C": 0.024244620170823284
+    },
+    "chosen_mean_val_pr_auc": 0.4547497976748231,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.2592943797404667,
+          "C": 70.17038286703823
+        },
+        "per_seed_val_pr_auc": [
+          0.351196962425169
+        ],
+        "mean_val_pr_auc": 0.351196962425169,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 5
+          },
+          "alpha": 0.7573739175895008,
+          "C": 0.024244620170823284
+        },
+        "per_seed_val_pr_auc": [
+          0.4547497976748231
+        ],
+        "mean_val_pr_auc": 0.4547497976748231,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.47034203416986337,
+          "C": 6.614740641230146
+        },
+        "per_seed_val_pr_auc": [
+          0.396861000235937
+        ],
+        "mean_val_pr_auc": 0.396861000235937,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 2,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.8531678524172808,
+          "C": 4.923882631706737
+        },
+        "per_seed_val_pr_auc": [
+          0.44367104087265047
+        ],
+        "mean_val_pr_auc": 0.44367104087265047,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Q1-VQC (Headline)",
+    "n_train": 100,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0,
+      "pos_weight_mult": 0.5,
+      "lr": 0.01,
+      "batch_size": 128,
+      "alpha": 2.5,
+      "encoding": "angle",
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
+    },
+    "chosen_mean_val_pr_auc": 0.10954904272718188,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.10403908506917077
+        ],
+        "mean_val_pr_auc": 0.10403908506917077,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.09737730639415001
+        ],
+        "mean_val_pr_auc": 0.09737730639415001,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.10954904272718188
+        ],
+        "mean_val_pr_auc": 0.10954904272718188,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.09882759296062718
+        ],
+        "mean_val_pr_auc": 0.09882759296062718,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "LogReg",
+    "label": "LogReg",
+    "n_train": 200,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "class_weight": "balanced",
+      "C": 104.81131341546852
+    },
+    "chosen_mean_val_pr_auc": 0.10912555926255234,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 104.81131341546852
+        },
+        "per_seed_val_pr_auc": [
+          0.10912555926255234
+        ],
+        "mean_val_pr_auc": 0.10912555926255234,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 1.5264179671752334
+        },
+        "per_seed_val_pr_auc": [
+          0.10912116738791038
+        ],
+        "mean_val_pr_auc": 0.10912116738791038,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": null,
+          "C": 19.306977288832496
+        },
+        "per_seed_val_pr_auc": [
+          0.10876900652404103
+        ],
+        "mean_val_pr_auc": 0.10876900652404103,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 0.49417133613238334
+        },
+        "per_seed_val_pr_auc": [
+          0.10906924321086
+        ],
+        "mean_val_pr_auc": 0.10906924321086,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "RBF-SVM",
+    "label": "RBF-SVM",
+    "n_train": 200,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "gamma": 0.04291934260128776,
+      "class_weight": "balanced",
+      "C": 47.14866363457394
+    },
+    "chosen_mean_val_pr_auc": 0.6607815124739256,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "gamma": 0.04291934260128776,
+          "class_weight": "balanced",
+          "C": 47.14866363457394
+        },
+        "per_seed_val_pr_auc": [
+          0.6607815124739256
+        ],
+        "mean_val_pr_auc": 0.6607815124739256,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 0.006551285568595509,
+          "class_weight": "balanced",
+          "C": 0.025595479226995357
+        },
+        "per_seed_val_pr_auc": [
+          0.12724212319488415
+        ],
+        "mean_val_pr_auc": 0.12724212319488415,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 1.8420699693267144,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 4.498432668969444
+        },
+        "per_seed_val_pr_auc": [
+          0.49131261921093256
+        ],
+        "mean_val_pr_auc": 0.49131261921093256,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 2.2229964825261934,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 3.5564803062231287
+        },
+        "per_seed_val_pr_auc": [
+          0.4770633169783069
+        ],
+        "mean_val_pr_auc": 0.4770633169783069,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Tiny-MLP",
+    "label": "Tiny-MLP (41p)",
+    "n_train": 200,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 1.0,
+      "lr": 0.001,
+      "hidden_dim": 4,
+      "batch_size": 32
+    },
+    "chosen_mean_val_pr_auc": 0.12752123420410494,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 1.0,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.12752123420410494
+        ],
+        "mean_val_pr_auc": 0.12752123420410494,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.01,
+          "pos_weight_mult": 1.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 64
+        },
+        "per_seed_val_pr_auc": [
+          0.11921996470001968
+        ],
+        "mean_val_pr_auc": 0.11921996470001968,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.11922536863230787
+        ],
+        "mean_val_pr_auc": 0.11922536863230787,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.11977655230572765
+        ],
+        "mean_val_pr_auc": 0.11977655230572765,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q2-QuantumKernel",
+    "label": "Q2-QuantumKernel (8q)",
+    "n_train": 200,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "depth": 1,
+      "class_weight": {
+        "0": 1,
+        "1": 5
+      },
+      "alpha": 0.7573739175895008,
+      "C": 0.024244620170823284
+    },
+    "chosen_mean_val_pr_auc": 0.5249920486941787,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.2592943797404667,
+          "C": 70.17038286703823
+        },
+        "per_seed_val_pr_auc": [
+          0.49762124691704174
+        ],
+        "mean_val_pr_auc": 0.49762124691704174,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 5
+          },
+          "alpha": 0.7573739175895008,
+          "C": 0.024244620170823284
+        },
+        "per_seed_val_pr_auc": [
+          0.5249920486941787
+        ],
+        "mean_val_pr_auc": 0.5249920486941787,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.47034203416986337,
+          "C": 6.614740641230146
+        },
+        "per_seed_val_pr_auc": [
+          0.511042787607335
+        ],
+        "mean_val_pr_auc": 0.511042787607335,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 2,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.8531678524172808,
+          "C": 4.923882631706737
+        },
+        "per_seed_val_pr_auc": [
+          0.5118473809624826
+        ],
+        "mean_val_pr_auc": 0.5118473809624826,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Q1-VQC (Headline)",
+    "n_train": 200,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0001,
+      "pos_weight_mult": 0.5,
+      "lr": 0.02,
+      "batch_size": 128,
+      "alpha": 0.25,
+      "encoding": "angle",
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
+    },
+    "chosen_mean_val_pr_auc": 0.12672451472254245,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.12672451472254245
+        ],
+        "mean_val_pr_auc": 0.12672451472254245,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.0980237514689507
+        ],
+        "mean_val_pr_auc": 0.0980237514689507,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.11503203639601413
+        ],
+        "mean_val_pr_auc": 0.11503203639601413,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.09941272279923175
+        ],
+        "mean_val_pr_auc": 0.09941272279923175,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "LogReg",
+    "label": "LogReg",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "class_weight": null,
+      "C": 19.306977288832496
+    },
+    "chosen_mean_val_pr_auc": 0.11200689076410536,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 104.81131341546852
+        },
+        "per_seed_val_pr_auc": [
+          0.10961714962078792
+        ],
+        "mean_val_pr_auc": 0.10961714962078792,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 1.5264179671752334
+        },
+        "per_seed_val_pr_auc": [
+          0.10962988843348843
+        ],
+        "mean_val_pr_auc": 0.10962988843348843,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": null,
+          "C": 19.306977288832496
+        },
+        "per_seed_val_pr_auc": [
+          0.11200689076410536
+        ],
+        "mean_val_pr_auc": 0.11200689076410536,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "class_weight": "balanced",
+          "C": 0.49417133613238334
+        },
+        "per_seed_val_pr_auc": [
+          0.10964213630804318
+        ],
+        "mean_val_pr_auc": 0.10964213630804318,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "RBF-SVM",
+    "label": "RBF-SVM",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "gamma": 0.04291934260128776,
+      "class_weight": "balanced",
+      "C": 47.14866363457394
+    },
+    "chosen_mean_val_pr_auc": 0.8541272445404764,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "gamma": 0.04291934260128776,
+          "class_weight": "balanced",
+          "C": 47.14866363457394
+        },
+        "per_seed_val_pr_auc": [
+          0.8541272445404764
+        ],
+        "mean_val_pr_auc": 0.8541272445404764,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 0.006551285568595509,
+          "class_weight": "balanced",
+          "C": 0.025595479226995357
+        },
+        "per_seed_val_pr_auc": [
+          0.1284550447928562
+        ],
+        "mean_val_pr_auc": 0.1284550447928562,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 1.8420699693267144,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 4.498432668969444
+        },
+        "per_seed_val_pr_auc": [
+          0.5664667500750359
+        ],
+        "mean_val_pr_auc": 0.5664667500750359,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "gamma": 2.2229964825261934,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "C": 3.5564803062231287
+        },
+        "per_seed_val_pr_auc": [
+          0.5347012368701008
+        ],
+        "mean_val_pr_auc": 0.5347012368701008,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Tiny-MLP",
+    "label": "Tiny-MLP (41p)",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.01,
+      "pos_weight_mult": 1.5,
+      "lr": 0.01,
+      "hidden_dim": 4,
+      "batch_size": 64
+    },
+    "chosen_mean_val_pr_auc": 0.416372483641955,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 1.0,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.1258295465953403
+        ],
+        "mean_val_pr_auc": 0.1258295465953403,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.01,
+          "pos_weight_mult": 1.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 64
+        },
+        "per_seed_val_pr_auc": [
+          0.416372483641955
+        ],
+        "mean_val_pr_auc": 0.416372483641955,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.12147923916596715
+        ],
+        "mean_val_pr_auc": 0.12147923916596715,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.001,
+          "hidden_dim": 4,
+          "batch_size": 32
+        },
+        "per_seed_val_pr_auc": [
+          0.12514406263158673
+        ],
+        "mean_val_pr_auc": 0.12514406263158673,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q2-QuantumKernel",
+    "label": "Q2-QuantumKernel (8q)",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "depth": 1,
+      "class_weight": {
+        "0": 1,
+        "1": 10
+      },
+      "alpha": 0.2592943797404667,
+      "C": 70.17038286703823
+    },
+    "chosen_mean_val_pr_auc": 0.7783944625055192,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.2592943797404667,
+          "C": 70.17038286703823
+        },
+        "per_seed_val_pr_auc": [
+          0.7783944625055192
+        ],
+        "mean_val_pr_auc": 0.7783944625055192,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 5
+          },
+          "alpha": 0.7573739175895008,
+          "C": 0.024244620170823284
+        },
+        "per_seed_val_pr_auc": [
+          0.6038602308472331
+        ],
+        "mean_val_pr_auc": 0.6038602308472331,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 1,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.47034203416986337,
+          "C": 6.614740641230146
+        },
+        "per_seed_val_pr_auc": [
+          0.691922626975179
+        ],
+        "mean_val_pr_auc": 0.691922626975179,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "depth": 2,
+          "class_weight": {
+            "0": 1,
+            "1": 10
+          },
+          "alpha": 0.8531678524172808,
+          "C": 4.923882631706737
+        },
+        "per_seed_val_pr_auc": [
+          0.6221350114837405
+        ],
+        "mean_val_pr_auc": 0.6221350114837405,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  },
+  {
+    "family": "Q1-VQC",
+    "label": "Q1-VQC (Headline)",
+    "n_train": 500,
+    "tune_seeds": [
+      200
+    ],
+    "n_candidates": 4,
+    "chosen_config": {
+      "weight_decay": 0.0,
+      "pos_weight_mult": 0.5,
+      "lr": 0.01,
+      "batch_size": 128,
+      "alpha": 2.5,
+      "encoding": "angle",
+      "entanglement": "bipartite",
+      "n_layers": 2,
+      "sign_offset": true,
+      "readout": "linear_z"
+    },
+    "chosen_mean_val_pr_auc": 0.12309777543901913,
+    "chosen_std_val_pr_auc": 0.0,
+    "candidates": [
+      {
+        "config": {
+          "weight_decay": 0.0001,
+          "pos_weight_mult": 0.5,
+          "lr": 0.02,
+          "batch_size": 128,
+          "alpha": 0.25,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.10244131930442711
+        ],
+        "mean_val_pr_auc": 0.10244131930442711,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 0.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.1008221703049621
+        ],
+        "mean_val_pr_auc": 0.1008221703049621,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 0.5,
+          "lr": 0.01,
+          "batch_size": 128,
+          "alpha": 2.5,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.12309777543901913
+        ],
+        "mean_val_pr_auc": 0.12309777543901913,
+        "std_val_pr_auc": 0.0
+      },
+      {
+        "config": {
+          "weight_decay": 0.0,
+          "pos_weight_mult": 1.5,
+          "lr": 0.005,
+          "batch_size": 128,
+          "alpha": 1.0,
+          "encoding": "angle",
+          "entanglement": "bipartite",
+          "n_layers": 2,
+          "sign_offset": true,
+          "readout": "linear_z"
+        },
+        "per_seed_val_pr_auc": [
+          0.10088792667510679
+        ],
+        "mean_val_pr_auc": 0.10088792667510679,
+        "std_val_pr_auc": 0.0
+      }
+    ]
+  }
+]

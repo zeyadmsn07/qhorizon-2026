@@ -1,0 +1,14 @@
+{
+  "mode": "smoke",
+  "tune_seeds": [
+    200,
+    201,
+    202
+  ],
+  "eval_seeds": [
+    100,
+    101
+  ],
+  "n_tuning_configs": 2,
+  "wall_clock_sec": 449.98
+}

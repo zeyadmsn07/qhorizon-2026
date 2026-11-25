@@ -1,0 +1,198 @@
+{
+  "best_classical": "Tiny-MLP (41p)",
+  "headline_vqc": "Q1-VQC (Bipartite_SignLinear_41p)",
+  "hypotheses": {
+    "H1a": {
+      "mean_delta": 0.04629919129307706,
+      "ci_lo": 0.028019696559471046,
+      "ci_hi": 0.06605083230840221,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Tiny-MLP (41p) vs. Q2-QuantumKernel (8q)",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H1b": {
+      "mean_delta": 0.0131366280219359,
+      "ci_lo": -0.0008242731180611935,
+      "ci_hi": 0.02387631221535926,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p)",
+      "verdict": "Inconclusive",
+      "direction": "greater"
+    },
+    "H1c": {
+      "mean_delta": -0.024871750686837186,
+      "ci_lo": -0.042237337233567714,
+      "ci_hi": -0.010380459514492051,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Q2-QuantumKernel (8q) vs. RandomForest",
+      "verdict": "Contradicted",
+      "direction": "greater"
+    },
+    "H2a": {
+      "mean_delta": -0.0365491388406823,
+      "ci_lo": -0.06120428439839475,
+      "ci_hi": -0.012483289061970314,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "VQC_bipartite_L2 vs. VQC_none_L2",
+      "verdict": "Contradicted",
+      "direction": "greater"
+    },
+    "H2b": {
+      "mean_delta": -0.016343189864970336,
+      "ci_lo": -0.04406223053425499,
+      "ci_hi": 0.0175009812890526,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "VQC_bipartite_L2 vs. VQC_ring_L2",
+      "verdict": "Inconclusive",
+      "direction": "greater"
+    },
+    "H3": {
+      "mean_delta": 0.1535799872159118,
+      "ci_lo": 0.027501978990080323,
+      "ci_hi": 0.25105060814595015,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "4q_AmplitudePlusNorm_L4 vs. 3q_Amplitude_L5",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H4a": {
+      "mean_delta": -0.08045159499876024,
+      "ci_lo": -0.15401529593086422,
+      "ci_hi": -0.0214639526295122,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "N=100 Q2-QuantumKernel vs. RBF-SVM (tied)",
+      "verdict": "Contradicted",
+      "direction": "tied"
+    },
+    "H4b_2000": {
+      "mean_delta": -0.0009041475113196196,
+      "ci_lo": -0.0022873858763257297,
+      "ci_hi": 0.0003955789356861288,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Shots=2000 vs. Analytic (tied)",
+      "verdict": "Practically tied",
+      "direction": "tied"
+    },
+    "H4b_500": {
+      "mean_delta": -0.0020544779609243577,
+      "ci_lo": -0.004755023120146579,
+      "ci_hi": 0.0005271323744852107,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Shots=500 vs. Analytic (tied)",
+      "verdict": "Practically tied",
+      "direction": "tied"
+    },
+    "H4b_100": {
+      "mean_delta": -0.00461083076219837,
+      "ci_lo": -0.010964830916871261,
+      "ci_hi": 0.0017476782190397246,
+      "wilcoxon_p": NaN,
+      "min_attainable_p": 0.25,
+      "n_seeds": 3,
+      "comparison": "Shots=100 vs. Analytic (tied)",
+      "verdict": "Inconclusive",
+      "direction": "tied"
+    }
+  },
+  "models": {
+    "Dummy": {
+      "mean": 0.09166666666666666,
+      "ci_lo": 0.09166666666666666,
+      "ci_hi": 0.09166666666666666,
+      "collapse": "3/3",
+      "delta_vs_best": -0.8318805521730782,
+      "delta_lo": -0.855656581393601,
+      "delta_hi": -0.8038719845407672,
+      "status": "Contradicted"
+    },
+    "LogReg": {
+      "mean": 0.9219659683569227,
+      "ci_lo": 0.8898078763715591,
+      "ci_hi": 0.9484621277893044,
+      "collapse": "0/3",
+      "delta_vs_best": -0.001581250482822168,
+      "delta_lo": -0.012580929858026113,
+      "delta_hi": 0.007181778069201158,
+      "status": "Inconclusive"
+    },
+    "RBF-SVM": {
+      "mean": 0.9022893639073478,
+      "ci_lo": 0.8731292154753822,
+      "ci_hi": 0.927736632642972,
+      "collapse": "0/3",
+      "delta_vs_best": -0.02125785493239707,
+      "delta_lo": -0.035515510146101874,
+      "delta_hi": -0.0047140823897756316,
+      "status": "Contradicted"
+    },
+    "RandomForest": {
+      "mean": 0.9021197782335051,
+      "ci_lo": 0.8701018595540516,
+      "ci_hi": 0.9316702104341573,
+      "collapse": "0/3",
+      "delta_vs_best": -0.021427440606239873,
+      "delta_lo": -0.037191524213197276,
+      "delta_hi": -0.005607770156609364,
+      "status": "Contradicted"
+    },
+    "Tiny-MLP (41p)": {
+      "mean": 0.9235472188397448,
+      "ci_lo": 0.8955386512074339,
+      "ci_hi": 0.9473232480602678,
+      "collapse": "0/3",
+      "delta_vs_best": 0.0,
+      "delta_lo": 0.0,
+      "delta_hi": 0.0,
+      "status": "Reference"
+    },
+    "Q1-VQC (Bipartite_SignLinear_41p)": {
+      "mean": 0.910410590817809,
+      "ci_lo": 0.8821463386068821,
+      "ci_hi": 0.9353050183385747,
+      "collapse": "0/3",
+      "delta_vs_best": -0.0131366280219359,
+      "delta_lo": -0.023876312215359265,
+      "delta_hi": 0.0008242731180611922,
+      "status": "Inconclusive"
+    },
+    "Q1-VQC (Ring L=2, Fragile v1)": {
+      "mean": 0.8677537117410483,
+      "ci_lo": 0.8285466466414172,
+      "ci_hi": 0.9059932478190188,
+      "collapse": "0/3",
+      "delta_vs_best": -0.055793507098696495,
+      "delta_lo": -0.0833671022970529,
+      "delta_hi": -0.030324996115374644,
+      "status": "Contradicted"
+    },
+    "Q2-QuantumKernel (8q)": {
+      "mean": 0.8772480275466679,
+      "ci_lo": 0.8396696358396081,
+      "ci_hi": 0.9103620106095144,
+      "collapse": "0/3",
+      "delta_vs_best": -0.04629919129307706,
+      "delta_lo": -0.06605083230840221,
+      "delta_hi": -0.028019696559471056,
+      "status": "Contradicted"
+    }
+  }
+}

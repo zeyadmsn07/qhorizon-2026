@@ -1,0 +1,7 @@
+model,qubits,depth,total_gates,two_qubit_gates,trainable_params,qpu_circuits_train_N500,qpu_circuits_test_3000,shots_per_eval,simulability
+"Q1-VQC (8q Bipartite Sign+Linear, 41p)",8,7,41,8,41,500/epoch (O(N)),"3,000 (O(N_test))","500-2,000 shots","<=8q (dim<=256), CPU-simulable"
+"Q1-VQC (8q Ring L=2, 34p)",8,21,49,16,34,500/epoch (O(N)),"3,000 (O(N_test))","500-2,000 shots","<=8q (dim<=256), CPU-simulable"
+"Q1-VQC (4q Amplitude+Norm L=4, 34p)",4,25,50,16,34,500/epoch (O(N)),"3,000 (O(N_test))","500-2,000 shots","<=8q (dim<=256), CPU-simulable"
+"Q1-VQC (3q Amplitude L=5, 32p)",3,26,46,15,32,500/epoch (O(N)),"3,000 (O(N_test))","500-2,000 shots","<=8q (dim<=256), CPU-simulable"
+"Q2-QuantumKernel (8q ZZ d=1, Inversion Test)",8,52,80,32,0,"124,750 pairs (N*(N-1)/2 = O(N^2))","1,500,000 pairs (N*N_test)","~10,000 shots/pair for +-0.01 K_ij","8q (dim=256), state-vector shortcut in sim"
+RBF-SVM (Classical Reference),0,0,0,0,0,0 QPU runs,0 QPU runs,Exact float64,Classical baseline (no quantum advantage claimed)

@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-from src.config import RESULTS_DIR
+from src.config import get_results_dir
+RESULTS_DIR = get_results_dir('smoke')
 from src.data import get_locked_splits, sample_and_preprocess
 from src.metrics import evaluate_predictions
 from src.models_quantum import train_predict_quantum_kernel_svm, train_predict_vqc
@@ -90,7 +91,7 @@ def main():
 
     # Format and save verification results
     df = pd.DataFrame(results)
-    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_params", "train_time_sec"]
+    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_trainable_params", "n_tuned_hyperparams", "model_size_values", "n_support_vectors", "train_time_sec"]
     df = df[cols]
     output_path = RESULTS_DIR / "quantum_models_verification.csv"
     df.to_csv(output_path, index=False)

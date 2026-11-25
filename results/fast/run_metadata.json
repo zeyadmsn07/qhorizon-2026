@@ -1,0 +1,13 @@
+{
+  "mode": "fast",
+  "headline_vqc": "Q1-VQC (Bipartite_SignLinear_41p)",
+  "tune_seeds": [
+    200
+  ],
+  "eval_seeds": [
+    100,
+    101,
+    102
+  ],
+  "wall_clock_sec": 1716.37
+}
