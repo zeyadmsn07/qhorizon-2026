@@ -52,3 +52,16 @@ class TestBaselineSmoke(unittest.TestCase):
             entries = json.loads(tlog.read_text(encoding="utf-8"))
             self.assertGreater(len(entries), 0)
             self.assertIn("chosen_config", entries[0])
+
+    def test_parameter_accounting_columns(self):
+        from src.models_classical import TinyMLP, count_torch_params
+        from src.models_quantum import train_predict_quantum_kernel_svm
+        self.assertEqual(count_torch_params(TinyMLP(8, 2)), 21)
+        self.assertEqual(count_torch_params(TinyMLP(8, 4)), 41)
+        self.assertEqual(count_torch_params(TinyMLP(8, 8)), 81)
+        splits = get_locked_splits()
+        d = sample_and_preprocess(splits, n_train=100, seed=100)
+        _, _, comp, _ = train_predict_quantum_kernel_svm({"alpha": 1.0, "depth": 1, "C": 1.0}, d, seed=100)
+        self.assertEqual(comp["n_trainable_params"], 0)
+        self.assertEqual(comp["n_tuned_hyperparams"], 4)
+        self.assertGreater(comp["n_support_vectors"], 0)

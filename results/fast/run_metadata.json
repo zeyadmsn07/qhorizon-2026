@@ -1,0 +1,13 @@
+{
+  "mode": "fast",
+  "tune_seeds": [
+    200
+  ],
+  "eval_seeds": [
+    100,
+    101,
+    102
+  ],
+  "n_tuning_configs": 4,
+  "wall_clock_sec": 749.21
+}

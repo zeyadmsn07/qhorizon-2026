@@ -51,12 +51,12 @@ def main():
             val_scores=val_scores,
             y_test=data["y_test"],
             test_scores=test_scores,
-            n_params=n_params,
+            complexity=n_params,
             train_time_sec=train_time,
         )
         metrics["model"] = model_name
         results.append(metrics)
-        print(f"[{model_name:>12}] PR-AUC: {metrics['test_pr_auc']:.4f} | F1: {metrics['test_f1']:.4f} | MCC: {metrics['test_mcc']:.4f} | Acc: {metrics['test_acc']:.4f} | Params: {metrics['n_params']:>4} | Time: {metrics['train_time_sec']:.3f}s")
+        print(f"[{model_name:>12}] PR-AUC: {metrics['test_pr_auc']:.4f} | F1: {metrics['test_f1']:.4f} | MCC: {metrics['test_mcc']:.4f} | Acc: {metrics['test_acc']:.4f} | Params: {metrics['n_trainable_params']:>4} | Time: {metrics['train_time_sec']:.3f}s")
 
     # Verify Dummy baseline accurately captures the majority-class noise baseline
     dummy_res = next(r for r in results if r["model"] == "Dummy")
@@ -66,7 +66,7 @@ def main():
 
     print("\n=== [3/3] Saving Verification Metrics CSV ===")
     df = pd.DataFrame(results)
-    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_params", "train_time_sec"]
+    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_trainable_params", "n_tuned_hyperparams", "model_size_values", "n_support_vectors", "train_time_sec"]
     df = df[cols]
     output_path = RESULTS_DIR / "classical_baselines_verification.csv"
     df.to_csv(output_path, index=False)

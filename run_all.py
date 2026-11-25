@@ -36,6 +36,13 @@ def main() -> None:
     pd.DataFrame([r for f, o, l in specs for r in tune_and_evaluate_10_seeds(splits, 500, f, o, l, **kw)]).to_csv(out_dir / "main_benchmark.csv", index=False)
     print(f"[1/5] Saved main_benchmark.csv ({time.perf_counter() - t0:.1f}s elapsed)")
 
+    mlp_specs = [
+        ("Tiny-MLP", {"hidden_dim": 2}, "Tiny-MLP (h=2, 21p)"),
+        ("Tiny-MLP", {"hidden_dim": 4}, "Tiny-MLP (h=4, 41p)"),
+        ("Tiny-MLP", {"hidden_dim": 8}, "Tiny-MLP (h=8, 81p)"),
+    ]
+    pd.DataFrame([r for f, o, l in mlp_specs for r in tune_and_evaluate_10_seeds(splits, 500, f, o, l, **kw)]).to_csv(out_dir / "mlp_ablation.csv", index=False)
+
     ga = [r for ent in ["none", "ring", "bipartite"] for L in [1, 2, 4] for r in tune_and_evaluate_10_seeds(splits, 500, "Q1-VQC", {"encoding": "angle", "entanglement": ent, "n_layers": L}, f"VQC_{ent}_L{L}", **kw)]
     pd.DataFrame(ga).to_csv(out_dir / "gold_a_entanglement.csv", index=False)
     print(f"[2/5] Saved gold_a_entanglement.csv ({time.perf_counter() - t0:.1f}s elapsed)")

@@ -91,7 +91,7 @@ def main():
 
     # Format and save verification results
     df = pd.DataFrame(results)
-    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_params", "train_time_sec"]
+    cols = ["model", "test_pr_auc", "test_f1", "test_mcc", "test_acc", "threshold", "n_trainable_params", "n_tuned_hyperparams", "model_size_values", "n_support_vectors", "train_time_sec"]
     df = df[cols]
     output_path = RESULTS_DIR / "quantum_models_verification.csv"
     df.to_csv(output_path, index=False)

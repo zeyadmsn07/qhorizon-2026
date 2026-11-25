@@ -31,7 +31,7 @@ def fit_predict_classical(
     params: dict,
     data: dict,
     seed: int,
-) -> tuple[np.ndarray, np.ndarray, int, float]:
+) -> tuple[np.ndarray, np.ndarray, dict, float]:
     X_train, y_train = data["X_train"], data["y_train"]
     X_val, X_test = data["X_val"], data["X_test"]
     t0 = time.perf_counter()
@@ -42,7 +42,7 @@ def fit_predict_classical(
         clf.fit(X_train, y_train)
         val_scores = clf.predict_proba(X_val)[:, 1]
         test_scores = clf.predict_proba(X_test)[:, 1]
-        n_params = 0
+        complexity = {"n_trainable_params": 0, "n_tuned_hyperparams": 0, "model_size_values": 0, "n_support_vectors": float("nan")}
 
     elif model_name == "LogReg":
         clf = LogisticRegression(
@@ -54,7 +54,8 @@ def fit_predict_classical(
         clf.fit(X_train, y_train)
         val_scores = clf.decision_function(X_val)
         test_scores = clf.decision_function(X_test)
-        n_params = clf.coef_.size + clf.intercept_.size
+        n_p = int(clf.coef_.size + clf.intercept_.size)
+        complexity = {"n_trainable_params": n_p, "n_tuned_hyperparams": 2, "model_size_values": n_p, "n_support_vectors": float("nan")}
 
     elif model_name == "RBF-SVM":
         clf = SVC(
@@ -67,7 +68,7 @@ def fit_predict_classical(
         clf.fit(X_train, y_train)
         val_scores = clf.decision_function(X_val)
         test_scores = clf.decision_function(X_test)
-        n_params = clf.support_vectors_.size
+        complexity = {"n_trainable_params": 0, "n_tuned_hyperparams": 3, "model_size_values": int(clf.support_vectors_.size), "n_support_vectors": int(len(clf.support_))}
 
     elif model_name == "RandomForest":
         clf = RandomForestClassifier(
@@ -81,13 +82,15 @@ def fit_predict_classical(
         clf.fit(X_train, y_train)
         val_scores = clf.predict_proba(X_val)[:, 1]
         test_scores = clf.predict_proba(X_test)[:, 1]
-        n_params = sum(est.tree_.node_count for est in clf.estimators_)
+        nodes = int(sum(est.tree_.node_count for est in clf.estimators_))
+        complexity = {"n_trainable_params": 0, "n_tuned_hyperparams": 4, "model_size_values": nodes, "n_support_vectors": float("nan")}
 
     elif model_name == "Tiny-MLP":
         torch.manual_seed(seed)
         np.random.seed(seed)
         model = TinyMLP(in_features=X_train.shape[1], hidden_dim=params.get("hidden_dim", 4))
-        n_params = count_torch_params(model)
+        n_p = count_torch_params(model)
+        complexity = {"n_trainable_params": n_p, "n_tuned_hyperparams": 4, "model_size_values": n_p, "n_support_vectors": float("nan")}
 
         pos_ratio = (y_train == 0).sum() / max((y_train == 1).sum(), 1)
         pos_weight = torch.tensor([pos_ratio * params["pos_weight_mult"]], dtype=torch.float32)
@@ -106,7 +109,7 @@ def fit_predict_classical(
         best_state = None
         patience_left = 15
 
-        for _ in range(120):
+        for _ in range(params.get("max_epochs", 120)):
             model.train()
             perm = torch.randperm(len(Xt))
             for i in range(0, len(Xt), params["batch_size"]):
@@ -138,4 +141,4 @@ def fit_predict_classical(
         raise ValueError(f"Unknown classical model: {model_name}")
 
     fit_sec = time.perf_counter() - t0
-    return val_scores, test_scores, n_params, fit_sec
+    return val_scores, test_scores, complexity, fit_sec

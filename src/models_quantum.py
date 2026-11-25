@@ -215,16 +215,17 @@ def train_predict_vqc(
         test_scores = model(Xte).numpy()
 
     fit_sec = time.perf_counter() - t0
+    complexity = {"n_trainable_params": int(n_params), "n_tuned_hyperparams": 4, "model_size_values": int(n_params), "n_support_vectors": float("nan")}
     if return_model:
-        return val_scores, test_scores, n_params, fit_sec, init_grad_norm, model
-    return val_scores, test_scores, n_params, fit_sec
+        return val_scores, test_scores, complexity, fit_sec, init_grad_norm, model
+    return val_scores, test_scores, complexity, fit_sec
 
 
 def train_predict_quantum_kernel_svm(
     params: dict,
     data: dict,
     seed: int,
-) -> tuple[np.ndarray, np.ndarray, int, float]:
+) -> tuple[np.ndarray, np.ndarray, dict, float]:
     t0 = time.perf_counter()
     n_wires = 8
     alpha = float(params.get("alpha", 1.0))
@@ -271,6 +272,7 @@ def train_predict_quantum_kernel_svm(
     val_scores = clf.decision_function(K_va)
     test_scores = clf.decision_function(K_te)
 
-    n_params = 1
+    n_sv = int(len(clf.support_))
+    complexity = {"n_trainable_params": 0, "n_tuned_hyperparams": 4, "model_size_values": int(n_sv * data["X_train"].shape[1]), "n_support_vectors": n_sv}
     fit_sec = time.perf_counter() - t0
-    return val_scores, test_scores, n_params, fit_sec
+    return val_scores, test_scores, complexity, fit_sec
