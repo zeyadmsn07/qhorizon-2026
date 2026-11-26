@@ -171,6 +171,11 @@ python run_all.py --mode full --tune-seeds 3
 ### Measured Runtimes
 {rt_md}
 
+### Dataset Citation & Software Attribution
+* **HTRU2 Pulsar Dataset (UCI ML Repository ID `372`):** R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, & J. D. Knowles (2016), *"Fifty Years of Pulsar Candidate Selection: From simple filters to a new principled real-time classification approach,"* *MNRAS* 459(1), 1104?1123. Available at `https://archive.ics.uci.edu/dataset/372/htru2` (`DOI: 10.24432/C5DK6R`, CC BY 4.0).
+* **Software Stack:** Quantum circuits simulated with **PennyLane** (`default.qubit`); classical models implemented with **PyTorch** and **scikit-learn**.
+* **AI Tool Disclosure:** Full AI assistance and verification logs are recorded in `AI_USAGE_LOG.md`.
+
 ### Team Credits
 {team_md}
 
