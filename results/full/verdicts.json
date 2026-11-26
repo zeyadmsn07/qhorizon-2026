@@ -1,0 +1,198 @@
+{
+  "best_classical": "Tiny-MLP (41p)",
+  "headline_vqc": "Q1-VQC (Bipartite_SignLinear_41p)",
+  "hypotheses": {
+    "H1a": {
+      "mean_delta": 0.012999505857265748,
+      "ci_lo": 0.004721954707496369,
+      "ci_hi": 0.02170023616616057,
+      "wilcoxon_p": 0.00390625,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Tiny-MLP (41p) vs. Q2-QuantumKernel (8q)",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H1b": {
+      "mean_delta": 0.014439504641080592,
+      "ci_lo": 0.0059895457701099955,
+      "ci_hi": 0.023151751058042326,
+      "wilcoxon_p": 0.001953125,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p)",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H1c": {
+      "mean_delta": 0.010064212568634223,
+      "ci_lo": 0.0027454452276530466,
+      "ci_hi": 0.018901743649244237,
+      "wilcoxon_p": 0.001953125,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Q2-QuantumKernel (8q) vs. RandomForest",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H2a": {
+      "mean_delta": 0.010989906442894482,
+      "ci_lo": -0.0005537246026741481,
+      "ci_hi": 0.022721983182218505,
+      "wilcoxon_p": 0.037109375,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "VQC_bipartite_L2 vs. VQC_none_L2",
+      "verdict": "Inconclusive",
+      "direction": "greater"
+    },
+    "H2b": {
+      "mean_delta": 0.012020835568514732,
+      "ci_lo": 0.0024775735705827875,
+      "ci_hi": 0.022517568984090575,
+      "wilcoxon_p": 0.001953125,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "VQC_bipartite_L2 vs. VQC_ring_L2",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H3": {
+      "mean_delta": 0.24501268722067185,
+      "ci_lo": 0.19086864218922708,
+      "ci_hi": 0.2884683498564909,
+      "wilcoxon_p": 0.001953125,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "4q_AmplitudePlusNorm_L4 vs. 3q_Amplitude_L5",
+      "verdict": "Supported",
+      "direction": "greater"
+    },
+    "H4a": {
+      "mean_delta": -0.04599908044019396,
+      "ci_lo": -0.08467513221728981,
+      "ci_hi": -0.014188421310061795,
+      "wilcoxon_p": 0.009765625,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "N=100 Q2-QuantumKernel vs. RBF-SVM (tied)",
+      "verdict": "Contradicted",
+      "direction": "tied"
+    },
+    "H4b_2000": {
+      "mean_delta": -0.0007216627617500859,
+      "ci_lo": -0.001522041480759817,
+      "ci_hi": 7.542152536586782e-06,
+      "wilcoxon_p": 0.005859375,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Shots=2000 vs. Analytic (tied)",
+      "verdict": "Practically tied",
+      "direction": "tied"
+    },
+    "H4b_500": {
+      "mean_delta": -0.0010849949294853833,
+      "ci_lo": -0.002768973690824652,
+      "ci_hi": 0.0004797847420174083,
+      "wilcoxon_p": 0.16015625,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Shots=500 vs. Analytic (tied)",
+      "verdict": "Practically tied",
+      "direction": "tied"
+    },
+    "H4b_100": {
+      "mean_delta": -0.006804283571111225,
+      "ci_lo": -0.011189002527313622,
+      "ci_hi": -0.0030605940354479066,
+      "wilcoxon_p": 0.001953125,
+      "min_attainable_p": 0.001953125,
+      "n_seeds": 10,
+      "comparison": "Shots=100 vs. Analytic (tied)",
+      "verdict": "Inconclusive",
+      "direction": "tied"
+    }
+  },
+  "models": {
+    "Dummy": {
+      "mean": 0.09166666666666666,
+      "ci_lo": 0.09166666666666666,
+      "ci_hi": 0.09166666666666666,
+      "collapse": "10/10",
+      "delta_vs_best": -0.8329739108993408,
+      "delta_lo": -0.8573067683481638,
+      "delta_hi": -0.8066719423729158,
+      "status": "Contradicted"
+    },
+    "LogReg": {
+      "mean": 0.9183974674820309,
+      "ci_lo": 0.8891164552910109,
+      "ci_hi": 0.94532943997613,
+      "collapse": "0/10",
+      "delta_vs_best": -0.006243110083976744,
+      "delta_lo": -0.018672252549563416,
+      "delta_hi": 0.0030615199810358684,
+      "status": "Inconclusive"
+    },
+    "RBF-SVM": {
+      "mean": 0.9226714928348386,
+      "ci_lo": 0.8940121424095812,
+      "ci_hi": 0.9459201779169026,
+      "collapse": "0/10",
+      "delta_vs_best": -0.00196908473116878,
+      "delta_lo": -0.007853963477416005,
+      "delta_hi": 0.003878269561268623,
+      "status": "Practically tied"
+    },
+    "RandomForest": {
+      "mean": 0.9015768591401073,
+      "ci_lo": 0.8721002082626791,
+      "ci_hi": 0.9293141209240375,
+      "collapse": "0/10",
+      "delta_vs_best": -0.023063718425899972,
+      "delta_lo": -0.036282980796254034,
+      "delta_hi": -0.011034367974600705,
+      "status": "Contradicted"
+    },
+    "Tiny-MLP (41p)": {
+      "mean": 0.9246405775660073,
+      "ci_lo": 0.8983386090395825,
+      "ci_hi": 0.9489734350148303,
+      "collapse": "0/10",
+      "delta_vs_best": 0.0,
+      "delta_lo": 0.0,
+      "delta_hi": 0.0,
+      "status": "Reference"
+    },
+    "Q1-VQC (Bipartite_SignLinear_41p)": {
+      "mean": 0.9102010729249269,
+      "ci_lo": 0.8817264336885504,
+      "ci_hi": 0.9356235982289525,
+      "collapse": "0/10",
+      "delta_vs_best": -0.014439504641080592,
+      "delta_lo": -0.02315175105804233,
+      "delta_hi": -0.005989545770110002,
+      "status": "Contradicted"
+    },
+    "Q1-VQC (Ring L=2, Fragile v1)": {
+      "mean": 0.8860303292491712,
+      "ci_lo": 0.8521258159893014,
+      "ci_hi": 0.9168817627101253,
+      "collapse": "0/10",
+      "delta_vs_best": -0.0386102483168362,
+      "delta_lo": -0.05407473182695413,
+      "delta_hi": -0.022905302562138866,
+      "status": "Contradicted"
+    },
+    "Q2-QuantumKernel (8q)": {
+      "mean": 0.9116410717087418,
+      "ci_lo": 0.881850726596759,
+      "ci_hi": 0.9369656356891662,
+      "collapse": "0/10",
+      "delta_vs_best": -0.012999505857265748,
+      "delta_lo": -0.021700236166160573,
+      "delta_hi": -0.004721954707496371,
+      "status": "Contradicted"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "mode": "full",
+  "headline_vqc": "Q1-VQC (Bipartite_SignLinear_41p)",
+  "tune_seeds": [
+    200,
+    201,
+    202
+  ],
+  "eval_seeds": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109
+  ],
+  "wall_clock_sec": 22996.21
+}

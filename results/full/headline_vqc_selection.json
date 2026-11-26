@@ -1,0 +1,60 @@
+{
+  "rule": "Highest mean validation PR-AUC across disjoint tune_seeds (tie-break: lower tune val std); test set never consulted.",
+  "chosen_label": "Bipartite_SignLinear_41p",
+  "chosen_overrides": {
+    "encoding": "angle",
+    "entanglement": "bipartite",
+    "n_layers": 2,
+    "sign_offset": true,
+    "readout": "linear_z"
+  },
+  "chosen_tune_mean_val_pr_auc": 0.9022299720500225,
+  "chosen_tune_std_val_pr_auc": 0.0006797042550544722,
+  "candidates_tune_val": [
+    {
+      "label": "Ring_L2_Baseline",
+      "chosen_mean_val_pr_auc": 0.8610969212073551,
+      "chosen_std_val_pr_auc": 0.003905116006584979
+    },
+    {
+      "label": "Init_WideNormal_0.5",
+      "chosen_mean_val_pr_auc": 0.8845072075570282,
+      "chosen_std_val_pr_auc": 0.00868731136377239
+    },
+    {
+      "label": "Init_Uniform_Pi",
+      "chosen_mean_val_pr_auc": 0.8670477249886767,
+      "chosen_std_val_pr_auc": 0.008593353853092147
+    },
+    {
+      "label": "SignAware_Offset_Pi2",
+      "chosen_mean_val_pr_auc": 0.862667128187717,
+      "chosen_std_val_pr_auc": 0.0020579501478156744
+    },
+    {
+      "label": "Readout_Linear8_41p",
+      "chosen_mean_val_pr_auc": 0.8725103553843393,
+      "chosen_std_val_pr_auc": 0.0057850435130765475
+    },
+    {
+      "label": "Readout_SingleZ0",
+      "chosen_mean_val_pr_auc": 0.8707420253007533,
+      "chosen_std_val_pr_auc": 0.004123338501567683
+    },
+    {
+      "label": "Epochs100_Patience20",
+      "chosen_mean_val_pr_auc": 0.8676809349931555,
+      "chosen_std_val_pr_auc": 0.0008602099941331561
+    },
+    {
+      "label": "Restarts_k3_ValSelected",
+      "chosen_mean_val_pr_auc": 0.862063221814334,
+      "chosen_std_val_pr_auc": 0.0011503997799997858
+    },
+    {
+      "label": "Bipartite_SignLinear_41p",
+      "chosen_mean_val_pr_auc": 0.9022299720500225,
+      "chosen_std_val_pr_auc": 0.0006797042550544722
+    }
+  ]
+}
