@@ -65,7 +65,7 @@ def generate_tables(res_dir: Path) -> str:
 
 | Comparison Pair | Quantum / Target Model | Classical Counterpart | Why This Pair Is Fair |
 | :--- | :--- | :--- | :--- |
-| Parametric Weight-Matched | Q1-VQC (34 weights) | Tiny-MLP (21 / 41 / 81 weights) | Both use minibatch AdamW + BCE early stopping with matched parameter counts |
+| Parametric Weight-Matched | Q1-VQC (41 weights) | Tiny-MLP (21 / 41 / 81 weights) | Both use minibatch AdamW + BCE early stopping with matched parameter counts |
 | Non-Parametric Kernel | Q2-QuantumKernel (0 weights, 8q ZZ) | RBF-SVM (0 weights, Gaussian) | Identical dual SVM solver; only the kernel Gram matrix differs |
 | Linear Separability Floor | All nonlinear models | LogReg (9 weights) | Quantifies how much pulsar separation is already linear |
 | Tree Ensemble Reference | Q1-VQC & Q2-QuantumKernel | RandomForest (0 weights) | Standard non-parametric tabular ensemble baseline |
