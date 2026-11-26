@@ -4,7 +4,7 @@
 
 ---
 
-### Plain-English Summary: What We Tested & What We Found
+### What We Tested & What We Found
 
 1. **The Problem & Why Accuracy Is a Trap:** The UCI HTRU2 pulsar dataset (R. J. Lyon et al., 2016) contains **17,898** radio-telescope candidate signals, of which only **9.16%** are real pulsars. A trivial model that predicts *"not a pulsar"* every time achieves **90.83% accuracy** while catching zero pulsars. We therefore evaluate all models using **PR-AUC** (Precision-Recall Area Under the Curve) and **MCC** (Matthews Correlation Coefficient) across **10 independent evaluation seeds (`100..109`)** after tuning hyperparameters strictly on **3 disjoint validation seeds (`200..202`)**.
 2. **Classical Models Win on HTRU2—Because Pulsar Data Is Mostly Linear:** On `N = 500` training samples, our weight-matched **Tiny-MLP (41 weights)** achieves **`0.9246 ± 0.0079` PR-AUC**, edging out both **Q2-QuantumKernel (8 qubits, `0.9116 ± 0.0057`)** and **Q1-VQC (41 weights, `0.9102 ± 0.0025`)**, though both quantum models outperform **Random Forest (`0.9016 ± 0.0089`)**. Full-pool diagnostics show that a simple straight-line **Logistic Regression (`0.9378` PR-AUC)** nearly matches a neural network (`0.9382`), meaning pulsar signals do not need complex quantum feature spaces.
