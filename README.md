@@ -1,305 +1,240 @@
-# Q//Horizon 2026: Quantum vs. Classical Pulsar Classification
+<div align="center">
 
-**An end-to-end, statistically rigorous benchmark comparing Variational Quantum Classifiers (VQC) and Quantum Kernels against matched classical baselines on real radio-telescope pulsar data (UCI HTRU2) and a controlled nonlinear 8D diagnostic.**
+<samp>Q // HORIZON 2026 &nbsp;·&nbsp; QUANTUM MACHINE LEARNING BENCHMARK</samp>
+
+# Pulsar Signal Classification<br><sub>Variational Circuits & Quantum Kernels vs. Classical Baselines</sub>
+
+<p>
+  <a href="https://zeyadmsn07.github.io/qhorizon-2026/"><kbd>&nbsp;Interactive Landing Page ↗&nbsp;</kbd></a>
+  &nbsp;&nbsp;
+  <a href="Q_Horizon_Benchmark.ipynb"><kbd>&nbsp;Benchmark Notebook&nbsp;</kbd></a>
+  &nbsp;&nbsp;
+  <a href="results/full/summary_tables.md"><kbd>&nbsp;Full 10-Seed Tables&nbsp;</kbd></a>
+  &nbsp;&nbsp;
+  <a href="AI_USAGE_LOG.md"><kbd>&nbsp;AI Usage Log&nbsp;</kbd></a>
+</p>
+
+<sub>
+  <b>Dataset:</b> UCI HTRU2 (17,898 candidates · 9.16% pulsars) &nbsp;|&nbsp;
+  <b>Qubit Ceiling:</b> $\le 8$ wires &nbsp;|&nbsp;
+  <b>Protocol:</b> 3 tune seeds $\times$ 10 test seeds &nbsp;|&nbsp;
+  <b>Stack:</b> PennyLane · PyTorch · scikit-learn
+</sub>
+
+</div>
+
+<br>
 
 ---
 
-### What We Tested & What We Found
+## Why Radio Pulsars on Eight Qubits
+<sub><samp>CONTEXT & DATASET SELECTION</samp></sub>
 
-1. **The Problem & Why Accuracy Is a Trap:** The UCI HTRU2 pulsar dataset (R. J. Lyon et al., 2016) contains **17,898** radio-telescope candidate signals, of which only **9.16%** are real pulsars. A trivial model that predicts *"not a pulsar"* every time achieves **90.83% accuracy** while catching zero pulsars. We therefore evaluate all models using **PR-AUC** (Precision-Recall Area Under the Curve) and **MCC** (Matthews Correlation Coefficient) across **10 independent evaluation seeds (`100..109`)** after tuning hyperparameters strictly on **3 disjoint validation seeds (`200..202`)**.
-2. **Classical Models Win on HTRU2—Because Pulsar Data Is Mostly Linear:** On `N = 500` training samples, our weight-matched **Tiny-MLP (41 weights)** achieves **`0.9246 ± 0.0079` PR-AUC** (practically tied with **RBF-SVM** at **`0.9227 ± 0.0036`**), ahead of **Q2-QuantumKernel (8 qubits, `0.9116 ± 0.0057`)** and **Q1-VQC (41 weights, `0.9102 ± 0.0025`)**. Against **Random Forest (`0.9016 ± 0.0089`)**, `Q2-QuantumKernel` achieves a statistically supported `+0.0101` lead (**H1c Supported**), whereas `Q1-VQC`'s `+0.0086` edge falls inside our `±0.01` practical-tie band. Full-pool diagnostics (`N = 13,398`) confirm that 9-weight **Logistic Regression (`0.9377` PR-AUC)** nearly matches **Tiny-MLP (`0.9394`)** and **Poly2-LogReg (`0.9411`)**, leaving minimal headroom for nonlinear feature maps.
-3. **Disjoint Multi-Seed Tuning & Joint Readout/Wiring Design Stabilized VQC:** In our initial single-seed-tuned baseline (`v1`), `Ring L=2` collapsed below `0.70` PR-AUC on `2/10` seeds (`0.7800 ± 0.1437`). Moving to disjoint 3-seed validation tuning (`TUNE_SEEDS = [200, 201, 202]`) already eliminated all collapses on `Ring L=2` (`0/10` collapses, `0.8860 ± 0.0062`). Single-factor circuit modifications on `Ring L=2`—adding a $\pi/2$ sign offset alone (`0.8854`) or 8-wire linear readout alone (`0.8869`)—produced negligible change; **only the joint combination** of sparse **bipartite entanglement** (`8` vs. `16` CNOTs; circuit depth `7` vs. `21`) + $\pi/2$ sign offset + 8-wire linear readout (`Bipartite_SignLinear_41p`) lifted PR-AUC to **`0.9102 ± 0.0025`** (`+0.0242` over `Ring L=2`, `+0.0121` over plain `VQC_bipartite_L2`).
-4. **Inductive-Bias Alignment & Width Bottlenecks on `ConcentricShell-8D`:** On a synthetic 8D radial inner-ball benchmark ($r^2 = \sum_{i=0}^3 x_i^2 + 0.35\sin(2.5 x_0 x_1) \le q_{0.12}$ with 4 nuisance features) where linear `LogReg` fails (`0.1165` PR-AUC), **Q2-QuantumKernel (`0.8832 [0.8512, 0.9104]`)** and **RBF-SVM (`0.8695 [0.8398, 0.8974]`)** are **statistically tied** (overlapping 95% CIs). At `N = 500`, 41-weight **Q1-VQC (`0.6602`)** exceeds the 4-neuron **Tiny-MLP (`0.4075`)** after nearly failing at `N = 100/200` (`0.1307` / `0.3127`), because this task's even coordinate symmetry ($f(-x)=f(x)$) aligns with $\cos(\cdot)$ angle encoding while 4 hidden Tanh units bottleneck radial closure: widening `Tiny-MLP` to `8 / 16 / 32` units lifts `N = 500` PR-AUC to `0.5936 / 0.6195 / 0.7767`, surpassing `Q1-VQC`.
+Finding pulsars in modern radio-telescope surveys means separating rare, periodic neutron-star signals from heavy radio-frequency interference and background noise. We built this study around the **UCI HTRU2 Pulsar Candidate Dataset** (R. J. Lyon et al., 2016, ID `372`), which records 17,898 candidate detections from the High Time Resolution Universe Survey. Each candidate is represented by 8 continuous measurements: four from the folded pulse profile (mean, standard deviation, kurtosis, and skewness) and four from the dispersion-measure signal-to-noise (DM-SNR) curve.
 
-<!-- dashboard-guide:start -->
-## How to View the Interactive Dashboard
+We chose HTRU2 for three reasons:
 
-We built an interactive page that shows every result in this study as charts you can hover over, switch between datasets, and explore experiment by experiment. It uses the same numbers as the tables in this README; nothing is re-run.
+1. Its 8 physical measurements map one-to-one onto an 8-qubit circuit without PCA or dropped features, staying comfortably inside near-term ($\le 10$ qubit) simulation limits while letting us wire the 4 pulse-profile qubits directly to the 4 DM-SNR qubits.
+2. Real pulsars make up only 9.16% of the survey and several features have extreme outlier tails. A trivial classifier that predicts noise every time scores 90.83% accuracy while missing every pulsar, forcing a realistic pipeline built around train-only power scaling and Precision-Recall AUC (PR-AUC).
+3. Clean physics summaries give classical algorithms a strong home-turf advantage, making HTRU2 an honest test of compact quantum circuits rather than a cherry-picked showcase. To separate dataset geometry from model capacity, we pair HTRU2 with a controlled 8-dimensional nonlinear task (`ConcentricShell-8D`).
 
-### Option 1: Open it in your browser (no installation, no internet needed)
-1. Download this repository (green **Code** button, then **Download ZIP**) and unzip it. Alternatively, open `dashboard/qhorizon_dashboard.html` on GitHub and click **Download raw file**.
-2. Double-click `qhorizon_dashboard.html`. It opens in any modern browser (Chrome, Edge, Firefox or Safari).
+---
 
-### Option 2: Open the online version
-The same page is hosted with GitHub Pages: **https://zeyadmsn07.github.io/qhorizon-2026/**
+## Explore & Run the Project
+<sub><samp>INTERACTIVE LANDING PAGE & EXECUTION MODES</samp></sub>
 
-### What You Will See
-* **Overview:** the task, the 8 measurements per signal, and why we score models with PR-AUC instead of plain accuracy.
-* **Datasets:** a switch between the real pulsar survey (`HTRU2`) and a synthetic radial inner-ball test (`ConcentricShell-8D`).
-* **Findings:** a dot-plot ranking every model. Blue marks classical models and purple marks quantum models.
-* **Experiments:** six short studies, each with a chart, a "What happened" box and a "What we can conclude" box.
-* **Audit tables:** the exact 10-seed numbers and the verdict on each hypothesis.
+To make our results intuitive and easy to explore without digging through raw CSV files, we built an interactive landing page where you can switch between datasets, hover over 10-seed confidence intervals, and inspect each experiment step by step. You can explore the results and run the full benchmark either online or offline.
 
-### Optional: Refresh the Page From the Result Files
-Only needed if `results/full/` is regenerated. Requires Python and `pip install -r requirements.txt`.
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### <samp>01 // ONLINE</samp><br>Browser & Google Colab
+
+Open the hosted landing page in any browser with zero installation:
+
+<p align="center">
+  <a href="https://zeyadmsn07.github.io/qhorizon-2026/"><b>https://zeyadmsn07.github.io/qhorizon-2026/</b></a>
+</p>
+
+To run the code in the cloud, open `Q_Horizon_Benchmark.ipynb` (or `Q_Horizon_Dashboard.ipynb`) in Google Colab directly from this repository, run `pip install -r requirements.txt` in the first cell, and execute the notebook from top to bottom.
+
+</td>
+<td width="50%" valign="top">
+
+### <samp>02 // OFFLINE</samp><br>Local HTML & CLI Suite
+
+Because HTRU2 is cached locally in `data_cache/htru2.csv`, everything runs offline after cloning or downloading the ZIP.
+
+Double-click `dashboard/qhorizon_dashboard.html` to open the interactive page in Chrome, Edge, Firefox, or Safari (or run `python dashboard/serve.py` after regenerating results). To run the automated test suite or reproduce the experiments locally, use the terminal commands below.
+
+</td>
+</tr>
+</table>
+
 ```bash
-python dashboard/serve.py     # rebuilds the data and opens http://localhost:8000
-```
-<!-- dashboard-guide:end -->
-
----
-
-## 1. Fair Benchmark Protocol & Main Results (`N_train = 500`)
-
-### How We Kept Every Comparison Fair
-* **Exact Weight Parity:** `Q1-VQC (Bipartite_SignLinear_41p)` and `Tiny-MLP (41p)` both have **41 trainable scalar weights** and train with minibatch AdamW + binary cross-entropy early stopping, supplemented by width ablations (`21p` to `321p`) so architectural bottlenecks are never hidden behind parameter matching.
-* **Identical Kernel Solver:** `Q2-QuantumKernel (8q)` and `RBF-SVM` both use the exact same dual Support Vector Machine solver (`0` trainable weights); only the kernel matrix changes.
-* **Zero Data Leakage:** Yeo-Johnson power scaling and standardization are fit **only on the training split** inside each seed, evaluated against a locked `3,000`-sample test set and `1,500`-sample validation set.
-
-![Main Benchmark](results/full/main_benchmark.png)
-
-> **Reading the Main Benchmark Chart:** Bars and error markers show mean PR-AUC and 95% two-level bootstrap confidence intervals across 10 seeds (`100..109`). Classical `Tiny-MLP (41p)` and `RBF-SVM` sit practically tied at the top (~`0.923–0.925`), followed closely by `LogReg` (`0.9184`). `Q2-QuantumKernel` (`0.9116`) beats `RandomForest` (`0.9016`) beyond our `±0.01` margin (`+0.0101`, **Supported**), while `Q1-VQC` (`0.9102`) sits `+0.0086` above `RandomForest` (within the `±0.01` tie band) with zero training collapses.
-
-## Fair Comparison Pairs & Parameter Accounting
-- `Trainable`: gradient-optimized or directly fitted weight scalars (`0` for non-parametric SVM/RF/Kernel).
-- `Tuned HP`: hyperparameter dimensions searched under the shared validation budget; `Model Size`: inference scalars (`SVs x features`, tree nodes, or weights).
-
-| Comparison Pair | Quantum / Target Model | Classical Counterpart | Why This Pair Is Fair |
-| :--- | :--- | :--- | :--- |
-| Parametric Weight-Matched | Q1-VQC (41 weights) | Tiny-MLP (21 / 41 / 81 weights) | Both use minibatch AdamW + BCE early stopping with matched parameter counts |
-| Non-Parametric Kernel | Q2-QuantumKernel (0 weights, 8q ZZ) | RBF-SVM (0 weights, Gaussian) | Identical dual SVM solver; only the kernel Gram matrix differs |
-| Linear Separability Floor | All nonlinear models | LogReg (9 weights) | Quantifies how much pulsar separation is already linear |
-| Tree Ensemble Reference | Q1-VQC & Q2-QuantumKernel | RandomForest (0 weights) | Standard non-parametric tabular ensemble baseline |
-
-## Main Benchmark (N=500)
-| model | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Dummy | 0.0917 ± 0.0000 | 0.0917 (0.0000) | 10/10 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.9083 ± 0.0000 | 0 | 0 | 0 | — | 0.00 |
-| LogReg | 0.9184 ± 0.0169 | 0.9247 (0.0287) | 0/10 | 0.8737 ± 0.0102 | 0.8619 ± 0.0116 | 0.9773 ± 0.0023 | 9 | 2 | 9 | — | 0.01 |
-| RBF-SVM | 0.9227 ± 0.0036 | 0.9241 (0.0043) | 0/10 | 0.8702 ± 0.0081 | 0.8579 ± 0.0091 | 0.9766 ± 0.0018 | 0 | 3 | 519 | 64.9 | 0.01 |
-| RandomForest | 0.9016 ± 0.0089 | 0.9024 (0.0103) | 0/10 | 0.8494 ± 0.0112 | 0.8358 ± 0.0140 | 0.9730 ± 0.0030 | 0 | 4 | 572 | — | 0.04 |
-| Tiny-MLP (41p) | 0.9246 ± 0.0079 | 0.9265 (0.0134) | 0/10 | 0.8753 ± 0.0129 | 0.8632 ± 0.0146 | 0.9774 ± 0.0028 | 41 | 4 | 41 | — | 0.32 |
-| Q1-VQC (Bipartite_SignLinear_41p) | 0.9102 ± 0.0025 | 0.9101 (0.0040) | 0/10 | 0.8524 ± 0.0077 | 0.8384 ± 0.0084 | 0.9735 ± 0.0017 | 41 | 4 | 41 | — | 11.36 |
-| Q1-VQC (Ring L=2, Fragile v1) | 0.8860 ± 0.0062 | 0.8887 (0.0064) | 0/10 | 0.8373 ± 0.0085 | 0.8223 ± 0.0086 | 0.9712 ± 0.0012 | 34 | 4 | 34 | — | 17.97 |
-| Q2-QuantumKernel (8q) | 0.9116 ± 0.0057 | 0.9136 (0.0051) | 0/10 | 0.8508 ± 0.0049 | 0.8360 ± 0.0055 | 0.9729 ± 0.0011 | 0 | 4 | 441 | 55.1 | 0.27 |
-
-## MLP Capacity Ablation (N=500)
-| model | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Tiny-MLP (h=2, 21p) | 0.9270 ± 0.0070 | 0.9299 (0.0117) | 0/10 | 0.8773 ± 0.0101 | 0.8655 ± 0.0113 | 0.9777 ± 0.0022 | 21 | 4 | 21 | — | 0.25 |
-| Tiny-MLP (h=4, 41p) | 0.9246 ± 0.0079 | 0.9265 (0.0134) | 0/10 | 0.8753 ± 0.0129 | 0.8632 ± 0.0146 | 0.9774 ± 0.0028 | 41 | 4 | 41 | — | 0.32 |
-| Tiny-MLP (h=8, 81p) | 0.9246 ± 0.0045 | 0.9227 (0.0079) | 0/10 | 0.8747 ± 0.0069 | 0.8631 ± 0.0079 | 0.9775 ± 0.0017 | 81 | 4 | 81 | — | 0.18 |
-
-## Gold A: Entanglement & Depth
-| model | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| VQC_none_L1 | 0.8862 ± 0.0082 | 0.8899 (0.0120) | 0/10 | 0.8325 ± 0.0065 | 0.8182 ± 0.0056 | 0.9708 ± 0.0007 | 18 | 4 | 18 | — | 6.60 |
-| VQC_none_L2 | 0.8871 ± 0.0098 | 0.8916 (0.0144) | 0/10 | 0.8367 ± 0.0088 | 0.8227 ± 0.0087 | 0.9715 ± 0.0013 | 34 | 4 | 34 | — | 10.57 |
-| VQC_none_L4 | 0.8886 ± 0.0086 | 0.8911 (0.0094) | 0/10 | 0.8330 ± 0.0107 | 0.8183 ± 0.0120 | 0.9706 ± 0.0024 | 66 | 4 | 66 | — | 18.72 |
-| VQC_ring_L1 | 0.8644 ± 0.0035 | 0.8642 (0.0052) | 0/10 | 0.8218 ± 0.0097 | 0.8048 ± 0.0115 | 0.9680 ± 0.0022 | 18 | 4 | 18 | — | 7.35 |
-| VQC_ring_L2 | 0.8860 ± 0.0062 | 0.8887 (0.0064) | 0/10 | 0.8373 ± 0.0085 | 0.8223 ± 0.0086 | 0.9712 ± 0.0012 | 34 | 4 | 34 | — | 17.97 |
-| VQC_ring_L4 | 0.8966 ± 0.0060 | 0.8975 (0.0057) | 0/10 | 0.8426 ± 0.0104 | 0.8289 ± 0.0105 | 0.9724 ± 0.0015 | 66 | 4 | 66 | — | 21.78 |
-| VQC_bipartite_L1 | 0.8782 ± 0.0099 | 0.8750 (0.0134) | 0/10 | 0.8295 ± 0.0141 | 0.8162 ± 0.0135 | 0.9705 ± 0.0022 | 18 | 4 | 18 | — | 7.10 |
-| VQC_bipartite_L2 | 0.8981 ± 0.0057 | 0.8983 (0.0057) | 0/10 | 0.8475 ± 0.0067 | 0.8334 ± 0.0074 | 0.9728 ± 0.0016 | 34 | 4 | 34 | — | 11.56 |
-| VQC_bipartite_L4 | 0.8990 ± 0.0113 | 0.9039 (0.0075) | 0/10 | 0.8430 ± 0.0101 | 0.8283 ± 0.0116 | 0.9718 ± 0.0024 | 66 | 4 | 66 | — | 19.32 |
-
-## Gold B: Encoding & Norm Restoration
-| model | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 8q_Angle_L2 | 0.8860 ± 0.0062 | 0.8887 (0.0064) | 0/10 | 0.8373 ± 0.0085 | 0.8223 ± 0.0086 | 0.9712 ± 0.0012 | 34 | 4 | 34 | — | 17.97 |
-| 8q_Angle_Reupload_L2 | 0.8726 ± 0.0206 | 0.8706 (0.0325) | 0/10 | 0.8285 ± 0.0223 | 0.8133 ± 0.0240 | 0.9698 ± 0.0039 | 34 | 4 | 34 | — | 13.65 |
-| 3q_Amplitude_L5 | 0.6057 ± 0.0433 | 0.6082 (0.0438) | 10/10 | 0.7086 ± 0.0198 | 0.6795 ± 0.0210 | 0.9429 ± 0.0067 | 32 | 4 | 32 | — | 3.15 |
-| 4q_AmplitudePlusNorm_L4 | 0.8507 ± 0.0190 | 0.8538 (0.0240) | 0/10 | 0.8194 ± 0.0145 | 0.8055 ± 0.0153 | 0.9690 ± 0.0027 | 34 | 4 | 34 | — | 3.77 |
-
-## Gold C: Sample Efficiency Sweep
-| n_train | model | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 100 | Dummy | 0.0917 ± 0.0000 | 0.0917 (0.0000) | 10/10 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.9083 ± 0.0000 | 0 | 0 | 0 | — | 0.00 |
-| 100 | RBF-SVM | 0.9008 ± 0.0131 | 0.9024 (0.0156) | 0/10 | 0.8496 ± 0.0129 | 0.8360 ± 0.0136 | 0.9734 ± 0.0022 | 0 | 3 | 128 | 16.0 | 0.00 |
-| 100 | Tiny-MLP (41p) | 0.9041 ± 0.0133 | 0.9044 (0.0173) | 0/10 | 0.8606 ± 0.0145 | 0.8476 ± 0.0161 | 0.9749 ± 0.0027 | 41 | 4 | 41 | — | 0.09 |
-| 100 | Q1-VQC (Bipartite_SignLinear_41p) | 0.8926 ± 0.0145 | 0.8980 (0.0243) | 0/10 | 0.8398 ± 0.0250 | 0.8276 ± 0.0272 | 0.9717 ± 0.0053 | 41 | 4 | 41 | — | 3.81 |
-| 100 | Q2-QuantumKernel (8q) | 0.8548 ± 0.0561 | 0.8805 (0.0493) | 0/10 | 0.8264 ± 0.0267 | 0.8102 ± 0.0286 | 0.9676 ± 0.0072 | 0 | 4 | 136 | 17.0 | 0.22 |
-| 200 | Dummy | 0.0917 ± 0.0000 | 0.0917 (0.0000) | 10/10 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.9083 ± 0.0000 | 0 | 0 | 0 | — | 0.00 |
-| 200 | RBF-SVM | 0.9135 ± 0.0084 | 0.9159 (0.0068) | 0/10 | 0.8623 ± 0.0100 | 0.8491 ± 0.0109 | 0.9752 ± 0.0018 | 0 | 3 | 238 | 29.7 | 0.01 |
-| 200 | Tiny-MLP (41p) | 0.9175 ± 0.0077 | 0.9177 (0.0079) | 0/10 | 0.8740 ± 0.0103 | 0.8620 ± 0.0117 | 0.9773 ± 0.0024 | 41 | 4 | 41 | — | 0.17 |
-| 200 | Q1-VQC (Bipartite_SignLinear_41p) | 0.9095 ± 0.0047 | 0.9109 (0.0041) | 0/10 | 0.8580 ± 0.0113 | 0.8444 ± 0.0127 | 0.9745 ± 0.0025 | 41 | 4 | 41 | — | 6.05 |
-| 200 | Q2-QuantumKernel (8q) | 0.8964 ± 0.0154 | 0.8965 (0.0201) | 0/10 | 0.8529 ± 0.0237 | 0.8400 ± 0.0268 | 0.9736 ± 0.0055 | 0 | 4 | 149 | 18.6 | 0.23 |
-| 500 | Dummy | 0.0917 ± 0.0000 | 0.0917 (0.0000) | 10/10 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.9083 ± 0.0000 | 0 | 0 | 0 | — | 0.00 |
-| 500 | RBF-SVM | 0.9227 ± 0.0036 | 0.9241 (0.0043) | 0/10 | 0.8702 ± 0.0081 | 0.8579 ± 0.0091 | 0.9766 ± 0.0018 | 0 | 3 | 519 | 64.9 | 0.01 |
-| 500 | Tiny-MLP (41p) | 0.9246 ± 0.0079 | 0.9265 (0.0134) | 0/10 | 0.8753 ± 0.0129 | 0.8632 ± 0.0146 | 0.9774 ± 0.0028 | 41 | 4 | 41 | — | 0.32 |
-| 500 | Q1-VQC (Bipartite_SignLinear_41p) | 0.9102 ± 0.0025 | 0.9101 (0.0040) | 0/10 | 0.8524 ± 0.0077 | 0.8384 ± 0.0084 | 0.9735 ± 0.0017 | 41 | 4 | 41 | — | 11.36 |
-| 500 | Q2-QuantumKernel (8q) | 0.9116 ± 0.0057 | 0.9136 (0.0051) | 0/10 | 0.8508 ± 0.0049 | 0.8360 ± 0.0055 | 0.9729 ± 0.0011 | 0 | 4 | 441 | 55.1 | 0.27 |
-| 1000 | Dummy | 0.0917 ± 0.0000 | 0.0917 (0.0000) | 10/10 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.9083 ± 0.0000 | 0 | 0 | 0 | — | 0.00 |
-| 1000 | RBF-SVM | 0.9293 ± 0.0028 | 0.9298 (0.0034) | 0/10 | 0.8772 ± 0.0071 | 0.8654 ± 0.0081 | 0.9777 ± 0.0018 | 0 | 3 | 1030 | 128.8 | 0.02 |
-| 1000 | Tiny-MLP (41p) | 0.9331 ± 0.0032 | 0.9331 (0.0020) | 0/10 | 0.8758 ± 0.0062 | 0.8635 ± 0.0073 | 0.9770 ± 0.0016 | 41 | 4 | 41 | — | 0.65 |
-| 1000 | Q1-VQC (Bipartite_SignLinear_41p) | 0.9162 ± 0.0035 | 0.9166 (0.0029) | 0/10 | 0.8558 ± 0.0084 | 0.8418 ± 0.0095 | 0.9740 ± 0.0018 | 41 | 4 | 41 | — | 19.16 |
-| 1000 | Q2-QuantumKernel (8q) | 0.9271 ± 0.0067 | 0.9270 (0.0051) | 0/10 | 0.8788 ± 0.0053 | 0.8673 ± 0.0060 | 0.9783 ± 0.0011 | 0 | 4 | 1444 | 180.5 | 0.32 |
-
-## Table D: Finite Shot Noise
-| model | shots | PR-AUC (Mean+/-Std) | Median (IQR) | Collapse | Test F1 | Test MCC | Test Acc | Trainable | Tuned HP | Model Size | SVs | Sim/CPU s* |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Q1-VQC (Bipartite_SignLinear_41p) | analytic | 0.9102 ± 0.0025 | 0.9101 (0.0040) | 0/10 | 0.8524 ± 0.0077 | 0.8384 ± 0.0084 | 0.9735 ± 0.0017 | 41 | 4 | 41 | — | 11.35 |
-| Q1-VQC (Bipartite_SignLinear_41p) | 2000 | 0.9095 ± 0.0021 | 0.9093 (0.0033) | 0/10 | 0.8562 ± 0.0066 | 0.8422 ± 0.0075 | 0.9741 ± 0.0014 | 41 | 4 | 41 | — | 11.35 |
-| Q1-VQC (Bipartite_SignLinear_41p) | 500 | 0.9091 ± 0.0021 | 0.9088 (0.0030) | 0/10 | 0.8550 ± 0.0072 | 0.8419 ± 0.0071 | 0.9743 ± 0.0011 | 41 | 4 | 41 | — | 11.35 |
-| Q1-VQC (Bipartite_SignLinear_41p) | 100 | 0.9034 ± 0.0037 | 0.9027 (0.0072) | 0/10 | 0.8488 ± 0.0112 | 0.8344 ± 0.0127 | 0.9727 ± 0.0026 | 41 | 4 | 41 | — | 11.35 |
-
-*Note: Quantum fit times measure CPU state-vector simulation (`default.qubit`), not physical QPU hardware execution.*
-
----
-
-## 2. Mechanical Verdict Rules & All 10 Hypothesis Outcomes
-
-Rather than overclaiming *"Confirmed"* from noisy single-seed p-values, every hypothesis is graded automatically by `analyze_results.py` using a **Mechanical Verdict** rule with a **$\pm 0.01$ PR-AUC practical margin** and a **95% two-level bootstrap confidence interval** (resampling both the 10 seeds and the 3,000 test examples):
-
-* **Supported:** The entire 95% CI lies above `0` and the mean gain is greater than `0.01` PR-AUC.
-* **Practically tied:** The entire 95% CI lies strictly inside `[-0.01, +0.01]` (no meaningful practical difference).
-* **Contradicted:** The entire 95% CI lies below `0` and the drop exceeds `0.01` PR-AUC (opposite of the hypothesis).
-* **Inconclusive:** A directional trend is visible, but the 95% CI either touches `0` or crosses the `±0.01` margin boundary.
-
-Rule (`margin = 0.01` PR-AUC, 95% CI across seeds x stratified test resamples): **Supported** (`CI > 0` and `|delta| > 0.01`), **Practically tied** (`CI` inside `[-0.01, +0.01]`), **Contradicted** (`CI < 0` and `|delta| > 0.01`), **Inconclusive** otherwise.
-
-## 1. Hypothesis Verdicts
-| ID | Comparison (A vs. B) | Delta PR-AUC | 95% Two-Level CI | Wilcoxon p (min p) | Verdict |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| **H1a** | Tiny-MLP (41p) vs. Q2-QuantumKernel (8q) | `+0.0130` | `[+0.0047, +0.0217]` | 0.0039 (min 0.0020) | **Supported** |
-| **H1b** | Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p) | `+0.0144` | `[+0.0060, +0.0232]` | 0.0020 (min 0.0020) | **Supported** |
-| **H1c** | Q2-QuantumKernel (8q) vs. RandomForest | `+0.0101` | `[+0.0027, +0.0189]` | 0.0020 (min 0.0020) | **Supported** |
-| **H2a** | VQC_bipartite_L2 vs. VQC_none_L2 | `+0.0110` | `[-0.0006, +0.0227]` | 0.0371 (min 0.0020) | **Inconclusive** |
-| **H2b** | VQC_bipartite_L2 vs. VQC_ring_L2 | `+0.0120` | `[+0.0025, +0.0225]` | 0.0020 (min 0.0020) | **Supported** |
-| **H3** | 4q_AmplitudePlusNorm_L4 vs. 3q_Amplitude_L5 | `+0.2450` | `[+0.1909, +0.2885]` | 0.0020 (min 0.0020) | **Supported** |
-| **H4a** | N=100 Q2-QuantumKernel vs. RBF-SVM (tied) | `-0.0460` | `[-0.0847, -0.0142]` | 0.0098 (min 0.0020) | **Contradicted** |
-| **H4b_2000** | Shots=2000 vs. Analytic (tied) | `-0.0007` | `[-0.0015, +0.0000]` | 0.0059 (min 0.0020) | **Practically tied** |
-| **H4b_500** | Shots=500 vs. Analytic (tied) | `-0.0011` | `[-0.0028, +0.0005]` | 0.1602 (min 0.0020) | **Practically tied** |
-| **H4b_100** | Shots=100 vs. Analytic (tied) | `-0.0068` | `[-0.0112, -0.0031]` | 0.0020 (min 0.0020) | **Inconclusive** |
-
-## 2. Pairwise Comparison vs. Best Classical (`Tiny-MLP (41p)`)
-| Model | Mean PR-AUC | 95% Two-Level CI | Collapse | Delta vs. Best Classical | Paired 95% CI | Verdict |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Dummy** | `0.0917` | `[0.0917, 0.0917]` | 10/10 | `-0.8330` | `[-0.8573, -0.8067]` | Contradicted |
-| **LogReg** | `0.9184` | `[0.8891, 0.9453]` | 0/10 | `-0.0062` | `[-0.0187, +0.0031]` | Inconclusive |
-| **RBF-SVM** | `0.9227` | `[0.8940, 0.9459]` | 0/10 | `-0.0020` | `[-0.0079, +0.0039]` | Practically tied |
-| **RandomForest** | `0.9016` | `[0.8721, 0.9293]` | 0/10 | `-0.0231` | `[-0.0363, -0.0110]` | Contradicted |
-| **Tiny-MLP (41p)** | `0.9246` | `[0.8983, 0.9490]` | 0/10 | `+0.0000` | `[+0.0000, +0.0000]` | Reference |
-| **Q1-VQC (Bipartite_SignLinear_41p)** | `0.9102` | `[0.8817, 0.9356]` | 0/10 | `-0.0144` | `[-0.0232, -0.0060]` | Contradicted |
-| **Q1-VQC (Ring L=2, Fragile v1)** | `0.8860` | `[0.8521, 0.9169]` | 0/10 | `-0.0386` | `[-0.0541, -0.0229]` | Contradicted |
-| **Q2-QuantumKernel (8q)** | `0.9116` | `[0.8819, 0.9370]` | 0/10 | `-0.0130` | `[-0.0217, -0.0047]` | Contradicted |
-
-### Plain-English Guide to the Verdicts
-* **H1a, H1b, H1c (Main Leaderboard):** Classical `Tiny-MLP (41p)` beats both quantum models by `+0.0130` to `+0.0144` PR-AUC (**Supported**), while `Q2-QuantumKernel` beats `RandomForest` by `+0.0101` (**Supported**).
-* **H2a & H2b (Entanglement Wiring):** Sparse bipartite wiring beats dense ring wiring by `+0.0120` PR-AUC with half the CNOTs (**H2b Supported**), whereas bipartite vs. unentangled (`+0.0110`) touches `-0.0006` at the lower CI bound (**H2a Inconclusive**) because HTRU2 is largely linear.
-* **H3 (Signal Magnitude / Radial Norm):** Standard amplitude encoding normalizes vectors to length 1, erasing radio-signal strength; restoring the radial norm on qubit 3 boosts PR-AUC by **`+0.2450`** (**Supported**).
-* **H4a (Low-Data Regime & Hybrid Blend Check):** At $N = 100$ training samples, standalone `RBF-SVM` beats `Q2-QuantumKernel` by `0.0460` PR-AUC (**Contradicted**). Blending `Q1-VQC` + `Tiny-MLP` probabilities at $N = 100$ yields a smooth interior validation optimum around $w_{\text{VQC}} = 0.20\text{--}0.30$ (`test PR-AUC = 0.9132`, `+0.0091 [+0.0009, +0.0200]` over `Tiny-MLP` alone; `+0.0077` at $w = 0.10$), a modest low-data synergy that remains within the `±0.01` practical margin and disappears by $N \ge 500$ (`+0.0009`).
-* **H4b (Measurement Shot Noise):** Running `2,000` or `500` shots per circuit stays within `0.0011` PR-AUC of exact statevector simulation (**Practically tied**), while `100` shots begins showing mild sampling variance (`-0.0068`, **Inconclusive**).
-
----
-
-## 3. Focused Ablations & VQC Stability Diagnostics
-
-### A. Disentangling Multi-Seed Tuning, Readout & Entanglement Topology (Gold A & Phase 5)
-* **What Actually Stopped VQC Collapse:** In `v1`, tuning hyperparameters on a single seed (`seed 100`) selected an overly narrow input scaling (`alpha = 0.25`) where standard `RY` + $\langle Z \rangle = \cos(\theta)$ readout starts nearly even ($f(-x)=f(x)$), causing `2/10` evaluation seeds to stall below `0.70` (`0.7800 ± 0.1437`). Switching to disjoint 3-seed validation tuning (`seeds 200..202`) already eliminated collapses on `Ring_L2_Baseline` (`0/10` collapses, `0.8860 ± 0.0062`).
-* **Single Factors vs. Synergistic Combination (`docs/vqc_stability.md`):** On `Ring L=2`, adding a $\pi/2$ sign offset alone (`0.8854`) or an 8-wire linear readout alone (`0.8869`) yielded no standalone gain, while switching `mean_z` from ring to bipartite wiring gave `+0.0120` (`VQC_bipartite_L2 = 0.8981`, **H2b Supported**). Combining **bipartite wiring + $\pi/2$ sign offset + 8-wire linear readout** (`Bipartite_SignLinear_41p`, `depth 7`, `8` CNOTs) produced an additional `+0.0121` jump to **`0.9102 ± 0.0025`** (`2.5×` lower seed std).
-
-| VQC Training Stability & Loss Curves | Entanglement Topology & Depth (Gold A) |
-| :---: | :---: |
-| ![VQC Loss Diagnostics](results/full/vqc_loss_diagnostics.png) | ![Gold A Entanglement](results/full/gold_a_entanglement.png) |
-
-![VQC Stability Ablation](results/full/vqc_stability_ablation.png)
-
-### B. Feature Encoding (Gold B), Sample Efficiency (Gold C) & Shot Noise (Table D)
-* **Encoding & Radial Norm (Gold B):** 8-qubit angle encoding (`2 arctan(alpha * x)`) preserves each feature on its own wire (`0.8860` on `Ring L=2`). Compressing 8 features into 3 qubits via amplitude encoding discards L2 vector magnitude and drops PR-AUC to `0.6057`; restoring the radial norm on a 4th wire recovers `+0.2450` PR-AUC (`0.8507`).
-* **Sample Sweep (Gold C) & Shot Robustness (Table D):** Across $N \in \{100, 200, 500, 1000\}$, classical `Tiny-MLP` and `RBF-SVM` maintain a consistent lead on HTRU2 (converging toward the validation-tuned full-pool ceilings of `0.9394` and `0.9309`), while `Q1-VQC` stays practically tied with exact simulation down to `500` shots.
-
-| Feature Encoding & Radial Norm (Gold B) | Sample Size Efficiency Sweep (Gold C) |
-| :---: | :---: |
-| ![Gold B Encoding](results/full/gold_b_encoding.png) | ![Gold C Sweep](results/full/gold_c_sweep.png) |
-
-| Finite Measurement Shot Noise (Table D) | Full-Pool Linearity Ceiling Check |
-| :---: | :---: |
-| ![Table D Shots](results/full/table_d_shots.png) | ![Linearity Check](results/full/linearity_check.png) |
-
----
-
-## 4. Deep-Dive Insights, Controlled Nonlinear 8D Diagnostic & Hardware Costs
-
-### Why Classical Wins HTRU2: Linearity & Kernel Concentration
-1. **Linearity Ceiling (`linearity_check.png`):** On the full training pool (`N = 13,398`) with validation-tuned hyperparameters, 9-weight **Logistic Regression (`0.9377` PR-AUC)** sits within `0.0017–0.0034` of 41-weight **Tiny-MLP (`0.9394`)** and 45-weight **Poly2-LogReg (`0.9411`)**, while **RBF-SVM** reaches **`0.9309`**.
-2. **Quantum Kernel Concentration & Small-$\alpha$ Classical Limit (`kernel_analysis.png`):** Within the benchmark search grid ($\alpha \in [0.1, 3.16]$), the 8-qubit ZZ kernel peaks at the lower boundary $\alpha = 0.1$ (`0.9199` on seed 100; effective rank `1.84`, **`0.9913` off-diagonal correlation** with tuned RBF). Probing below that grid boundary ($\alpha = 0.05, 0.02$ in `diagnostics_extra/kernel_sub01_check.csv`) nudges PR-AUC to `0.9281–0.9287` precisely because the ZZ Gram matrix degenerates into a rank-`1.05` (`off_diag_mean = 0.994`) classical linear/quadratic kernel, whereas increasing $\alpha \to 2.5$ triggers exponential kernel concentration (`off_diag_mean -> 0.008`, PR-AUC `0.8424`).
-
-| Quantum Kernel Spectrum & Concentration | ConcentricShell-8D Nonlinear Generalization |
-| :---: | :---: |
-| ![Kernel Analysis](results/full/kernel_analysis.png) | ![Nonlinear Dataset](results/full/nonlinear_dataset.png) |
-
-### Controlled Nonlinear 8D Diagnostic (`ConcentricShell-8D`) & Width Bottleneck Check
-To test model behavior when linear hyperplanes fail (`LogReg = 0.1165` PR-AUC), `ConcentricShell-8D` labels the innermost 12% of a perturbed 4D ball embedded in 8D ($r^2 = \sum_{i=0}^3 x_i^2 + 0.35\sin(2.5 x_0 x_1) \le q_{0.12}$, plus 4 Gaussian noise coordinates; named `ConcentricShell-8D` in code, though geometrically an **inner ball** rather than a hollow shell). Three diagnostic findings stand out:
-* **Kernels Statistically Tie:** Across $N = 100, 200, 500$, **Q2-QuantumKernel (`0.8832 [0.8512, 0.9104]` at `N = 500`)** and **RBF-SVM (`0.8695 [0.8398, 0.8974]`)** have heavily overlapping 95% CIs—a statistical tie, not a quantum kernel win.
-* **Low-Data VQC Struggles Before $N = 500$:** **Q1-VQC (`41p`)** nearly fails at `N = 100` (`0.1307`) and `N = 200` (`0.3127`) before reaching `0.6602` at `N = 500`.
-* **Why `41p` VQC Beats `41p` Tiny-MLP at `N = 500`:** Because $r^2(-x) = r^2(x)$ is strictly even in $x$, single-qubit rotation expectations ($\cos(\cdot)$) naturally supply coordinate-wise quadratic features, whereas closing a 4D ball with `Tanh` hyperplanes requires more than 4 hidden neurons. Relaxing `Tiny-MLP`'s width from `h = 4` (`41p`, `0.4075`) to `h = 8` (`81p`, `0.5936`), `h = 16` (`161p`, `0.6195`), and `h = 32` (`321p`, **`0.7767 [0.7384, 0.8080]`**) overtakes `Q1-VQC` (`diagnostics_extra/concentric_mlp_width_sweep.csv`).
-
-| n_train | model | mean_pr_auc | ci_lo | ci_hi | precheck_rbf_minus_logreg |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| 100 | LogReg | 0.1144 | 0.1108 | 0.1229 | 0.7889 |
-| 100 | RBF-SVM | 0.4919 | 0.4467 | 0.5410 | 0.7889 |
-| 100 | Tiny-MLP (41p) | 0.1125 | 0.1090 | 0.1202 | 0.7889 |
-| 100 | Q2-QuantumKernel (8q) | 0.5115 | 0.4519 | 0.5747 | 0.7889 |
-| 100 | Q1-VQC (Headline) | 0.1307 | 0.1078 | 0.1678 | 0.7889 |
-| 200 | LogReg | 0.1165 | 0.1119 | 0.1258 | 0.7889 |
-| 200 | RBF-SVM | 0.6713 | 0.6139 | 0.7286 | 0.7889 |
-| 200 | Tiny-MLP (41p) | 0.2001 | 0.1603 | 0.2529 | 0.7889 |
-| 200 | Q2-QuantumKernel (8q) | 0.7462 | 0.6936 | 0.7938 | 0.7889 |
-| 200 | Q1-VQC (Headline) | 0.3127 | 0.1891 | 0.4284 | 0.7889 |
-| 500 | LogReg | 0.1165 | 0.1119 | 0.1274 | 0.7889 |
-| 500 | RBF-SVM | 0.8695 | 0.8398 | 0.8974 | 0.7889 |
-| 500 | Tiny-MLP (41p) | 0.4075 | 0.3426 | 0.4784 | 0.7889 |
-| 500 | Q2-QuantumKernel (8q) | 0.8832 | 0.8512 | 0.9104 | 0.7889 |
-| 500 | Q1-VQC (Headline) | 0.6602 | 0.6075 | 0.7097 | 0.7889 |
-
-### QPU Resource Accounting (`qml.specs`) & Circuit Scaling
-* **Linear vs. Quadratic QPU Cost:** `Q1-VQC` requires **$O(N)$** circuit executions (`500` per epoch at `N = 500`), whereas `Q2-QuantumKernel` requires **$O(N^2)$** pairwise overlap circuits (`124,750` training pairs plus `1,500,000` test pairs), making variational circuits far more practical for near-term hardware.
-
-| model | qubits | depth | total_gates | two_qubit_gates | trainable_params | qpu_circuits_train_N500 | qpu_circuits_test_3000 | shots_per_eval | simulability |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Q1-VQC (8q Bipartite Sign+Linear, 41p) | 8 | 7 | 41 | 8 | 41 | 500/epoch (O(N)) | 3,000 (O(N_test)) | 500-2,000 shots | <=8q (dim<=256), CPU-simulable |
-| Q1-VQC (8q Ring L=2, 34p) | 8 | 21 | 49 | 16 | 34 | 500/epoch (O(N)) | 3,000 (O(N_test)) | 500-2,000 shots | <=8q (dim<=256), CPU-simulable |
-| Q1-VQC (4q Amplitude+Norm L=4, 34p) | 4 | 25 | 50 | 16 | 34 | 500/epoch (O(N)) | 3,000 (O(N_test)) | 500-2,000 shots | <=8q (dim<=256), CPU-simulable |
-| Q1-VQC (3q Amplitude L=5, 32p) | 3 | 26 | 46 | 15 | 32 | 500/epoch (O(N)) | 3,000 (O(N_test)) | 500-2,000 shots | <=8q (dim<=256), CPU-simulable |
-| Q2-QuantumKernel (8q ZZ d=1, Inversion Test) | 8 | 52 | 80 | 32 | 0 | 124,750 pairs (N*(N-1)/2 = O(N^2)) | 1,500,000 pairs (N*N_test) | ~10,000 shots/pair for +-0.01 K_ij | 8q (dim=256), state-vector shortcut in sim |
-| RBF-SVM (Classical Reference) | 0 | 0 | 0 | 0 | 0 | 0 QPU runs | 0 QPU runs | Exact float64 | Classical baseline (no quantum advantage claimed) |
-
----
-
-## Reproducibility & Repository Navigation
-
-### Key Files
-* `run_all.py`: Master experiment runner (`--mode full --tune-seeds 3` produces all `results/full/` checkpoints and tables).
-* `analyze_results.py`: Two-level stratified bootstrap CIs, Wilcoxon signed-rank tests, and mechanical verdicts (`results/full/verdicts.md`).
-* `src/vqc_study.py`, `src/models_quantum.py`, `src/models_classical.py`: Symmetry-broken 8q PennyLane VQC, ZZ quantum kernel, and matched classical baselines.
-* `src/linearity_check.py`, `src/kernel_analysis.py`, `src/nonlinear_benchmark.py`, `src/hardware_cost.py`, `scripts/run_diagnostic_checks.py`: Depth-of-insight diagnostics, MLP width / sub-0.1 boundary checks, and QPU circuit specs.
-* `Q_Horizon_Benchmark.ipynb` & `Q_Horizon_Dashboard.ipynb`: Self-contained Jupyter / Google Colab notebooks with all 10-seed figures, tables, and interactive dashboard pre-rendered inline.
-* `scripts/check_submission.py`: Automated 14-test audit suite verifying parameter accounting, split isolation, qubit ceiling, and README integrity.
-
-### Quick Reproduction Commands
-```bash
-# 1. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 2. Verify all 14 submission checks and tests against committed results/full/
+# Run all 14 unit tests and submission checks (~5 sec)
 python scripts/check_submission.py
 
-# 3. Re-run the full 10-seed benchmark suite from scratch (~6.4 hours on CPU)
+# Quick end-to-end verification across every pipeline (~7.5 min -> results/smoke/)
+python run_all.py --mode smoke
+
+# Medium 3-seed pass (~12.5 min -> results/fast/)
+python run_all.py --mode fast
+
+# Full 10-seed benchmark from scratch (writes to results/full/)
 python run_all.py --mode full --tune-seeds 3
+python analyze_results.py --results-dir results/full
+python -m src.plot_results --results-dir results/full
 ```
 
-### Measured Runtimes
-- `--mode smoke`: 449.98 s
-- `--mode fast`: 749.21 s (12.49 min)
-- `v1 10-seed sweep`: 9231.16 s (153.85 min)
+---
 
-### Dataset Citation & Software Attribution
-* **HTRU2 Pulsar Dataset (UCI ML Repository ID `372`):** R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, & J. D. Knowles (2016), *"Fifty Years of Pulsar Candidate Selection: From simple filters to a new principled real-time classification approach,"* *MNRAS* 459(1), 1104–1123. Available at `https://archive.ics.uci.edu/dataset/372/htru2` (`DOI: 10.24432/C5DK6R`, CC BY 4.0).
-* **Software Stack:** Quantum circuits simulated with **PennyLane** (`default.qubit`); classical models implemented with **PyTorch** and **scikit-learn**.
-* **AI Tool Disclosure:** Full AI assistance and verification logs are recorded in `AI_USAGE_LOG.md`.
+## Key Findings at a Glance
+<sub><samp>TEN EVALUATION SEEDS · THREE DISJOINT TUNING SEEDS</samp></sub>
 
-### Team Credits
-| Member | Role | Verified Deliverables |
-| :--- | :--- | :--- |
-| **Zeyad Mohamed Nada** | Team Lead & QML Benchmark Architect | Verified train-only Yeo-Johnson splits (`src/data.py`), disjoint multi-seed tuning (`src/tuning.py`), VQC symmetry/readout ablations (`src/vqc_study.py`), two-level bootstrap CIs (`src/stats.py`), linearity/kernel/nonlinear-8D analyses, and clean-venv reproducibility |
+> [!IMPORTANT]
+> Every tunable model shares an identical 20-configuration search budget on 3 disjoint validation seeds (`200..202`) before being scored across 10 independent evaluation seeds (`100..109`). Thresholds and Yeo-Johnson feature transforms never touch the locked 3,000-sample test split.
+
+* Classical models lead on HTRU2 because the feature space is already nearly linear. At $N = 500$ training samples, our 41-weight `Tiny-MLP` scores `0.9246` PR-AUC and `RBF-SVM` scores `0.9227`, ahead of the 8-qubit `Q2-QuantumKernel` (`0.9116`) and the 41-weight `Q1-VQC` (`0.9102`). Against `RandomForest` (`0.9016`), only `Q2-QuantumKernel` clears our $\pm 0.01$ practical margin (`+0.0101`), whereas `Q1-VQC` (`+0.0086`) lands inside the practical-tie band. On the full 13,398-sample training pool, a 9-weight linear `LogReg` reaches `0.9377` PR-AUC, virtually matching `Tiny-MLP` (`0.9394`).
+* Multi-seed validation tuning and a joint circuit redesign stabilized VQC training. In our initial single-seed-tuned baseline, the ring-entangled circuit (`Ring L=2`) collapsed below `0.70` PR-AUC on 2 of 10 seeds (`0.7800`). Moving to 3-seed validation tuning eliminated all collapses on `Ring L=2` (`0.8860`, `0/10` collapses). Adding a $\pi/2$ phase shift alone (`0.8854`) or an 8-qubit linear readout alone (`0.8869`) made no standalone difference, whereas combining sparse bipartite wiring (8 CNOTs instead of 16; depth 7 instead of 21) with the $\pi/2$ shift and 8-qubit linear readout lifted PR-AUC to `0.9102`.
+* On our synthetic 8D inner-ball task (`ConcentricShell-8D`), linear `LogReg` fails (`0.1165`), while `Q2-QuantumKernel` (`0.8832`) and `RBF-SVM` (`0.8695`) finish in a statistical tie with overlapping 95% confidence intervals. At $N = 500$, the 41-weight `Q1-VQC` (`0.6602`) beats the 4-neuron `Tiny-MLP` (`0.4075`) after struggling at $N = 100$ (`0.1307`) and $N = 200$ (`0.3127`). Width sweeps confirm this gap comes from two design factors: the synthetic label is even in every coordinate ($f(-x) = f(x)$), matching $\cos(\cdot)$ qubit rotations, and 4 hidden neurons bottleneck radial closure. Widening `Tiny-MLP` to 8, 16, and 32 neurons raises PR-AUC to `0.5936`, `0.6195`, and `0.7767`, overtaking `Q1-VQC`.
+
+---
+
+## 1. Fair Benchmark — Pulsar Classification at $N = 500$
+<sub><samp>WEIGHT-MATCHED PARAMETRIC & IDENTICAL-SOLVER KERNEL PAIRS</samp></sub>
+
+* `Q1-VQC (Bipartite_SignLinear_41p)` and `Tiny-MLP (41p)` both train 41 scalar weights with minibatch AdamW and binary cross-entropy early stopping, backed by MLP width checks (`21p` to `321p`) so parameter matching never hides a width bottleneck.
+* `Q2-QuantumKernel (8q)` and `RBF-SVM` use the exact same dual Support Vector Machine solver with zero gradient-trained weights; only the kernel matrix differs.
+* Yeo-Johnson scaling is fit strictly on `X_train` per seed, and decision thresholds are chosen on the 1,500-sample validation set before evaluating once on the 3,000-sample test set.
+
+<p align="center">
+  <img src="results/full/main_benchmark.png" alt="Main Benchmark at N=500" width="88%">
+</p>
+
+| Model | PR-AUC (Mean $\pm$ Std) | Collapse | Test F1 | Test MCC | Test Acc | Weights | Tuned HP | SVs | CPU s\* |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Dummy | $0.0917 \pm 0.0000$ | 10/10 | $0.0000 \pm 0.0000$ | $0.0000 \pm 0.0000$ | $0.9083 \pm 0.0000$ | 0 | 0 | -- | 0.00 |
+| LogReg | $0.9184 \pm 0.0169$ | 0/10 | $0.8737 \pm 0.0102$ | $0.8619 \pm 0.0116$ | $0.9773 \pm 0.0023$ | 9 | 2 | -- | 0.01 |
+| RBF-SVM | $0.9227 \pm 0.0036$ | 0/10 | $0.8702 \pm 0.0081$ | $0.8579 \pm 0.0091$ | $0.9766 \pm 0.0018$ | 0 | 3 | 64.9 | 0.01 |
+| RandomForest | $0.9016 \pm 0.0089$ | 0/10 | $0.8494 \pm 0.0112$ | $0.8358 \pm 0.0140$ | $0.9730 \pm 0.0030$ | 0 | 4 | -- | 0.04 |
+| **Tiny-MLP (41p)** | **$0.9246 \pm 0.0079$** | **0/10** | **$0.8753 \pm 0.0129$** | **$0.8632 \pm 0.0146$** | **$0.9774 \pm 0.0028$** | **41** | **4** | **--** | **0.32** |
+| Q1-VQC (Bipartite_SignLinear_41p) | $0.9102 \pm 0.0025$ | 0/10 | $0.8524 \pm 0.0077$ | $0.8384 \pm 0.0084$ | $0.9735 \pm 0.0017$ | 41 | 4 | -- | 11.36 |
+| Q1-VQC (Ring L=2, Fragile v1) | $0.8860 \pm 0.0062$ | 0/10 | $0.8373 \pm 0.0085$ | $0.8223 \pm 0.0086$ | $0.9712 \pm 0.0012$ | 34 | 4 | -- | 17.97 |
+| Q2-QuantumKernel (8q) | $0.9116 \pm 0.0057$ | 0/10 | $0.8508 \pm 0.0049$ | $0.8360 \pm 0.0055$ | $0.9729 \pm 0.0011$ | 0 | 4 | 55.1 | 0.27 |
+
+<sub>*Quantum CPU times reflect PennyLane <code>default.qubit</code> statevector simulation rather than physical QPU hardware. Medians, IQRs, and HTRU2 MLP capacity checks (<code>21p</code> = <code>0.9270</code>, <code>41p</code> = <code>0.9246</code>, <code>81p</code> = <code>0.9246</code>) are archived in <a href="results/full/summary_tables.md"><code>results/full/summary_tables.md</code></a>.</sub>
+
+---
+
+## 2. Statistical Audit — Mechanical Verdict Ledger
+<sub><samp>TWO-LEVEL STRATIFIED BOOTSTRAP · ±0.01 PRACTICAL MARGIN</samp></sub>
+
+Every hypothesis is scored automatically by `analyze_results.py` using a **Mechanical Verdict** rule built on a $\pm 0.01$ PR-AUC practical margin and a 95% two-level bootstrap confidence interval (jointly resampling the 10 seeds and the 3,000 stratified test examples):
+
+* <samp>Supported</samp> — the entire 95% CI lies above `0` and the mean gain exceeds `0.01` PR-AUC.
+* <samp>Practically tied</samp> — the entire 95% CI sits inside `[-0.01, +0.01]`.
+* <samp>Contradicted</samp> — the entire 95% CI lies below `0` with a drop beyond `0.01` PR-AUC (or outside the tie band for tie tests).
+* <samp>Inconclusive</samp> — the 95% CI touches `0` or crosses the $\pm 0.01$ margin boundary.
+
+| ID | Comparison (Model A vs. Model B) | $\Delta$ PR-AUC | 95% Two-Level CI | Wilcoxon $p$ | Verdict |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| `H1a` | Tiny-MLP (41p) vs. Q2-QuantumKernel (8q) | `+0.0130` | `[+0.0047, +0.0217]` | 0.0039 | <samp>Supported</samp> |
+| `H1b` | Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p) | `+0.0144` | `[+0.0060, +0.0232]` | 0.0020 | <samp>Supported</samp> |
+| `H1c` | Q2-QuantumKernel (8q) vs. RandomForest | `+0.0101` | `[+0.0027, +0.0189]` | 0.0020 | <samp>Supported</samp> |
+| `H2a` | VQC_bipartite_L2 vs. VQC_none_L2 | `+0.0110` | `[-0.0006, +0.0227]` | 0.0371 | <samp>Inconclusive</samp> |
+| `H2b` | VQC_bipartite_L2 vs. VQC_ring_L2 | `+0.0120` | `[+0.0025, +0.0225]` | 0.0020 | <samp>Supported</samp> |
+| `H3` | 4q_AmplitudePlusNorm_L4 vs. 3q_Amplitude_L5 | `+0.2450` | `[+0.1909, +0.2885]` | 0.0020 | <samp>Supported</samp> |
+| `H4a` | N=100 Q2-QuantumKernel vs. RBF-SVM (tied) | `-0.0460` | `[-0.0847, -0.0142]` | 0.0098 | <samp>Contradicted</samp> |
+| `H4b_2000` | Shots=2000 vs. Analytic (tied) | `-0.0007` | `[-0.0015, +0.0000]` | 0.0059 | <samp>Practically tied</samp> |
+| `H4b_500` | Shots=500 vs. Analytic (tied) | `-0.0011` | `[-0.0028, +0.0005]` | 0.1602 | <samp>Practically tied</samp> |
+| `H4b_100` | Shots=100 vs. Analytic (tied) | `-0.0068` | `[-0.0112, -0.0031]` | 0.0020 | <samp>Inconclusive</samp> |
+
+---
+
+## 3. Circuit Studies — Topology, Encoding & Shot Noise
+<sub><samp>DISENTANGLING TUNING, SYMMETRY, DATA SCALE & MEASUREMENT SHOTS</samp></sub>
+
+### <samp>A //</samp> Entanglement Wiring, Readout & Training Stability
+
+In our first single-seed-tuned baseline, `Ring L=2` picked a narrow input scale ($\alpha = 0.25$) where `RY` rotations with $\langle Z \rangle = \cos(\theta)$ readout start nearly blind to feature sign ($+x$ vs. $-x$), causing 2 of 10 seeds to stall. Tuning across 3 disjoint validation seeds brought `Ring L=2` to `0/10` collapses (`0.8860`). Testing individual modifications (`docs/vqc_stability.md`) showed that neither the $\pi/2$ sign shift (`0.8854`) nor the 8-wire linear readout (`0.8869`) improved `Ring L=2` alone. Switching from ring to domain-paired bipartite wiring added `+0.0120` (`VQC_bipartite_L2` = `0.8981`), and combining bipartite wiring with the $\pi/2$ shift and 8-wire linear readout added another `+0.0121` (`0.9102`) with half as many CNOT gates.
+
+| VQC Loss Curves (Seed 100 vs. Seed 105) | Entanglement & Depth (Gold A) |
+| :---: | :---: |
+| <img src="results/full/vqc_loss_diagnostics.png" alt="VQC Loss Diagnostics" width="100%"> | <img src="results/full/gold_a_entanglement.png" alt="Gold A Entanglement" width="100%"> |
+
+<p align="center">
+  <img src="results/full/vqc_stability_ablation.png" alt="VQC Stability Ablation" width="82%">
+</p>
+
+### <samp>B //</samp> Feature Encoding, Sample Sweep & Finite Shots
+
+* Compressing 8 features into 3 qubits with amplitude encoding normalizes every vector to unit length, erasing signal magnitude and dropping PR-AUC to `0.6057`. Restoring the L2 norm on a 4th qubit recovers `+0.2450` PR-AUC (`0.8507`), while 8-qubit angle encoding (`2 arctan(alpha * x)`) keeps each feature on its own wire without state-preparation overhead.
+* Across $N \in \{100, 200, 500, 1000\}$, standalone `Tiny-MLP` and `RBF-SVM` stay ahead of standalone quantum models at every sample size. Blending `Q1-VQC` and `Tiny-MLP` probabilities at $N = 100$ produces a smooth validation peak around a 20%--30% VQC weight (`0.9132` test PR-AUC, `+0.0091` over `Tiny-MLP` alone), which stays inside the $\pm 0.01$ tie band and vanishes by $N = 500$ (`+0.0009`).
+* Finite-shot inference on `Q1-VQC` stays practically tied with exact analytic readout at `2,000` shots (`0.9095`) and `500` shots (`0.9091`), showing mild sampling variance only at `100` shots (`0.9034`).
+
+| Feature Encoding & Norm (Gold B) | Sample Efficiency Sweep (Gold C) |
+| :---: | :---: |
+| <img src="results/full/gold_b_encoding.png" alt="Gold B Encoding" width="100%"> | <img src="results/full/gold_c_sweep.png" alt="Gold C Sample Sweep" width="100%"> |
+
+| Finite Shot Noise (Table D) | Full-Pool Linearity Ceiling |
+| :---: | :---: |
+| <img src="results/full/table_d_shots.png" alt="Table D Shot Noise" width="100%"> | <img src="results/full/linearity_check.png" alt="Linearity Ceiling Check" width="100%"> |
+
+---
+
+## 4. Deep Diagnostics — Geometry, Width & Hardware Cost
+<sub><samp>LINEARITY CEILING · KERNEL SPECTRUM · NONLINEAR 8D INNER BALL · QPU SCALING</samp></sub>
+
+### <samp>A //</samp> HTRU2 Linearity & Quantum Kernel Concentration
+
+On the full 13,398-sample training pool with validation-tuned hyperparameters, 9-weight `LogReg` (`0.9377`), 41-weight `Tiny-MLP` (`0.9394`), 45-weight `Poly2-LogReg` (`0.9411`), and `RBF-SVM` (`0.9309`) all cluster within roughly `0.01` PR-AUC, showing how little nonlinear headroom exists on HTRU2. Meanwhile, the 8-qubit ZZ kernel peaks at the lower boundary of its search grid ($\alpha = 0.1$, effective rank `1.84`, `0.9913` correlation with tuned RBF). Probing smaller scales ($\alpha = 0.05, 0.02$) nudges single-seed PR-AUC to `0.9281`--`0.9287` only because the ZZ Gram matrix collapses into a rank-`1.05` classical kernel, whereas larger $\alpha$ values trigger exponential off-diagonal concentration (`0.008` at $\alpha = 2.5$).
+
+| Quantum Kernel Spectrum & Concentration | ConcentricShell-8D Generalization |
+| :---: | :---: |
+| <img src="results/full/kernel_analysis.png" alt="Kernel Analysis" width="100%"> | <img src="results/full/nonlinear_dataset.png" alt="ConcentricShell-8D" width="100%"> |
+
+### <samp>B //</samp> Controlled Nonlinear 8D Diagnostic (`ConcentricShell-8D`)
+
+`ConcentricShell-8D` labels the innermost 12% of a perturbed 4D ball embedded in 8D ($r^2 = \sum_{i=0}^3 x_i^2 + 0.35\sin(2.5 x_0 x_1) \le q_{0.12}$ plus 4 Gaussian noise coordinates; despite the code name, the positive class is an inner ball rather than a hollow shell). Linear `LogReg` fails (`0.1165`), while `Q2-QuantumKernel` (`0.8832`) and `RBF-SVM` (`0.8695`) statistically tie across sample sizes. With 41 weights, `Q1-VQC` scores `0.1307` at $N = 100$, `0.3127` at $N = 200$, and `0.6602` at $N = 500$ against `0.4075` for the 4-unit `Tiny-MLP`, while widening `Tiny-MLP` to 8, 16, and 32 units reaches `0.5936`, `0.6195`, and `0.7767` (`results/full/diagnostics_extra/concentric_mlp_width_sweep.csv`).
+
+| $N_{\text{train}}$ | LogReg | RBF-SVM | Tiny-MLP (41p) | Q2-QuantumKernel (8q) | Q1-VQC (41p) |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| `100` | 0.1144 | 0.4919 | 0.1125 | 0.5115 | 0.1307 |
+| `200` | 0.1165 | 0.6713 | 0.2001 | 0.7462 | 0.3127 |
+| `500` | 0.1165 | 0.8695 | 0.4075 | 0.8832 | 0.6602 |
+
+### <samp>C //</samp> Physical QPU Resource Accounting (`qml.specs`)
+
+`Q1-VQC` scales linearly in dataset size ($O(N)$: `500` circuits per epoch and `3,000` test circuits), whereas `Q2-QuantumKernel` requires $O(N^2)$ pairwise overlap circuits (`124,750` training pairs plus `1,500,000` test pairs at $N = 500$).
+
+| Circuit Architecture | Qubits | Depth | Total Gates | 2Q Gates | Weights | Train Executions ($N=500$) | Test Executions ($3,000$) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Q1-VQC (8q Bipartite Sign+Linear) | 8 | 7 | 41 | 8 | 41 | 500 / epoch ($O(N)$) | 3,000 ($O(N_{\text{test}})$) |
+| Q1-VQC (8q Ring L=2) | 8 | 21 | 49 | 16 | 34 | 500 / epoch ($O(N)$) | 3,000 ($O(N_{\text{test}})$) |
+| Q1-VQC (4q Amplitude+Norm L=4) | 4 | 25 | 50 | 16 | 34 | 500 / epoch ($O(N)$) | 3,000 ($O(N_{\text{test}})$) |
+| Q1-VQC (3q Amplitude L=5) | 3 | 26 | 46 | 15 | 32 | 500 / epoch ($O(N)$) | 3,000 ($O(N_{\text{test}})$) |
+| Q2-QuantumKernel (8q ZZ d=1) | 8 | 52 | 80 | 32 | 0 | 124,750 pairs ($O(N^2)$) | 1,500,000 pairs ($N \cdot N_{\text{test}}$) |
 
 ---
 
 ## 5. Limitations
 
-* **Classical Simulability (No Quantum Advantage Claimed):** All quantum circuits in this study use $\le 8$ qubits (Hilbert space dimension $\le 256$), which is fast to simulate exactly on a standard laptop CPU; therefore, **no quantum advantage is claimed** in runtime or asymptotic computational complexity.
-* **Domain Linearity of HTRU2 & Small-$\alpha$ Kernel Boundary:** Because UCI HTRU2 pulsar features are already ~94% separable by a linear hyperplane, quantum feature maps offer no accuracy advantage over compact classical neural networks or RBF-SVMs, and `Q2-QuantumKernel` peaks near the small-$\alpha$ boundary ($\alpha \le 0.1$) where it mimics a low-rank classical kernel.
-* **Synthetic Inner-Ball Symmetry & MLP Width Constraint (`ConcentricShell-8D`):** `ConcentricShell-8D` is a synthetic inner-ball task whose even coordinate symmetry ($f(-x)=f(x)$) directly favors $\cos(\cdot)$ angle rotations, while restricting `Tiny-MLP` to 4 hidden neurons (`41` weights) creates a geometric width bottleneck (`32` hidden units reach `0.7767` PR-AUC, above `Q1-VQC`'s `0.6602`).
-* **Idealized Gate Noise Model:** Finite-shot experiments (`Table D`) capture statistical multinomial sampling noise (`100–2,000` shots) but do not model hardware gate infidelity, readout bit-flip bias, or decoherence ($T_1/T_2$).
-* **AI Tool Disclosure:** AI coding assistants were used strictly for boilerplate scaffolding, plotting/table formatting, and test verification under human review; full prompts and verification logs are documented in `AI_USAGE_LOG.md`.
+* All circuits use $\le 8$ qubits ($2^8 = 256$ amplitudes) and run quickly on a standard laptop CPU, so no quantum advantage is claimed in runtime or computational complexity.
+* HTRU2 is roughly 94% separable by a linear hyperplane, leaving minimal room for nonlinear feature maps; on this dataset, `Q2-QuantumKernel` peaks near the small-$\alpha$ boundary ($\alpha \le 0.1$) where it behaves like a low-rank classical kernel.
+* `ConcentricShell-8D` is synthetic, its even coordinate symmetry ($f(-x) = f(x)$) aligns directly with $\cos(\cdot)$ angle encoding, and fixing `Tiny-MLP` to 4 hidden neurons creates a geometric width bottleneck (`32` hidden units reach `0.7767` PR-AUC, surpassing `Q1-VQC` at `0.6602`).
+* Finite-shot experiments (`100`--`2,000` shots) model statistical multinomial measurement noise only and do not simulate gate infidelity, readout bit-flip bias, or hardware decoherence ($T_1/T_2$).
+
+---
+
+## Credits & Attribution
+<sub><samp>DATASET · SOFTWARE STACK · TRANSPARENCY</samp></sub>
+
+* **Dataset** — UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, and J. D. Knowles (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; see [`DATA_LICENSE.md`](DATA_LICENSE.md)).
+* **Software** — Quantum circuits are simulated with **PennyLane** (`default.qubit`), and classical baselines are built with **PyTorch** and **scikit-learn**.
+* **AI Transparency** — All AI-assisted scaffolding, diagnostic checks, and human verification steps are recorded in [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
+* **Author & Lead Architect** — **Zeyad Mohamed Nada** (leakage-free HTRU2 pipeline, disjoint multi-seed tuning, VQC stability ablations, two-level bootstrap statistics, diagnostics, and interactive dashboard; see [`docs/TEAM.md`](docs/TEAM.md)).
