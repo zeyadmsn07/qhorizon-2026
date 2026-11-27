@@ -274,3 +274,36 @@ python run_all.py --mode full --tune-seeds 3
 * **Synthetic Nature of `ConcentricShell-8D`:** The nonlinear 8D reversal demonstrates geometric inductive bias under matched parameter budgets, not real-world astrophysical data.
 * **Idealized Gate Noise Model:** Finite-shot experiments (`Table D`) capture statistical multinomial sampling noise (`100–2,000` shots) but do not model hardware gate infidelity, readout bit-flip bias, or decoherence ($T_1/T_2$).
 * **AI Tool Disclosure:** AI coding assistants were used strictly for boilerplate scaffolding, plotting/table formatting, and test verification under human review; full prompts and verification logs are documented in `AI_USAGE_LOG.md`.
+
+## 6. Interactive Dashboard Guide
+
+An offline, publication-style dashboard sits on top of the committed `results/full/` files. It does not re-train anything: every number is read from the same 10-seed CSVs used in the tables above.
+
+### What You Get
+* **`dashboard/`**: a zero-dependency web page (plain HTML, CSS and JavaScript) with an overview of the task, a `HTRU2 Pulsars` vs. `Concentric Shell-8D` toggle, a zoomable PR-AUC dot-plot with hover tooltips, an Experiments section covering all six experiments, and audit tables with the code folded away.
+* **`dashboard/qhorizon_dashboard.html`**: the same page as one standalone file. Double-click it to open it offline, or send it to a judge.
+* **`Q_Horizon_Dashboard.ipynb`**: a companion notebook that embeds the dashboard and shows color-coded audit tables, with all code cells collapsed (`hide_input`).
+
+### How to Run It
+```bash
+# 1. Install dependencies (the dashboard itself only needs pandas and numpy)
+pip install -r requirements.txt
+
+# 2. Build the data and open the dashboard at http://localhost:8000
+python dashboard/serve.py
+
+# Optional: rebuild only the data and the standalone HTML file
+python dashboard/build_data.py
+
+# Optional: regenerate the companion notebook, then open it in Jupyter
+python dashboard/make_notebook.py
+jupyter notebook Q_Horizon_Dashboard.ipynb
+```
+On Windows PowerShell, use the same commands (`python` or `py`). Use `python dashboard/serve.py --port 9000 --no-browser` to change the port or skip opening the browser.
+
+### How to Read It
+* **Colors:** Cornflower Blue (`#6E8EEB`) is a classical model, Orchid Purple (`#B07CE8`) is a quantum model.
+* **Dot-plot:** each dot is a 10-seed average PR-AUC at `N = 500`. The HTRU2 axis is zoomed to `0.89`-`0.93` so small gaps are visible; use the axis button for the full `0`-`1` range.
+* **Experiments:** six experiments build on each other. Experiments 1 and 2 fix the circuit design (entanglement wiring, qubit compression and encoding), 3 and 4 stress it (low-data sweep, measurement shot noise), and 5 and 6 improve cost and role (projected quantum kernels, hybrid quantum-classical blend).
+* **Callouts:** every chart has a *What happened* box (the numbers) and a *What we can conclude* box (the plain-English meaning).
+* **Updating:** if `results/full/` is regenerated, run `python dashboard/build_data.py` and the dashboard updates itself.

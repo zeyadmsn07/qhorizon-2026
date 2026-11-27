@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q//HORIZON 2026 | Interactive Results</title>
+<meta name="description" content="Interactive research dashboard: quantum vs. classical pulsar classification (HTRU2 and Concentric Shell-8D).">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">Q<i>//</i>HORIZON 2026</div>
+    <nav aria-label="Sections">
+      <a href="#mission">Overview</a><a href="#challenge">Challenge</a><a href="#datasets">Fair test</a><a href="#glance">Findings</a>
+      <a href="#ablations">Experiments</a><a href="#takeaway">Takeaway</a><a href="#audit">Audit</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ SECTION 01 : MISSION ============ -->
+<div class="hero" id="mission">
+  <div class="wrap">
+    <div class="eyebrow">Q//HORIZON 2026 &middot; Research Showcase</div>
+    <h1>Quantum vs. Classical Machine Learning: Hunting Radio Pulsars on Equal Footing</h1>
+    <p class="lede">Can an 8-qubit quantum circuit compete with a classical neural network when both are given the exact same number of trainable parameters? We tested both side by side across 10 random seeds on real astronomical survey data.</p>
+    <div class="stats">
+      <div class="stat"><b id="hero-signals">&ndash;</b><span>Radio signals in the HTRU2 survey</span></div>
+      <div class="stat c"><b id="hero-weights">&ndash;</b><span>Trainable weights: quantum circuit vs. neural network</span></div>
+      <div class="stat"><b id="hero-circuits">&ndash;</b><span>Fewer circuit runs with Projected Quantum Kernels</span></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="block" id="challenge" aria-labelledby="lh-title">
+    <div class="eyebrow"><span class="pill">01 / THE CHALLENGE</span></div>
+    <h2 id="lh-title">Finding a Cosmic Lighthouse in a Sea of Static</h2>
+    <p class="lede" style="margin-bottom:12px">A pulsar is the collapsed core of a giant star. It spins rapidly and sweeps beams of radio waves across space like a lighthouse. When a beam crosses Earth, radio telescopes record a faint pulse.</p>
+    <p class="lede">The catch is noise. Over 90% of recorded signals come from satellites, radar, and everyday interference. Because real pulsars make up less than a tenth of the data, standard accuracy is misleading: a model that guesses &ldquo;noise&rdquo; every time still scores above 90% while missing every star. Instead, we grade every model with PR-AUC, a single score from 0.00 to 1.00 that balances two questions: when the model flags a pulsar, is it right, and how many real pulsars did it catch?</p>
+    <div class="card lighthouse">
+      <div class="lh-col">
+        <h3>1 &middot; The signal</h3>
+        <svg class="beam" viewBox="0 0 200 170" role="img" aria-label="A pulsar sweeping a radio beam">
+          <defs><radialGradient id="glow"><stop offset="0" stop-color="#B07CE8" stop-opacity=".55"/><stop offset="1" stop-color="#B07CE8" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="100" r="60" fill="url(#glow)"/>
+          <g class="sweep"><path d="M100 100 L190 70 L190 130 Z" fill="#6E8EEB" opacity=".35"/><path d="M100 100 L10 130 L10 70 Z" fill="#6E8EEB" opacity=".35"/></g>
+          <circle cx="100" cy="100" r="9" fill="#0F172A"/><circle cx="100" cy="100" r="4" fill="#fff"/>
+          <text x="100" y="160" text-anchor="middle" style="font-size:11px">neutron star, ~1 flash per second</text>
+        </svg>
+      </div>
+      <div class="lh-col">
+        <h3>2 &middot; 8 measurements &rarr; 8 qubits (1-to-1)</h3>
+        <div class="map" id="qmap"></div>
+      </div>
+      <div class="lh-col">
+        <h3>3 &middot; The catch: rare targets</h3>
+        <div class="balance" role="img" aria-label="Class balance"><div class="p" id="bal-p"></div><div class="n" id="bal-n"></div></div>
+        <div class="legend"><span><i style="background:var(--quantum)"></i>real pulsars</span><span><i style="background:var(--classical-soft);border:1px solid var(--classical)"></i>everyday interference</span></div>
+        <div class="trap" id="trap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 02 : DATASET TOGGLE ============ -->
+  <section class="block" id="datasets" aria-labelledby="ds-title">
+    <div class="eyebrow"><span class="pill">02 / A FAIR TEST</span></div>
+    <h2 id="ds-title">41 Parameters vs. 41 Parameters</h2>
+    <p class="lede">Many quantum machine learning comparisons pit a tuned quantum circuit against an oversized classical network, or the reverse. We removed that bias. Each radio signal contains 8 physical measurements, which map one-to-one onto 8 qubits with no lossy compression. We then matched a variational quantum circuit (Q1-VQC) against a compact classical neural network (Tiny-MLP) with 41 trainable weights apiece, isolating architecture from raw model size. Select a dataset below to see both on real survey data and on a curved synthetic benchmark.</p>
+    <div class="row">
+      <div class="tabs" role="tablist" aria-label="Dataset" id="ds-tabs">
+        <button class="tab" role="tab" data-ds="htru2" aria-selected="true">HTRU2 Pulsars</button>
+        <button class="tab" role="tab" data-ds="shell" aria-selected="false">Concentric Shell-8D</button>
+      </div>
+    </div>
+    <div class="split">
+      <div class="card">
+        <div class="eyebrow" id="ds-kicker"></div>
+        <div class="stat" style="border:0;padding:0;background:none"><b id="ds-hero" style="font-size:clamp(40px,6vw,64px)"></b><span id="ds-hero-sub"></span></div>
+        <p id="ds-desc" class="note" style="font-size:15px;margin-top:14px"></p>
+      </div>
+      <div class="callouts">
+        <div class="call what"><h4>What happened</h4><p id="ds-what"></p></div>
+        <div class="call so"><h4>What we can conclude</h4><p id="ds-so"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 03 : DOT PLOT ============ -->
+  <section class="block" id="glance" aria-labelledby="gl-title">
+    <div class="eyebrow"><span class="pill">03 / WHAT WE FOUND</span></div>
+    <h2 id="gl-title">Classical Models Still Lead on Straight Boundaries</h2>
+    <p class="lede">Each marker is a model&rsquo;s mean PR-AUC over 10 seeds at 500 training samples (higher is better). Hover over or focus a marker for details.</p>
+    <div class="card">
+      <div class="row">
+        <div class="legend grow" style="margin:0"><span><i style="background:var(--classical)"></i>Classical</span><span><i style="background:var(--quantum)"></i>Quantum</span><span id="gl-whisker"></span></div>
+        <button class="toggle" id="zoom" aria-pressed="true">Zoomed axis</button>
+      </div>
+      <div class="chart" id="dotplot"></div>
+    </div>
+    <div class="split" style="margin-top:20px">
+      <div class="call what"><h4>What happened</h4><p id="gl-what"></p></div>
+      <div class="call so"><h4>What we can conclude</h4><p id="gl-so"></p></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 04 : ABLATIONS ============ -->
+  <section class="block" id="ablations" aria-labelledby="ab-title">
+    <div class="eyebrow"><span class="pill">04 / THE EXPERIMENTS</span></div>
+    <h2 id="ab-title">Six Experiments, One Question: Where Do Quantum Circuits Help?</h2>
+    <p class="lede">Each experiment changes one design choice at a time. Together they follow the life of a quantum model: how it is built (Experiments 1 and 2), how it holds up under stress (3 and 4), and how its cost and role can be improved (5 and 6).</p>
+    <ol class="flow" id="ex-flow"></ol>
+    <div class="row">
+      <div class="tabs" role="tablist" aria-label="Study" id="ab-tabs"></div>
+      <label class="grow" style="text-align:right;font-size:13px;color:var(--muted)">Experiment&nbsp;<select id="ab-select" aria-label="Choose a study"></select></label>
+    </div>
+    <div class="split">
+      <div class="card"><div class="legend" id="ab-legend"></div><div class="chart" id="ab-chart"></div><p class="note" id="ab-note"></p></div>
+      <div class="callouts">
+        <div class="call what"><h4>What happened</h4><p id="ab-what"></p></div>
+        <div class="call so"><h4>What we can conclude</h4><p id="ab-so"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="takeaway" aria-labelledby="tk-title">
+    <div class="eyebrow"><span class="pill">05 / THE TAKEAWAY</span></div>
+    <h2 id="tk-title">No Hype, Just Clear Boundaries</h2>
+    <div class="card"><p style="margin:0;font-size:17px">An 8-qubit system (2<sup>8</sup> = 256 states) runs easily on a laptop, so we claim no hardware speedup today. What the benchmarks show is more practical. Lightweight classical networks remain the best default for well-separated tabular data. Compact quantum circuits add measurable value when labels are scarce, when circuit depth is kept shallow (8 two-qubit gates instead of 16), or when signals follow curved, nonlinear patterns.</p></div>
+  </section>
+
+  <section class="block" id="audit" aria-labelledby="au-title">
+    <div class="eyebrow"><span class="pill">06 / REPRODUCIBILITY</span></div>
+    <h2 id="au-title">Audit Tables and Statistical Verdicts</h2>
+    <p class="lede">Exact 10-seed averages (mean &plusmn; standard deviation across seeds 100..109) and the automatic verdict on each hypothesis. Use the expandable panel under each table to see the code behind it.</p>
+
+    <h3>Main benchmark (N = 500)</h3>
+    <div class="tablewrap"><table id="t-main"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import pandas as pd
+df = pd.read_csv("results/full/main_benchmark.csv")
+df = df[df.n_train == 500]
+print(df.groupby("model").test_pr_auc.agg(["mean", "std"]).sort_values("mean", ascending=False))</pre></details>
+
+    <h3 style="margin-top:32px">Hypothesis verdicts</h3>
+    <p class="note" style="margin-top:0">Mechanical rule: &plusmn;0.01 PR-AUC margin and a 95% two-level bootstrap interval. Computed by <code>analyze_results.py</code>.</p>
+    <div class="tablewrap"><table id="t-verd"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import json
+v = json.load(open("results/full/verdicts.json"))["hypotheses"]
+for k, h in v.items():
+    print(k, h["comparison"], round(h["mean_delta"], 4), h["verdict"])</pre></details>
+
+    <h3 style="margin-top:32px">Quantum hardware cost</h3>
+    <div class="tablewrap"><table id="t-hw"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import pandas as pd
+print(pd.read_csv("results/full/hardware_cost_table.csv"))</pre></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>Scope and limitations.</b> All circuits use at most 8 qubits and are simulated on a CPU, so no quantum advantage is claimed. HTRU2 is largely linearly separable, which favors classical models. Concentric Shell-8D is synthetic and illustrates geometric inductive bias, not real-sky performance. Shot-noise runs do not model gate errors or decoherence.
+    <br><br>Data: HTRU2, R. J. Lyon et al. (2016), UCI ID 372, CC BY 4.0.
+  </div>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
