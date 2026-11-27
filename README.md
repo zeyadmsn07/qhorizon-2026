@@ -1,6 +1,6 @@
 <div align="center">
 
-<samp>Q // HORIZON 2026 &nbsp;·&nbsp; QUANTUM MACHINE LEARNING BENCHMARK</samp>
+<samp>Q // HORIZON 2026 &nbsp;·&nbsp; KUBITS TEAM: Zeyad Nada, Omar Eslam, Youssef Sallam</samp>
 
 # Pulsar Signal Classification<br><sub>Variational Circuits & Quantum Kernels vs. Classical Baselines</sub>
 
