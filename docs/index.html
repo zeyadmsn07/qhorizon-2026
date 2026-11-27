@@ -1,0 +1,1485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q//HORIZON 2026 | Interactive Results</title>
+<meta name="description" content="Interactive research dashboard: quantum vs. classical pulsar classification (HTRU2 and Concentric Shell-8D).">
+<style>
+/* Q//HORIZON 2026 dashboard: editorial light-mode */
+:root {
+  --canvas: #F8FAFC;
+  --card: #FFFFFF;
+  --line: #E2E8F0;
+  --ink: #0F172A;
+  --muted: #475569;
+  --faint: #94A3B8;
+  --classical: #6E8EEB;
+  --classical-soft: #E9EEFC;
+  --quantum: #B07CE8;
+  --quantum-soft: #F3EBFC;
+  --ok: #15803D;
+  --warn: #B45309;
+  --bad: #B91C1C;
+  --radius: 14px;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Consolas, monospace;
+  --sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0; background: var(--canvas); color: var(--ink);
+  font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--classical); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- top bar ---------- */
+.topbar { position: sticky; top: 0; z-index: 20; background: rgba(248,250,252,.92);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.topbar .wrap { display: flex; align-items: center; gap: 20px; height: 56px; }
+.brand { font-weight: 800; letter-spacing: .08em; font-size: 13px; white-space: nowrap; }
+.brand i { font-style: normal; color: var(--quantum); }
+.topbar nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; }
+.topbar nav a { text-decoration: none; font-size: 13px; color: var(--muted); padding: 6px 10px;
+  border-radius: 8px; white-space: nowrap; }
+.topbar nav a:hover { background: var(--line); color: var(--ink); }
+
+/* ---------- section scaffolding ---------- */
+section.block { padding: 56px 0 8px; }
+.eyebrow { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.pill { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  padding: 3px 10px; border-radius: 999px; background: var(--ink); color: #fff; }
+h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.05; letter-spacing: -.03em; margin: 0 0 16px; }
+h2 { font-size: clamp(26px, 3.6vw, 36px); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 12px; }
+h3 { font-size: 18px; margin: 0 0 6px; letter-spacing: -.01em; }
+.lede { font-size: 18px; color: var(--muted); max-width: 760px; margin: 0 0 28px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+.flow { list-style: none; margin: 0 0 24px; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; counter-reset: ex; }
+.flow li { margin: 0; }
+.flow button { all: unset; box-sizing: border-box; display: flex !important; flex-direction: column; justify-content: flex-start; text-align: left; cursor: pointer; display: block; height: 100%; width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; position: relative; }
+.flow button:hover { border-color: var(--faint); }
+.flow button[aria-current="true"] { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.flow button:focus-visible { outline: 3px solid var(--classical); outline-offset: 2px; }
+.flow .n { font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--muted); }
+.flow b { display: block; font-size: 14px; line-height: 1.3; margin: 4px 0; }
+.flow span.q { font-size: 12.5px; color: var(--muted); line-height: 1.4; display: block; }
+.flow .grp { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 8px; display: block; }
+
+/* ---------- hero ---------- */
+.hero { padding: 64px 0 24px; border-bottom: 1px solid var(--line); background:
+  radial-gradient(900px 300px at 85% -10%, var(--quantum-soft), transparent 70%),
+  radial-gradient(700px 260px at 0% 0%, var(--classical-soft), transparent 70%); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 28px 0 8px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
+.stat b { display: block; font-size: clamp(34px, 5vw, 52px); line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.stat span { display: block; margin-top: 8px; font-size: 14px; color: var(--muted); }
+.stat.c b { color: var(--ink); background: linear-gradient(90deg, var(--classical), var(--quantum)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ---------- lighthouse strip ---------- */
+.lighthouse { display: grid; grid-template-columns: 1.1fr 1.3fr 1fr; gap: 0; align-items: stretch; overflow: hidden; padding: 0; }
+.lh-col { padding: 24px; border-right: 1px solid var(--line); }
+.lh-col:last-child { border-right: 0; }
+.lh-col h3 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.beam { width: 100%; height: 170px; display: block; }
+.beam .sweep { transform-origin: 100px 100px; animation: sweep 6s linear infinite; }
+@keyframes sweep { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .beam .sweep { animation: none; } }
+.map { display: grid; grid-template-columns: 1fr 22px 1fr; gap: 5px 4px; align-items: center; font-size: 13px; margin-top: 10px; }
+.chip { padding: 4px 10px; border-radius: 8px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: var(--canvas); }
+.chip.q { background: var(--quantum-soft); border-color: var(--quantum); }
+.map .arrow { text-align: center; color: var(--faint); }
+.balance { display: flex; height: 36px; border-radius: 10px; overflow: hidden; margin: 12px 0 8px; border: 1px solid var(--line); }
+.balance div { display: flex; align-items: center; padding: 0 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.balance .p { background: var(--quantum); width: 9.16%; min-width: 58px; justify-content: center; padding: 0 6px; }
+.balance .n { background: var(--classical-soft); flex: 1; color: var(--ink); }
+.trap { margin-top: 16px; border-radius: 10px; background: #FFFBEB; border: 1px solid #FDE68A; padding: 12px 14px; font-size: 14px; }
+
+/* ---------- controls ---------- */
+.tabs { display: inline-flex; gap: 4px; padding: 4px; background: #EEF2F7; border-radius: 12px; flex-wrap: wrap; }
+.tab { appearance: none; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600;
+  padding: 9px 16px; border-radius: 9px; cursor: pointer; color: var(--muted); }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(15,23,42,.14); }
+.tag.best { background: #fff; color: var(--ink); border: 1px solid var(--faint); }
+.tag { font-size: 10px; letter-spacing: .08em; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
+select, .toggle { font: inherit; font-size: 14px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.row .grow { flex: 1; }
+.toggle { cursor: pointer; font-weight: 600; }
+.toggle[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ---------- chart + callouts ---------- */
+.split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.callouts { display: grid; gap: 14px; }
+.call { border-radius: var(--radius); padding: 16px 20px; border: 1px solid var(--line); background: #fff; }
+.call.what { background: #F3F6FD; border-color: #DCE4FA; }
+.call.so { background: #F8F4FD; border-color: #E8DCF8; }
+.call h4 { margin: 0 0 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.call p { margin: 0; font-size: 15px; }
+.call b { font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.chart { width: 100%; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { font-family: var(--sans); fill: var(--muted); font-size: 12px; }
+.chart .lab { fill: var(--ink); font-size: 13px; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .dot { cursor: pointer; transition: r .12s; }
+.chart .dot:hover, .chart .dot:focus { stroke: var(--ink); stroke-width: 2; outline: 0; }
+.chart .rowbg:hover { fill: #F1F5F9; }
+.note { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+#tip { position: fixed; z-index: 50; pointer-events: none; opacity: 0; transition: opacity .1s;
+  background: var(--ink); color: #fff; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.45;
+  max-width: 280px; box-shadow: 0 8px 24px rgba(15,23,42,.25); }
+#tip b { display: block; font-size: 14px; margin-bottom: 2px; }
+#tip .k { color: #CBD5E1; }
+
+/* ---------- tables ---------- */
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: #F8FAFC; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; }
+tr.classical td { background: #F5F8FE; }
+tr.quantum td { background: #FAF6FE; }
+tr.baseline td { background: #F8FAFC; color: var(--muted); }
+tr.best td { font-weight: 600; }
+.chipv { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.v-Supported { background: #DCFCE7; color: #166534; } .v-Contradicted { background: #FEE2E2; color: #991B1B; }
+.v-Inconclusive { background: #FEF3C7; color: #92400E; } .v-Practically { background: #E0E7FF; color: #3730A3; }
+details.code { margin-top: 14px; border: 1px dashed var(--faint); border-radius: 10px; background: #fff; }
+details.code summary { cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--muted); }
+details.code pre { margin: 0; padding: 14px; overflow-x: auto; background: var(--ink); color: #E2E8F0; border-radius: 0 0 10px 10px; font-size: 12.5px; line-height: 1.55; }
+.tabpanel[hidden] { display: none; }
+
+footer { margin-top: 64px; padding: 32px 0 56px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+
+@media (max-width: 1000px) { .flow { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 860px) {
+  .flow { grid-template-columns: 1fr 1fr; }
+  .stats { grid-template-columns: 1fr; }
+  .lighthouse { grid-template-columns: 1fr; }
+  .lh-col { border-right: 0; border-bottom: 1px solid var(--line); }
+  .split { grid-template-columns: 1fr; }
+  .topbar nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">Q<i>//</i>HORIZON 2026</div>
+    <nav aria-label="Sections">
+      <a href="#mission">Overview</a><a href="#challenge">Challenge</a><a href="#datasets">Fair test</a><a href="#glance">Findings</a>
+      <a href="#ablations">Experiments</a><a href="#takeaway">Takeaway</a><a href="#audit">Audit</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ SECTION 01 : MISSION ============ -->
+<div class="hero" id="mission">
+  <div class="wrap">
+    <div class="eyebrow">Q//HORIZON 2026 &middot; Research Showcase</div>
+    <h1>Quantum vs. Classical Machine Learning: Hunting Radio Pulsars on Equal Footing</h1>
+    <p class="lede">Can an 8-qubit quantum circuit compete with a classical neural network when both are given the exact same number of trainable parameters? We tested both side by side across 10 random seeds on real astronomical survey data.</p>
+    <div class="stats">
+      <div class="stat"><b id="hero-signals">&ndash;</b><span>Radio signals in the HTRU2 survey</span></div>
+      <div class="stat c"><b id="hero-weights">&ndash;</b><span>Trainable weights: quantum circuit vs. neural network</span></div>
+      <div class="stat"><b id="hero-circuits">&ndash;</b><span>Fewer circuit runs with Projected Quantum Kernels</span></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="block" id="challenge" aria-labelledby="lh-title">
+    <div class="eyebrow"><span class="pill">01 / THE CHALLENGE</span></div>
+    <h2 id="lh-title">Finding a Cosmic Lighthouse in a Sea of Static</h2>
+    <p class="lede" style="margin-bottom:12px">A pulsar is the collapsed core of a giant star. It spins rapidly and sweeps beams of radio waves across space like a lighthouse. When a beam crosses Earth, radio telescopes record a faint pulse.</p>
+    <p class="lede">The catch is noise. Over 90% of recorded signals come from satellites, radar, and everyday interference. Because real pulsars make up less than a tenth of the data, standard accuracy is misleading: a model that guesses &ldquo;noise&rdquo; every time still scores above 90% while missing every star. Instead, we grade every model with PR-AUC, a single score from 0.00 to 1.00 that balances two questions: when the model flags a pulsar, is it right, and how many real pulsars did it catch?</p>
+    <div class="card lighthouse">
+      <div class="lh-col">
+        <h3>1 &middot; The signal</h3>
+        <svg class="beam" viewBox="0 0 200 170" role="img" aria-label="A pulsar sweeping a radio beam">
+          <defs><radialGradient id="glow"><stop offset="0" stop-color="#B07CE8" stop-opacity=".55"/><stop offset="1" stop-color="#B07CE8" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="100" r="60" fill="url(#glow)"/>
+          <g class="sweep"><path d="M100 100 L190 70 L190 130 Z" fill="#6E8EEB" opacity=".35"/><path d="M100 100 L10 130 L10 70 Z" fill="#6E8EEB" opacity=".35"/></g>
+          <circle cx="100" cy="100" r="9" fill="#0F172A"/><circle cx="100" cy="100" r="4" fill="#fff"/>
+          <text x="100" y="160" text-anchor="middle" style="font-size:11px">neutron star, ~1 flash per second</text>
+        </svg>
+      </div>
+      <div class="lh-col">
+        <h3>2 &middot; 8 measurements &rarr; 8 qubits (1-to-1)</h3>
+        <div class="map" id="qmap"></div>
+      </div>
+      <div class="lh-col">
+        <h3>3 &middot; The catch: rare targets</h3>
+        <div class="balance" role="img" aria-label="Class balance"><div class="p" id="bal-p"></div><div class="n" id="bal-n"></div></div>
+        <div class="legend"><span><i style="background:var(--quantum)"></i>real pulsars</span><span><i style="background:var(--classical-soft);border:1px solid var(--classical)"></i>everyday interference</span></div>
+        <div class="trap" id="trap"></div>
+      </div>
+    </div>
+  <div class="card" style="margin-top:20px">
+      <h3>How to use this page</h3>
+      <p class="note" style="font-size:15px;margin-top:6px">Everything here is interactive and works offline. <b>Hover over or tab to any marker</b> to see its exact score. <b>Switch datasets</b> in Section 02 and the results update. In Section 04, <b>click an experiment</b> to see its chart and a plain-English summary. Each table in Section 06 has a &ldquo;show the code&rdquo; panel if you want to check how it was made.</p>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 02 : DATASET TOGGLE ============ -->
+  <section class="block" id="datasets" aria-labelledby="ds-title">
+    <div class="eyebrow"><span class="pill">02 / A FAIR TEST</span></div>
+    <h2 id="ds-title">41 Parameters vs. 41 Parameters</h2>
+    <p class="lede">Many quantum machine learning comparisons pit a tuned quantum circuit against an oversized classical network, or the reverse. We removed that bias. Each radio signal contains 8 physical measurements, which map one-to-one onto 8 qubits with no lossy compression. We then matched a variational quantum circuit (Q1-VQC) against a compact classical neural network (Tiny-MLP) with 41 trainable weights apiece, isolating architecture from raw model size. Select a dataset below to see both on real survey data and on a curved synthetic benchmark.</p>
+    <div class="row">
+      <div class="tabs" role="tablist" aria-label="Dataset" id="ds-tabs">
+        <button class="tab" role="tab" data-ds="htru2" aria-selected="true">HTRU2 Pulsars</button>
+        <button class="tab" role="tab" data-ds="shell" aria-selected="false">Concentric Shell-8D</button>
+      </div>
+    </div>
+    <div class="split">
+      <div class="card">
+        <div class="eyebrow" id="ds-kicker"></div>
+        <div class="stat" style="border:0;padding:0;background:none"><b id="ds-hero" style="font-size:clamp(40px,6vw,64px)"></b><span id="ds-hero-sub"></span></div>
+        <p id="ds-desc" class="note" style="font-size:15px;margin-top:14px"></p>
+      </div>
+      <div class="callouts">
+        <div class="call what"><h4>What happened</h4><p id="ds-what"></p></div>
+        <div class="call so"><h4>What we can conclude</h4><p id="ds-so"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 03 : DOT PLOT ============ -->
+  <section class="block" id="glance" aria-labelledby="gl-title">
+    <div class="eyebrow"><span class="pill">03 / WHAT WE FOUND</span></div>
+    <h2 id="gl-title">Classical Models Still Lead on Straight Boundaries</h2>
+    <p class="lede">Each marker is a model&rsquo;s mean PR-AUC over 10 seeds at 500 training samples (higher is better). Hover over or focus a marker for details.</p>
+    <div class="card">
+      <div class="row">
+        <div class="legend grow" style="margin:0"><span><i style="background:var(--classical)"></i>Classical</span><span><i style="background:var(--quantum)"></i>Quantum</span><span id="gl-whisker"></span></div>
+        <button class="toggle" id="zoom" aria-pressed="true">Zoomed axis</button>
+      </div>
+      <div class="chart" id="dotplot"></div>
+    </div>
+    <div class="split" style="margin-top:20px">
+      <div class="call what"><h4>What happened</h4><p id="gl-what"></p></div>
+      <div class="call so"><h4>What we can conclude</h4><p id="gl-so"></p></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 04 : ABLATIONS ============ -->
+  <section class="block" id="ablations" aria-labelledby="ab-title">
+    <div class="eyebrow"><span class="pill">04 / THE EXPERIMENTS</span></div>
+    <h2 id="ab-title">Six Experiments, One Question: Where Do Quantum Circuits Help?</h2>
+    <p class="lede">Each experiment changes one design choice at a time. Together they follow the life of a quantum model: how it is built (Experiments 1 and 2), how it holds up under stress (3 and 4), and how its cost and role can be improved (5 and 6).</p>
+    <ol class="flow" id="ex-flow"></ol>
+    <div class="row">
+      <div class="tabs" role="tablist" aria-label="Study" id="ab-tabs"></div>
+      <label class="grow" style="text-align:right;font-size:13px;color:var(--muted)">Experiment&nbsp;<select id="ab-select" aria-label="Choose a study"></select></label>
+    </div>
+    <div class="split">
+      <div class="card"><div class="legend" id="ab-legend"></div><div class="chart" id="ab-chart"></div><p class="note" id="ab-note"></p></div>
+      <div class="callouts">
+        <div class="call what"><h4>What happened</h4><p id="ab-what"></p></div>
+        <div class="call so"><h4>What we can conclude</h4><p id="ab-so"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="takeaway" aria-labelledby="tk-title">
+    <div class="eyebrow"><span class="pill">05 / THE TAKEAWAY</span></div>
+    <h2 id="tk-title">No Hype, Just Clear Boundaries</h2>
+    <div class="card"><p style="margin:0;font-size:17px">An 8-qubit system (2<sup>8</sup> = 256 states) runs easily on a laptop, so we claim no hardware speedup today. What the benchmarks show is more practical. Lightweight classical networks remain the best default for well-separated tabular data. Compact quantum circuits add measurable value when labels are scarce, when circuit depth is kept shallow (8 two-qubit gates instead of 16), or when signals follow curved, nonlinear patterns.</p></div>
+  </section>
+
+  <section class="block" id="audit" aria-labelledby="au-title">
+    <div class="eyebrow"><span class="pill">06 / REPRODUCIBILITY</span></div>
+    <h2 id="au-title">Audit Tables and Statistical Verdicts</h2>
+    <p class="lede">Exact 10-seed averages (mean &plusmn; standard deviation across seeds 100..109) and the automatic verdict on each hypothesis. Use the expandable panel under each table to see the code behind it.</p>
+
+    <h3>Main benchmark (N = 500)</h3>
+    <div class="tablewrap"><table id="t-main"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import pandas as pd
+df = pd.read_csv("results/full/main_benchmark.csv")
+df = df[df.n_train == 500]
+print(df.groupby("model").test_pr_auc.agg(["mean", "std"]).sort_values("mean", ascending=False))</pre></details>
+
+    <h3 style="margin-top:32px">Hypothesis verdicts</h3>
+    <p class="note" style="margin-top:0">Mechanical rule: &plusmn;0.01 PR-AUC margin and a 95% two-level bootstrap interval. Computed by <code>analyze_results.py</code>.</p>
+    <div class="tablewrap"><table id="t-verd"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import json
+v = json.load(open("results/full/verdicts.json"))["hypotheses"]
+for k, h in v.items():
+    print(k, h["comparison"], round(h["mean_delta"], 4), h["verdict"])</pre></details>
+
+    <h3 style="margin-top:32px">Quantum hardware cost</h3>
+    <div class="tablewrap"><table id="t-hw"></table></div>
+    <details class="code"><summary>Show the code behind this table</summary><pre>import pandas as pd
+print(pd.read_csv("results/full/hardware_cost_table.csv"))</pre></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>Scope and limitations.</b> All circuits use at most 8 qubits and are simulated on a CPU, so no quantum advantage is claimed. HTRU2 is largely linearly separable, which favors classical models. Concentric Shell-8D is synthetic and illustrates geometric inductive bias, not real-sky performance. Shot-noise runs do not model gate errors or decoherence.
+    <br><br>Data: HTRU2, R. J. Lyon et al. (2016), UCI ID 372, CC BY 4.0.
+  </div>
+</footer>
+
+<div id="tip" role="tooltip"></div>
+<script>
+window.QH_DATA = {
+ "meta": {
+  "n_signals": 17898,
+  "pulsar_pct": 9.16,
+  "noise_pct": 90.84,
+  "eval_seeds": "100..109",
+  "n_seeds": 10,
+  "n_train": 500,
+  "pqk_circuits": 3500,
+  "fqk_circuits": 1624750,
+  "circuit_ratio": 464,
+  "weights": 41
+ },
+ "htru2": [
+  {
+   "name": "Dummy",
+   "label": "Dummy",
+   "family": "baseline",
+   "mean": 0.0916666666666666,
+   "std": 0.0,
+   "n": 10,
+   "collapse": 10,
+   "mcc": 0.0,
+   "f1": 0.0,
+   "params": 0.0,
+   "sec": 0.00016655999934297002
+  },
+  {
+   "name": "LogReg",
+   "label": "LogReg",
+   "family": "classical",
+   "mean": 0.9183974674820308,
+   "std": 0.016902500121260572,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8618527944384837,
+   "f1": 0.8737493861359168,
+   "params": 9.0,
+   "sec": 0.00572421999822832
+  },
+  {
+   "name": "Q1-VQC (Bipartite_SignLinear_41p)",
+   "label": "Q1-VQC (41p)",
+   "family": "quantum",
+   "mean": 0.9102010729249269,
+   "std": 0.002494394461642948,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8383711385202632,
+   "f1": 0.8523583589503019,
+   "params": 41.0,
+   "sec": 11.359711150001385
+  },
+  {
+   "name": "Q1-VQC (Ring L=2, Fragile v1)",
+   "label": "Q1-VQC Ring v1",
+   "family": "quantum",
+   "mean": 0.8860303292491712,
+   "std": 0.0061850312780867,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8223346537937157,
+   "f1": 0.8372544681744308,
+   "params": 34.0,
+   "sec": 17.969795350005732
+  },
+  {
+   "name": "Q2-QuantumKernel (8q)",
+   "label": "Q2-QuantumKernel (8q)",
+   "family": "quantum",
+   "mean": 0.9116410717087418,
+   "std": 0.005680670887909939,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8360002905792486,
+   "f1": 0.8507569809220279,
+   "params": 0.0,
+   "sec": 0.26953651999647266
+  },
+  {
+   "name": "RBF-SVM",
+   "label": "RBF-SVM",
+   "family": "classical",
+   "mean": 0.9226714928348386,
+   "std": 0.0036276798936304344,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8579360771035656,
+   "f1": 0.8701758142122182,
+   "params": 0.0,
+   "sec": 0.01157980001007666
+  },
+  {
+   "name": "RandomForest",
+   "label": "RandomForest",
+   "family": "classical",
+   "mean": 0.9015768591401075,
+   "std": 0.008941836945371755,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8358080466805594,
+   "f1": 0.8493844487832469,
+   "params": 0.0,
+   "sec": 0.04455802000302353
+  },
+  {
+   "name": "Tiny-MLP (41p)",
+   "label": "Tiny-MLP (41p)",
+   "family": "classical",
+   "mean": 0.9246405775660074,
+   "std": 0.007864689860155948,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8632497926080953,
+   "f1": 0.8753094535056484,
+   "params": 41.0,
+   "sec": 0.3222714799921959
+  }
+ ],
+ "shell": [
+  {
+   "name": "LogReg",
+   "label": "LogReg",
+   "family": "classical",
+   "mean": 0.1165288543825906,
+   "lo": 0.1119137714728293,
+   "hi": 0.1273819775094936
+  },
+  {
+   "name": "RBF-SVM",
+   "label": "RBF-SVM",
+   "family": "classical",
+   "mean": 0.8694737440522549,
+   "lo": 0.839811277039375,
+   "hi": 0.8973861396985295
+  },
+  {
+   "name": "Tiny-MLP (41p)",
+   "label": "Tiny-MLP (41p)",
+   "family": "classical",
+   "mean": 0.4075476213607133,
+   "lo": 0.3425686497060466,
+   "hi": 0.4784052519148316
+  },
+  {
+   "name": "Q2-QuantumKernel (8q)",
+   "label": "Q2-QuantumKernel (8q)",
+   "family": "quantum",
+   "mean": 0.883242143679148,
+   "lo": 0.8512272638685985,
+   "hi": 0.9103949596279788
+  },
+  {
+   "name": "Q1-VQC (Headline)",
+   "label": "Q1-VQC (41p)",
+   "family": "quantum",
+   "mean": 0.6602222915448149,
+   "lo": 0.6075235896598464,
+   "hi": 0.7096851738606456
+  }
+ ],
+ "shell_by_n": {
+  "100": [
+   {
+    "name": "LogReg",
+    "label": "LogReg",
+    "family": "classical",
+    "mean": 0.1144388834098671,
+    "lo": 0.1108347772533138,
+    "hi": 0.1229436473648551
+   },
+   {
+    "name": "RBF-SVM",
+    "label": "RBF-SVM",
+    "family": "classical",
+    "mean": 0.4918800163950386,
+    "lo": 0.4467403216911585,
+    "hi": 0.540951932335745
+   },
+   {
+    "name": "Tiny-MLP (41p)",
+    "label": "Tiny-MLP (41p)",
+    "family": "classical",
+    "mean": 0.1124582138900641,
+    "lo": 0.1089700855250783,
+    "hi": 0.1201526248050908
+   },
+   {
+    "name": "Q2-QuantumKernel (8q)",
+    "label": "Q2-QuantumKernel (8q)",
+    "family": "quantum",
+    "mean": 0.5115260505587611,
+    "lo": 0.4518744316684556,
+    "hi": 0.5747446150360735
+   },
+   {
+    "name": "Q1-VQC (Headline)",
+    "label": "Q1-VQC (41p)",
+    "family": "quantum",
+    "mean": 0.1306849571577659,
+    "lo": 0.1077557974244257,
+    "hi": 0.1678218457035585
+   }
+  ],
+  "200": [
+   {
+    "name": "LogReg",
+    "label": "LogReg",
+    "family": "classical",
+    "mean": 0.116496475419072,
+    "lo": 0.1119193734171956,
+    "hi": 0.1258473696664616
+   },
+   {
+    "name": "RBF-SVM",
+    "label": "RBF-SVM",
+    "family": "classical",
+    "mean": 0.6712511944086516,
+    "lo": 0.613853368799423,
+    "hi": 0.7286100146090904
+   },
+   {
+    "name": "Tiny-MLP (41p)",
+    "label": "Tiny-MLP (41p)",
+    "family": "classical",
+    "mean": 0.2001487461435125,
+    "lo": 0.1603139792276323,
+    "hi": 0.2529287267209278
+   },
+   {
+    "name": "Q2-QuantumKernel (8q)",
+    "label": "Q2-QuantumKernel (8q)",
+    "family": "quantum",
+    "mean": 0.7461536580181245,
+    "lo": 0.69362991467246,
+    "hi": 0.793807352068437
+   },
+   {
+    "name": "Q1-VQC (Headline)",
+    "label": "Q1-VQC (41p)",
+    "family": "quantum",
+    "mean": 0.3127239363902898,
+    "lo": 0.1891256055290061,
+    "hi": 0.4284269644129483
+   }
+  ],
+  "500": [
+   {
+    "name": "LogReg",
+    "label": "LogReg",
+    "family": "classical",
+    "mean": 0.1165288543825906,
+    "lo": 0.1119137714728293,
+    "hi": 0.1273819775094936
+   },
+   {
+    "name": "RBF-SVM",
+    "label": "RBF-SVM",
+    "family": "classical",
+    "mean": 0.8694737440522549,
+    "lo": 0.839811277039375,
+    "hi": 0.8973861396985295
+   },
+   {
+    "name": "Tiny-MLP (41p)",
+    "label": "Tiny-MLP (41p)",
+    "family": "classical",
+    "mean": 0.4075476213607133,
+    "lo": 0.3425686497060466,
+    "hi": 0.4784052519148316
+   },
+   {
+    "name": "Q2-QuantumKernel (8q)",
+    "label": "Q2-QuantumKernel (8q)",
+    "family": "quantum",
+    "mean": 0.883242143679148,
+    "lo": 0.8512272638685985,
+    "hi": 0.9103949596279788
+   },
+   {
+    "name": "Q1-VQC (Headline)",
+    "label": "Q1-VQC (41p)",
+    "family": "quantum",
+    "mean": 0.6602222915448149,
+    "lo": 0.6075235896598464,
+    "hi": 0.7096851738606456
+   }
+  ]
+ },
+ "gold_a": [
+  {
+   "name": "VQC_bipartite_L1",
+   "label": "VQC_bipartite_L1",
+   "family": "quantum",
+   "mean": 0.8782282073472565,
+   "std": 0.009934242168315361,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8161543170298062,
+   "f1": 0.8294914648044717,
+   "params": 18.0,
+   "sec": 7.098334909995901
+  },
+  {
+   "name": "VQC_bipartite_L2",
+   "label": "VQC_bipartite_L2",
+   "family": "quantum",
+   "mean": 0.898051164817686,
+   "std": 0.005730272105380575,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.833426276837276,
+   "f1": 0.8475121348225982,
+   "params": 34.0,
+   "sec": 11.564234990000841
+  },
+  {
+   "name": "VQC_bipartite_L4",
+   "label": "VQC_bipartite_L4",
+   "family": "quantum",
+   "mean": 0.8989686250489051,
+   "std": 0.011319132919555051,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8282927990122542,
+   "f1": 0.8430170577696645,
+   "params": 66.0,
+   "sec": 19.318130209998344
+  },
+  {
+   "name": "VQC_none_L1",
+   "label": "VQC_none_L1",
+   "family": "quantum",
+   "mean": 0.8861753187038348,
+   "std": 0.00821015514758768,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8181680571614989,
+   "f1": 0.8325466444590159,
+   "params": 18.0,
+   "sec": 6.5996625700063305
+  },
+  {
+   "name": "VQC_none_L2",
+   "label": "VQC_none_L2",
+   "family": "quantum",
+   "mean": 0.8870612583747916,
+   "std": 0.009762007186802727,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8227314369937625,
+   "f1": 0.8366868388041026,
+   "params": 34.0,
+   "sec": 10.57453569000354
+  },
+  {
+   "name": "VQC_none_L4",
+   "label": "VQC_none_L4",
+   "family": "quantum",
+   "mean": 0.8886219622890923,
+   "std": 0.00860726007664401,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.818317403357159,
+   "f1": 0.8329857190643661,
+   "params": 66.0,
+   "sec": 18.721595919996616
+  },
+  {
+   "name": "VQC_ring_L1",
+   "label": "VQC_ring_L1",
+   "family": "quantum",
+   "mean": 0.8643649038427549,
+   "std": 0.0035045499606069595,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8047573521727834,
+   "f1": 0.8218204662922005,
+   "params": 18.0,
+   "sec": 7.347240540001076
+  },
+  {
+   "name": "VQC_ring_L2",
+   "label": "VQC_ring_L2",
+   "family": "quantum",
+   "mean": 0.8860303292491712,
+   "std": 0.0061850312780867,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8223346537937157,
+   "f1": 0.8372544681744308,
+   "params": 34.0,
+   "sec": 17.969795350005732
+  },
+  {
+   "name": "VQC_ring_L4",
+   "label": "VQC_ring_L4",
+   "family": "quantum",
+   "mean": 0.8965830193979729,
+   "std": 0.005962665427918133,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8288538120014144,
+   "f1": 0.8426151198636329,
+   "params": 66.0,
+   "sec": 21.782336859995848
+  }
+ ],
+ "hardware": [
+  {
+   "model": "Q1-VQC (8q Bipartite Sign+Linear, 41p)",
+   "qubits": 8,
+   "depth": 7,
+   "total_gates": 41,
+   "two_qubit_gates": 8,
+   "trainable_params": 41,
+   "qpu_circuits_train_N500": "500/epoch (O(N))",
+   "qpu_circuits_test_3000": "3,000 (O(N_test))",
+   "shots_per_eval": "500-2,000 shots",
+   "simulability": "<=8q (dim<=256), CPU-simulable"
+  },
+  {
+   "model": "Q1-VQC (8q Ring L=2, 34p)",
+   "qubits": 8,
+   "depth": 21,
+   "total_gates": 49,
+   "two_qubit_gates": 16,
+   "trainable_params": 34,
+   "qpu_circuits_train_N500": "500/epoch (O(N))",
+   "qpu_circuits_test_3000": "3,000 (O(N_test))",
+   "shots_per_eval": "500-2,000 shots",
+   "simulability": "<=8q (dim<=256), CPU-simulable"
+  },
+  {
+   "model": "Q1-VQC (4q Amplitude+Norm L=4, 34p)",
+   "qubits": 4,
+   "depth": 25,
+   "total_gates": 50,
+   "two_qubit_gates": 16,
+   "trainable_params": 34,
+   "qpu_circuits_train_N500": "500/epoch (O(N))",
+   "qpu_circuits_test_3000": "3,000 (O(N_test))",
+   "shots_per_eval": "500-2,000 shots",
+   "simulability": "<=8q (dim<=256), CPU-simulable"
+  },
+  {
+   "model": "Q1-VQC (3q Amplitude L=5, 32p)",
+   "qubits": 3,
+   "depth": 26,
+   "total_gates": 46,
+   "two_qubit_gates": 15,
+   "trainable_params": 32,
+   "qpu_circuits_train_N500": "500/epoch (O(N))",
+   "qpu_circuits_test_3000": "3,000 (O(N_test))",
+   "shots_per_eval": "500-2,000 shots",
+   "simulability": "<=8q (dim<=256), CPU-simulable"
+  },
+  {
+   "model": "Q2-QuantumKernel (8q ZZ d=1, Inversion Test)",
+   "qubits": 8,
+   "depth": 52,
+   "total_gates": 80,
+   "two_qubit_gates": 32,
+   "trainable_params": 0,
+   "qpu_circuits_train_N500": "124,750 pairs (N*(N-1)/2 = O(N^2))",
+   "qpu_circuits_test_3000": "1,500,000 pairs (N*N_test)",
+   "shots_per_eval": "~10,000 shots/pair for +-0.01 K_ij",
+   "simulability": "8q (dim=256), state-vector shortcut in sim"
+  },
+  {
+   "model": "RBF-SVM (Classical Reference)",
+   "qubits": 0,
+   "depth": 0,
+   "total_gates": 0,
+   "two_qubit_gates": 0,
+   "trainable_params": 0,
+   "qpu_circuits_train_N500": "0 QPU runs",
+   "qpu_circuits_test_3000": "0 QPU runs",
+   "shots_per_eval": "Exact float64",
+   "simulability": "Classical baseline (no quantum advantage claimed)"
+  }
+ ],
+ "gold_b": [
+  {
+   "name": "3q_Amplitude_L5",
+   "label": "3q_Amplitude_L5",
+   "family": "quantum",
+   "mean": 0.605716978444791,
+   "std": 0.043291419088457614,
+   "n": 10,
+   "collapse": 10,
+   "mcc": 0.6795118367773662,
+   "f1": 0.7085738772778591,
+   "params": 32.0,
+   "sec": 3.151933210005518
+  },
+  {
+   "name": "4q_AmplitudePlusNorm_L4",
+   "label": "4q_AmplitudePlusNorm_L4",
+   "family": "quantum",
+   "mean": 0.8507296656654628,
+   "std": 0.018964175015631343,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8055171754313541,
+   "f1": 0.8193923933656946,
+   "params": 34.0,
+   "sec": 3.76921399999992
+  },
+  {
+   "name": "8q_Angle_L2",
+   "label": "8q_Angle_L2",
+   "family": "quantum",
+   "mean": 0.8860303292491712,
+   "std": 0.0061850312780867,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8223346537937157,
+   "f1": 0.8372544681744308,
+   "params": 34.0,
+   "sec": 17.969795350005732
+  },
+  {
+   "name": "8q_Angle_Reupload_L2",
+   "label": "8q_Angle_Reupload_L2",
+   "family": "quantum",
+   "mean": 0.8725700523645349,
+   "std": 0.020590784243641868,
+   "n": 10,
+   "collapse": 0,
+   "mcc": 0.8132779230367433,
+   "f1": 0.828498507223066,
+   "params": 34.0,
+   "sec": 13.653448080000818
+  }
+ ],
+ "gold_c": {
+  "Q1-VQC (Bipartite_SignLinear_41p)": {
+   "label": "Q1-VQC (41p)",
+   "family": "quantum",
+   "points": [
+    {
+     "n": 100,
+     "mean": 0.8926208198767676,
+     "std": 0.014455086313748991
+    },
+    {
+     "n": 200,
+     "mean": 0.9094613602156123,
+     "std": 0.004736266192659614
+    },
+    {
+     "n": 500,
+     "mean": 0.9102010729249269,
+     "std": 0.002494394461642948
+    },
+    {
+     "n": 1000,
+     "mean": 0.916193440820042,
+     "std": 0.0034973546407308337
+    }
+   ]
+  },
+  "Q2-QuantumKernel (8q)": {
+   "label": "Q2-QuantumKernel (8q)",
+   "family": "quantum",
+   "points": [
+    {
+     "n": 100,
+     "mean": 0.8547571717917638,
+     "std": 0.05608573886969586
+    },
+    {
+     "n": 200,
+     "mean": 0.8963746340800773,
+     "std": 0.015402947247403992
+    },
+    {
+     "n": 500,
+     "mean": 0.9116410717087418,
+     "std": 0.005680670887909939
+    },
+    {
+     "n": 1000,
+     "mean": 0.9270873835103574,
+     "std": 0.006742598509482354
+    }
+   ]
+  },
+  "RBF-SVM": {
+   "label": "RBF-SVM",
+   "family": "classical",
+   "points": [
+    {
+     "n": 100,
+     "mean": 0.9007562522319578,
+     "std": 0.013140666602528718
+    },
+    {
+     "n": 200,
+     "mean": 0.9134938684105733,
+     "std": 0.00836607233934489
+    },
+    {
+     "n": 500,
+     "mean": 0.9226714928348386,
+     "std": 0.0036276798936304344
+    },
+    {
+     "n": 1000,
+     "mean": 0.9293497336955421,
+     "std": 0.002752534512443136
+    }
+   ]
+  },
+  "Tiny-MLP (41p)": {
+   "label": "Tiny-MLP (41p)",
+   "family": "classical",
+   "points": [
+    {
+     "n": 100,
+     "mean": 0.9040908029148902,
+     "std": 0.013325641196854357
+    },
+    {
+     "n": 200,
+     "mean": 0.9175418128093764,
+     "std": 0.00772438535352075
+    },
+    {
+     "n": 500,
+     "mean": 0.9246405775660074,
+     "std": 0.007864689860155948
+    },
+    {
+     "n": 1000,
+     "mean": 0.933113127006151,
+     "std": 0.0032425198507444455
+    }
+   ]
+  }
+ },
+ "gold_d": [
+  {
+   "shots": "100",
+   "label": "100 shots",
+   "mean": 0.9033966737378586,
+   "std": 0.0037281774266211196,
+   "n": 10
+  },
+  {
+   "shots": "500",
+   "label": "500 shots",
+   "mean": 0.9091159623794844,
+   "std": 0.0020979685965599564,
+   "n": 10
+  },
+  {
+   "shots": "2000",
+   "label": "2,000 shots",
+   "mean": 0.9094792945472197,
+   "std": 0.0020966899216417856,
+   "n": 10
+  },
+  {
+   "shots": "analytic",
+   "label": "Exact (analytic)",
+   "mean": 0.9102009573089698,
+   "std": 0.0024942497357457643,
+   "n": 10
+  }
+ ],
+ "pqk": [
+  {
+   "alpha": 0.25,
+   "pqk": 0.9233468410330146,
+   "pqk_std": 0.0031748050952955,
+   "fqk": 0.9166148590273744,
+   "fqk_std": 0.0056206784848758
+  },
+  {
+   "alpha": 0.5,
+   "pqk": 0.914891259588166,
+   "pqk_std": 0.0074546514229348,
+   "fqk": 0.8847825387565408,
+   "fqk_std": 0.0170677492104352
+  },
+  {
+   "alpha": 1.0,
+   "pqk": 0.8701586793214473,
+   "pqk_std": 0.0156284496833488,
+   "fqk": 0.8377775782005044,
+   "fqk_std": 0.0325661438302101
+  },
+  {
+   "alpha": 2.0,
+   "pqk": 0.7752522865256328,
+   "pqk_std": 0.0203407984352609,
+   "fqk": 0.643558926705811,
+   "fqk_std": 0.060866671304509
+  },
+  {
+   "alpha": 4.0,
+   "pqk": 0.6926041616110005,
+   "pqk_std": 0.0275310427451608,
+   "fqk": 0.5071059943823986,
+   "fqk_std": 0.0517077005220537
+  }
+ ],
+ "hybrid": [
+  {
+   "n": 100,
+   "vqc": 0.8926208198767676,
+   "mlp": 0.9040908029148902,
+   "blend": 0.9125102280946268,
+   "rank_blend": 0.9061996457684488
+  },
+  {
+   "n": 200,
+   "vqc": 0.9094613602156124,
+   "mlp": 0.9175418128093764,
+   "blend": 0.9209382811598996,
+   "rank_blend": 0.9186293419287712
+  },
+  {
+   "n": 500,
+   "vqc": 0.9102010729249268,
+   "mlp": 0.9246405775660074,
+   "blend": 0.9223208318023802,
+   "rank_blend": 0.921444059012256
+  },
+  {
+   "n": 1000,
+   "vqc": 0.9161934408200418,
+   "mlp": 0.933113127006151,
+   "blend": 0.9285039853360674,
+   "rank_blend": 0.9295834141919916
+  }
+ ],
+ "verdicts": [
+  {
+   "id": "H1a",
+   "comparison": "Tiny-MLP (41p) vs. Q2-QuantumKernel (8q)",
+   "delta": 0.012999505857265748,
+   "lo": 0.004721954707496369,
+   "hi": 0.02170023616616057,
+   "p": 0.00390625,
+   "verdict": "Supported"
+  },
+  {
+   "id": "H1b",
+   "comparison": "Tiny-MLP (41p) vs. Q1-VQC (Bipartite_SignLinear_41p)",
+   "delta": 0.014439504641080592,
+   "lo": 0.0059895457701099955,
+   "hi": 0.023151751058042326,
+   "p": 0.001953125,
+   "verdict": "Supported"
+  },
+  {
+   "id": "H1c",
+   "comparison": "Q2-QuantumKernel (8q) vs. RandomForest",
+   "delta": 0.010064212568634223,
+   "lo": 0.0027454452276530466,
+   "hi": 0.018901743649244237,
+   "p": 0.001953125,
+   "verdict": "Supported"
+  },
+  {
+   "id": "H2a",
+   "comparison": "VQC_bipartite_L2 vs. VQC_none_L2",
+   "delta": 0.010989906442894482,
+   "lo": -0.0005537246026741481,
+   "hi": 0.022721983182218505,
+   "p": 0.037109375,
+   "verdict": "Inconclusive"
+  },
+  {
+   "id": "H2b",
+   "comparison": "VQC_bipartite_L2 vs. VQC_ring_L2",
+   "delta": 0.012020835568514732,
+   "lo": 0.0024775735705827875,
+   "hi": 0.022517568984090575,
+   "p": 0.001953125,
+   "verdict": "Supported"
+  },
+  {
+   "id": "H3",
+   "comparison": "4q_AmplitudePlusNorm_L4 vs. 3q_Amplitude_L5",
+   "delta": 0.24501268722067185,
+   "lo": 0.19086864218922708,
+   "hi": 0.2884683498564909,
+   "p": 0.001953125,
+   "verdict": "Supported"
+  },
+  {
+   "id": "H4a",
+   "comparison": "N=100 Q2-QuantumKernel vs. RBF-SVM (tied)",
+   "delta": -0.04599908044019396,
+   "lo": -0.08467513221728981,
+   "hi": -0.014188421310061795,
+   "p": 0.009765625,
+   "verdict": "Contradicted"
+  },
+  {
+   "id": "H4b_2000",
+   "comparison": "Shots=2000 vs. Analytic (tied)",
+   "delta": -0.0007216627617500859,
+   "lo": -0.001522041480759817,
+   "hi": 7.542152536586782e-06,
+   "p": 0.005859375,
+   "verdict": "Practically tied"
+  },
+  {
+   "id": "H4b_500",
+   "comparison": "Shots=500 vs. Analytic (tied)",
+   "delta": -0.0010849949294853833,
+   "lo": -0.002768973690824652,
+   "hi": 0.0004797847420174083,
+   "p": 0.16015625,
+   "verdict": "Practically tied"
+  },
+  {
+   "id": "H4b_100",
+   "comparison": "Shots=100 vs. Analytic (tied)",
+   "delta": -0.006804283571111225,
+   "lo": -0.011189002527313622,
+   "hi": -0.0030605940354479066,
+   "p": 0.001953125,
+   "verdict": "Inconclusive"
+  }
+ ]
+};
+</script>
+<script>
+/* Q//HORIZON 2026 dashboard: vanilla JS + inline SVG, no dependencies. */
+(function () {
+  "use strict";
+  var D = window.QH_DATA;
+  var BLUE = "#6E8EEB", PURPLE = "#B07CE8", INK = "#0F172A", GRAYC = "#94A3B8";
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function f3(x) { return Number(x).toFixed(3); }
+  function f4(x) { return Number(x).toFixed(4); }
+  function sg(x, d) { d = d || 3; return (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(d); }
+  function col(fam) { return fam === "classical" ? BLUE : fam === "quantum" ? PURPLE : GRAYC; }
+  function byName(arr, name) { return arr.filter(function (r) { return r.name === name; })[0]; }
+  function setHTML(id, h) { $(id).innerHTML = h; }
+  var HEAD = "Q1-VQC (Bipartite_SignLinear_41p)", MLP = "Tiny-MLP (41p)", QK = "Q2-QuantumKernel (8q)", SVM = "RBF-SVM", RF = "RandomForest", LR = "LogReg";
+
+  /* ---------- tooltip ---------- */
+  var tip = $("tip");
+  function tipHTML(t) {
+    var h = "<b>" + esc(t.title) + "</b>";
+    (t.lines || []).forEach(function (l) { h += "<span class='k'>" + esc(l[0]) + ":</span> " + esc(l[1]) + "<br>"; });
+    return h;
+  }
+  function showTip(t, x, y) {
+    tip.innerHTML = tipHTML(t); tip.style.opacity = 1;
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    var nx = Math.min(x + 14, window.innerWidth - w - 8), ny = y - h - 12;
+    if (ny < 8) ny = y + 18;
+    tip.style.left = Math.max(8, nx) + "px"; tip.style.top = ny + "px";
+  }
+  function hideTip() { tip.style.opacity = 0; }
+  function wireTips(root) {
+    var els = root.querySelectorAll("[data-tip]");
+    Array.prototype.forEach.call(els, function (el) {
+      var t = JSON.parse(el.getAttribute("data-tip"));
+      el.addEventListener("mousemove", function (e) { showTip(t, e.clientX, e.clientY); });
+      el.addEventListener("mouseleave", hideTip);
+      el.addEventListener("focus", function () { var r = el.getBoundingClientRect(); showTip(t, r.left + r.width / 2, r.top); });
+      el.addEventListener("blur", hideTip);
+    });
+  }
+  function tipAttr(t) { return esc(JSON.stringify(t)); }
+
+  /* ---------- chart: Cleveland dot plot ---------- */
+  function dotPlot(el, rows, o) {
+    var W = 760, labelW = 200, x0 = labelW + 10, x1 = 620, rowH = 36, top = 6;
+    var H = top + rows.length * rowH + 40;
+    function X(v) { return x0 + (Math.min(Math.max(v, o.min), o.max) - o.min) / (o.max - o.min) * (x1 - x0); }
+    var s = "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" + esc(o.aria || "Dot plot") + "'>";
+    o.ticks.forEach(function (t) {
+      s += "<line class='grid' x1='" + X(t) + "' x2='" + X(t) + "' y1='" + top + "' y2='" + (H - 30) + "'/>";
+      s += "<text x='" + X(t) + "' y='" + (H - 12) + "' text-anchor='middle'>" + (o.tickFmt ? o.tickFmt(t) : t) + "</text>";
+    });
+    rows.forEach(function (r, i) {
+      var y = top + i * rowH + rowH / 2;
+      s += "<rect class='rowbg' x='0' y='" + (y - rowH / 2) + "' width='" + W + "' height='" + rowH + "' fill='transparent'/>";
+      s += "<line x1='" + x0 + "' x2='" + x1 + "' y1='" + y + "' y2='" + y + "' stroke='#E2E8F0' stroke-dasharray='2 4'/>";
+      var lo = r.lo, hi = r.hi;
+      if (lo != null && hi != null) {
+        var xl = X(lo), xh = X(hi);
+        s += "<line x1='" + xl + "' x2='" + xh + "' y1='" + y + "' y2='" + y + "' stroke='" + col(r.family) + "' stroke-width='3' stroke-linecap='round' opacity='.45'/>";
+        if (lo < o.min) s += "<path d='M" + (x0 + 6) + " " + (y - 5) + " L" + x0 + " " + y + " L" + (x0 + 6) + " " + (y + 5) + "' fill='none' stroke='" + col(r.family) + "' stroke-width='2'/>";
+        if (hi > o.max) s += "<path d='M" + (x1 - 6) + " " + (y - 5) + " L" + x1 + " " + y + " L" + (x1 - 6) + " " + (y + 5) + "' fill='none' stroke='" + col(r.family) + "' stroke-width='2'/>";
+      }
+      s += "<text class='lab' x='" + (labelW) + "' y='" + (y + 4) + "' text-anchor='end'>" + esc(r.label) + "</text>";
+      s += "<circle class='dot' tabindex='0' role='img' aria-label='" + esc(r.label + ": " + f3(r.mean)) + "' cx='" + X(r.mean) + "' cy='" + y + "' r='8' fill='" + col(r.family) + "' stroke='#fff' stroke-width='2' data-tip='" + tipAttr(r.tip) + "'/>";
+      s += "<text x='" + (W - 4) + "' y='" + (y + 4) + "' text-anchor='end' class='lab' style='font-variant-numeric:tabular-nums;font-weight:700'>" + f3(r.mean) + "</text>";
+    });
+    if (o.xLabel) s += "<text x='" + ((x0 + x1) / 2) + "' y='" + (H + 2) + "' text-anchor='middle'>" + esc(o.xLabel) + "</text>";
+    s += "</svg>";
+    el.innerHTML = s; wireTips(el);
+  }
+
+  /* ---------- chart: line plot (categorical x) ---------- */
+  var MARK = { circle: function (x, y, c) { return "<circle cx='" + x + "' cy='" + y + "' r='6' fill='" + c + "' stroke='#fff' stroke-width='2'"; },
+               square: function (x, y, c) { return "<rect x='" + (x - 6) + "' y='" + (y - 6) + "' width='12' height='12' rx='2' fill='" + c + "' stroke='#fff' stroke-width='2'"; },
+               diamond: function (x, y, c) { return "<path d='M" + x + " " + (y - 8) + " L" + (x + 8) + " " + y + " L" + x + " " + (y + 8) + " L" + (x - 8) + " " + y + " Z' fill='" + c + "' stroke='#fff' stroke-width='2'"; },
+               triangle: function (x, y, c) { return "<path d='M" + x + " " + (y - 8) + " L" + (x + 8) + " " + (y + 6) + " L" + (x - 8) + " " + (y + 6) + " Z' fill='" + c + "' stroke='#fff' stroke-width='2'"; } };
+  function linePlot(el, series, o) {
+    var W = 760, H = 360, l = 58, r = 190, t = 16, b = 52;
+    var xs = o.xs;
+    function X(i) { return l + (xs.length === 1 ? 0 : i / (xs.length - 1)) * (W - l - r); }
+    function Y(v) { return t + (1 - (v - o.yMin) / (o.yMax - o.yMin)) * (H - t - b); }
+    var s = "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" + esc(o.aria || "Line chart") + "'>";
+    o.yTicks.forEach(function (v) {
+      s += "<line class='grid' x1='" + l + "' x2='" + (W - r) + "' y1='" + Y(v) + "' y2='" + Y(v) + "'/><text x='" + (l - 8) + "' y='" + (Y(v) + 4) + "' text-anchor='end'>" + v.toFixed(o.yDec || 2) + "</text>";
+    });
+    xs.forEach(function (v, i) { s += "<text x='" + X(i) + "' y='" + (H - b + 22) + "' text-anchor='middle'>" + esc(o.xFmt ? o.xFmt(v) : v) + "</text>"; });
+    s += "<text x='" + ((l + W - r) / 2) + "' y='" + (H - 6) + "' text-anchor='middle'>" + esc(o.xLabel) + "</text>";
+    s += "<text transform='translate(14 " + ((t + H - b) / 2) + ") rotate(-90)' text-anchor='middle'>" + esc(o.yLabel) + "</text>";
+    var ends = [];
+    series.forEach(function (se) {
+      var c = se.color, pts = se.points;
+      var d = pts.map(function (p, i) { return (i ? "L" : "M") + X(p.i) + " " + Y(p.y); }).join(" ");
+      s += "<path d='" + d + "' fill='none' stroke='" + c + "' stroke-width='2.5' " + (se.dash ? "stroke-dasharray='" + se.dash + "'" : "") + "/>";
+      pts.forEach(function (p) {
+        if (p.err) s += "<line x1='" + X(p.i) + "' x2='" + X(p.i) + "' y1='" + Y(Math.max(p.y - p.err, o.yMin)) + "' y2='" + Y(Math.min(p.y + p.err, o.yMax)) + "' stroke='" + c + "' stroke-width='2' opacity='.5'/>";
+        s += MARK[se.marker || "circle"](X(p.i), Y(p.y), c) + " class='dot' tabindex='0' role='img' aria-label='" + esc(se.label + ", " + p.x + ": " + f3(p.y)) + "' data-tip='" + tipAttr(p.tip) + "'/>";
+      });
+      var last = pts[pts.length - 1];
+      ends.push({ y: Y(last.y), label: se.label, color: c });
+    });
+    ends.sort(function (a, b2) { return a.y - b2.y; });
+    for (var i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
+    ends.forEach(function (e) { s += "<text class='lab' x='" + (W - r + 14) + "' y='" + (e.y + 4) + "' style='font-weight:600'>" + esc(e.label) + "</text>"; });
+    s += "</svg>";
+    el.innerHTML = s; wireTips(el);
+  }
+
+  function legendHTML(items) {
+    return items.map(function (i) { return "<span><i style='background:" + i.c + "'></i>" + esc(i.t) + "</span>"; }).join("");
+  }
+  var LEG_FAM = [{ c: BLUE, t: "Classical" }, { c: PURPLE, t: "Quantum" }];
+
+  /* ---------- SECTION 01: hero + mission ---------- */
+  var M = D.meta;
+  $("hero-signals").textContent = M.n_signals.toLocaleString("en-US");
+  $("hero-weights").textContent = M.weights + " vs. " + M.weights;
+  $("hero-circuits").textContent = M.circuit_ratio + "×";
+  var feats = ["IP_Mean", "IP_Std", "IP_Kurtosis", "IP_Skewness", "DM_Mean", "DM_Std", "DM_Kurtosis", "DM_Skewness"];
+  $("qmap").innerHTML = feats.map(function (f, i) { return "<span class='chip'>" + f + "</span><span class='arrow'>&rarr;</span><span class='chip q'>qubit " + i + "</span>"; }).join("");
+  $("bal-p").textContent = M.pulsar_pct.toFixed(2) + "%";
+  $("bal-n").textContent = M.noise_pct.toFixed(2) + "% interference";
+  var dummy = byName(D.htru2, "Dummy");
+  setHTML("trap", "<b>Why not use accuracy?</b> Predicting &ldquo;not a pulsar&rdquo; for every signal is already <b>" + (100 - M.pulsar_pct).toFixed(1) + "% accurate</b> and finds <b>zero</b> pulsars. We therefore score with <b>PR-AUC</b>, where that strategy earns only <b>" + f3(dummy.mean) + "</b>. Higher is better; 1.0 is perfect.");
+
+  /* ---------- SECTION 02/03: dataset toggle + dot plot ---------- */
+  var state = { ds: "htru2", zoom: true, study: "gold_a" };
+  function dsContent() {
+    var mlp = byName(D.htru2, MLP), vqc = byName(D.htru2, HEAD), qk = byName(D.htru2, QK), svm = byName(D.htru2, SVM), rf = byName(D.htru2, RF), lr = byName(D.htru2, LR);
+    var smlp = byName(D.shell, MLP), svqc = byName(D.shell, "Q1-VQC (Headline)"), sqk = byName(D.shell, QK), ssvm = byName(D.shell, SVM), slr = byName(D.shell, LR);
+    if (state.ds === "htru2") return {
+      kicker: "Real astronomical survey &middot; " + M.n_signals.toLocaleString("en-US") + " signals",
+      hero: f3(mlp.mean) + " <span style='color:var(--faint)'>vs</span> " + f3(vqc.mean),
+      sub: "Tiny-MLP vs. Q1-VQC, both with " + M.weights + " weights (PR-AUC, N = 500)",
+      desc: "Real pulsars are mostly separable by a straight line, so even plain Logistic Regression reaches " + f3(byName(D.htru2, LR).mean) + ". Classical models have the edge.",
+      what: "Classical Tiny-MLP scored <b>" + f3(mlp.mean) + "</b>, ahead of the Quantum Kernel (<b>" + f3(qk.mean) + "</b>) and the Quantum VQC (<b>" + f3(vqc.mean) + "</b>). Both quantum models still beat Random Forest (<b>" + f3(rf.mean) + "</b>).",
+      so: "Pulsars and interference separate fairly cleanly along straight boundaries, so extra quantum complexity does not buy a standalone win. The gap is small (about " + f3(mlp.mean - vqc.mean) + ") but consistent across seeds. <b>No quantum advantage is claimed.</b>",
+      glWhat: "Tiny-MLP (<b>" + f3(mlp.mean) + "</b>) and RBF-SVM (<b>" + f3(svm.mean) + "</b>) lead. Quantum Kernel (<b>" + f3(qk.mean) + "</b>) and VQC (<b>" + f3(vqc.mean) + "</b>) follow, then Random Forest (<b>" + f3(rf.mean) + "</b>). All 10 seeds trained without collapse.",
+      glTitle: "Classical Models Still Lead on Straight Boundaries",
+      glSo: "Differences are around 0.01 to 0.015 PR-AUC: real but small. On data that is close to linearly separable, matched classical models are the safer default, and quantum models remain competitive."
+    };
+    return {
+      kicker: "Synthetic curved benchmark &middot; 8 dimensions",
+      hero: sg(svqc.mean - smlp.mean),
+      sub: "Q1-VQC " + f3(svqc.mean) + " vs. Tiny-MLP " + f3(smlp.mean) + ", both with " + M.weights + " weights (PR-AUC, N = 500)",
+      desc: "Points are arranged in concentric shells, so no straight line can separate them: Logistic Regression collapses to " + f3(slr.mean) + ". This tests whether quantum circuits help when the boundary curves.",
+      what: "The 41-weight Quantum VQC reached <b>" + f3(svqc.mean) + "</b>, while the 41-weight neural network managed only <b>" + f3(smlp.mean) + "</b>. The Quantum Kernel scored <b>" + f3(sqk.mean) + "</b> against RBF-SVM <b>" + f3(ssvm.mean) + "</b>.",
+      so: "With the same weight budget, a compact circuit learned the curved shape far better than the neural net. The kernel gap is inside the confidence intervals. Data is synthetic, so this shows <b>geometry</b>, not real-sky performance.",
+      glWhat: "Kernel methods lead (Q2 <b>" + f3(sqk.mean) + "</b>, RBF-SVM <b>" + f3(ssvm.mean) + "</b>). Q1-VQC (<b>" + f3(svqc.mean) + "</b>) sits far above Tiny-MLP (<b>" + f3(smlp.mean) + "</b>). Logistic Regression is near chance (<b>" + f3(slr.mean) + "</b>).",
+      glTitle: "Compact Quantum Circuits Gain an Edge on Curved Boundaries",
+      glSo: "Curvature changes the outcome: straight-line models fail, and the circuit's built-in structure becomes an advantage over an equal-size neural network. Whiskers are 95% intervals; the two kernels overlap."
+    };
+  }
+  function renderDataset() {
+    var c = dsContent();
+    setHTML("ds-kicker", c.kicker); setHTML("ds-hero", c.hero); $("ds-hero-sub").textContent = c.sub; $("ds-desc").textContent = c.desc;
+    setHTML("ds-what", c.what); setHTML("ds-so", c.so); setHTML("gl-what", c.glWhat); $("gl-title").textContent = c.glTitle; setHTML("gl-so", c.glSo);
+    Array.prototype.forEach.call(document.querySelectorAll("#ds-tabs .tab"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-ds") === state.ds ? "true" : "false"); });
+    renderDot();
+  }
+  function renderDot() {
+    var z = $("zoom"), rows;
+    if (state.ds === "htru2") {
+      z.disabled = false; z.setAttribute("aria-pressed", state.zoom); z.textContent = state.zoom ? "Zoomed axis 0.89–0.93" : "Full axis 0–1";
+      setHTML("gl-whisker", "Line = mean &plusmn; 1 std over 10 seeds");
+      rows = D.htru2.filter(function (r) { return state.zoom ? ["Dummy", "Q1-VQC (Ring L=2, Fragile v1)"].indexOf(r.name) < 0 : true; })
+        .sort(function (a, b) { return b.mean - a.mean; }).map(function (r) {
+          return { label: r.label, family: r.family, mean: r.mean, lo: r.mean - r.std, hi: r.mean + r.std,
+            tip: { title: r.name, lines: [["PR-AUC", f4(r.mean) + " ± " + f4(r.std)], ["MCC", r.mcc != null ? f3(r.mcc) : "n/a"], ["F1", r.f1 != null ? f3(r.f1) : "n/a"], ["Weights", String(Math.round(r.params || 0))], ["Collapsed runs", r.collapse + "/" + r.n]] } };
+        });
+      dotPlot($("dotplot"), rows, state.zoom ? { min: 0.89, max: 0.93, ticks: [0.89, 0.90, 0.91, 0.92, 0.93], tickFmt: function (t) { return t.toFixed(2); }, xLabel: "Average PR-AUC (axis zoomed to show small gaps)", aria: "HTRU2 PR-AUC dot plot" }
+        : { min: 0, max: 1, ticks: [0, 0.25, 0.5, 0.75, 1], tickFmt: function (t) { return t.toFixed(2); }, xLabel: "Average PR-AUC (full axis)", aria: "HTRU2 PR-AUC dot plot, full axis" });
+    } else {
+      z.disabled = true; z.setAttribute("aria-pressed", "false"); z.textContent = "Full axis 0–1";
+      setHTML("gl-whisker", "Line = 95% bootstrap interval");
+      rows = D.shell.slice().sort(function (a, b) { return b.mean - a.mean; }).map(function (r) {
+        return { label: r.label, family: r.family, mean: r.mean, lo: r.lo, hi: r.hi,
+          tip: { title: r.name === "Q1-VQC (Headline)" ? "Q1-VQC (41 weights)" : r.name, lines: [["PR-AUC", f4(r.mean)], ["95% interval", "[" + f3(r.lo) + ", " + f3(r.hi) + "]"]] } };
+      });
+      dotPlot($("dotplot"), rows, { min: 0, max: 1, ticks: [0, 0.25, 0.5, 0.75, 1], tickFmt: function (t) { return t.toFixed(2); }, xLabel: "Average PR-AUC (full axis)", aria: "Concentric Shell-8D PR-AUC dot plot" });
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#ds-tabs .tab"), function (b) {
+    b.addEventListener("click", function () { state.ds = b.getAttribute("data-ds"); renderDataset(); });
+  });
+  $("zoom").addEventListener("click", function () { state.zoom = !state.zoom; renderDot(); });
+
+  /* ---------- SECTION 04: ablation explorer ---------- */
+  function verdict(id) { return D.verdicts.filter(function (v) { return v.id === id; })[0]; }
+  function hw(prefix) { return D.hardware.filter(function (h) { return h.model.indexOf(prefix) === 0; })[0]; }
+  var GA_LABEL = { none: "No entanglement", ring: "Ring wiring", bipartite: "Bipartite wiring" };
+
+  var STUDIES = [
+    { id: "gold_a", tab: "1 · Wiring", title: "Experiment 1 · Entanglement wiring and symmetry fix", short: "Entanglement wiring", q: "Does denser wiring help, or just add depth?", grp: "Circuit design", render: function () {
+        var rows = D.gold_a.map(function (r) { var m = r.name.match(/VQC_(\w+)_L(\d)/); return { w: m[1], L: +m[2], r: r }; })
+          .sort(function (a, b) { return ["none", "ring", "bipartite"].indexOf(a.w) - ["none", "ring", "bipartite"].indexOf(b.w) || a.L - b.L; })
+          .map(function (o) { return { label: GA_LABEL[o.w] + " · " + o.L + " layer" + (o.L > 1 ? "s" : ""), family: "quantum", mean: o.r.mean, lo: o.r.mean - o.r.std, hi: o.r.mean + o.r.std,
+            tip: { title: o.r.name, lines: [["PR-AUC", f4(o.r.mean) + " ± " + f4(o.r.std)], ["Weights", String(Math.round(o.r.params))], ["Collapsed runs", o.r.collapse + "/" + o.r.n]] } }; });
+        dotPlot($("ab-chart"), rows, { min: 0.86, max: 0.91, ticks: [0.86, 0.87, 0.88, 0.89, 0.90, 0.91], tickFmt: function (t) { return t.toFixed(2); }, xLabel: "Average PR-AUC (zoomed)", aria: "Gold A entanglement ablation" });
+        var bi = byName(D.gold_a, "VQC_bipartite_L2"), ri = byName(D.gold_a, "VQC_ring_L2"), no = byName(D.gold_a, "VQC_none_L2");
+        var hb = hw("Q1-VQC (8q Bipartite"), hr = hw("Q1-VQC (8q Ring");
+        var h2b = verdict("H2b"), h2a = verdict("H2a");
+        return { legend: legendHTML([{ c: PURPLE, t: "Quantum VQC variants" }]), note: "Line = mean ± 1 std over 10 seeds. Axis is zoomed.",
+          what: "At 2 layers, bipartite wiring scored <b>" + f3(bi.mean) + "</b> versus ring <b>" + f3(ri.mean) + "</b> and no entanglement <b>" + f3(no.mean) + "</b>. The headline bipartite circuit needs <b>" + hb.two_qubit_gates + "</b> two-qubit gates (depth " + hb.depth + ") against <b>" + hr.two_qubit_gates + "</b> (depth " + hr.depth + ") for ring.",
+          so: "A lighter layout trains better rather than worse: bipartite beats ring by <b>" + sg(h2b.delta, 4) + "</b> (" + h2b.verdict + "). Against no entanglement the gain (" + sg(h2a.delta, 4) + ") is " + h2a.verdict.toLowerCase() + ", because pulsar data is mostly linear. A π/2 phase shift plus reading all 8 qubits removed training collapses." };
+      } },
+    { id: "gold_b", tab: "2 · Encoding", title: "Experiment 2 · Qubit compression and encoding", short: "Qubit compression", q: "Can 8 features fit on fewer qubits?", grp: "Circuit design", render: function () {
+        var names = { "8q_Angle_L2": "8 qubits · angle encoding", "8q_Angle_Reupload_L2": "8 qubits · angle + re-upload", "3q_Amplitude_L5": "3 qubits · amplitude (norm lost)", "4q_AmplitudePlusNorm_L4": "4 qubits · amplitude + norm qubit" };
+        var rows = D.gold_b.slice().sort(function (a, b) { return b.mean - a.mean; }).map(function (r) {
+          return { label: names[r.name] || r.name, family: "quantum", mean: r.mean, lo: r.mean - r.std, hi: r.mean + r.std,
+            tip: { title: r.name, lines: [["PR-AUC", f4(r.mean) + " ± " + f4(r.std)], ["Weights", String(Math.round(r.params))], ["Collapsed runs", r.collapse + "/" + r.n]] } };
+        });
+        dotPlot($("ab-chart"), rows, { min: 0.55, max: 0.95, ticks: [0.55, 0.65, 0.75, 0.85, 0.95], tickFmt: function (t) { return t.toFixed(2); }, xLabel: "Average PR-AUC", aria: "Gold B encoding ablation" });
+        var a3 = byName(D.gold_b, "3q_Amplitude_L5"), a4 = byName(D.gold_b, "4q_AmplitudePlusNorm_L4"), a8 = byName(D.gold_b, "8q_Angle_L2");
+        return { legend: legendHTML([{ c: PURPLE, t: "Quantum encodings" }]), note: "Line = mean ± 1 std over 10 seeds.",
+          what: "Squeezing 8 features into 3 qubits dropped PR-AUC to <b>" + f3(a3.mean) + "</b> (all " + a3.collapse + "/" + a3.n + " runs collapsed). Adding one qubit that stores the signal magnitude lifted it to <b>" + f3(a4.mean) + "</b>, a gain of <b>" + sg(a4.mean - a3.mean) + "</b>.",
+          so: "Standard amplitude encoding rescales every signal to length 1, which erases how strong it was. Keep the magnitude, or give each feature its own qubit (<b>" + f3(a8.mean) + "</b>), and the information survives." };
+      } },
+    { id: "gold_c", tab: "3 · Low data", title: "Experiment 3 · Low-data sweep", short: "Low-data sweep", q: "Do quantum models win with few samples?", grp: "Stress tests", render: function () {
+        var xs = [100, 200, 500, 1000], spec = [
+          [SVM, "RBF-SVM", BLUE, "", "square"], [MLP, "Tiny-MLP (41p)", BLUE, "7 5", "circle"],
+          [QK, "Q2-QuantumKernel", PURPLE, "", "square"], [HEAD, "Q1-VQC (41p)", PURPLE, "7 5", "circle"]];
+        var series = spec.map(function (sp) {
+          var g = D.gold_c[sp[0]];
+          return { label: sp[1], color: sp[2], dash: sp[3], marker: sp[4], points: g.points.map(function (p) {
+            return { i: xs.indexOf(p.n), x: p.n, y: p.mean, err: p.std, tip: { title: sp[1], lines: [["Training samples", String(p.n)], ["PR-AUC", f4(p.mean) + " ± " + f4(p.std)]] } }; }) };
+        });
+        linePlot($("ab-chart"), series, { xs: xs, yMin: 0.84, yMax: 0.94, yTicks: [0.84, 0.86, 0.88, 0.90, 0.92, 0.94], xLabel: "Training samples (N)", yLabel: "Average PR-AUC", aria: "Gold C sample sweep" });
+        var q100 = D.gold_c[QK].points[0].mean, s100 = D.gold_c[SVM].points[0].mean, v100 = D.gold_c[HEAD].points[0].mean, m100 = D.gold_c[MLP].points[0].mean;
+        var q1k = D.gold_c[QK].points[3].mean, s1k = D.gold_c[SVM].points[3].mean;
+        return { legend: legendHTML([{ c: BLUE, t: "Classical (solid RBF-SVM, dashed MLP)" }, { c: PURPLE, t: "Quantum (solid kernel, dashed VQC)" }]), note: "Vertical bars = ± 1 std over 10 seeds. N = 100 to 1,000.",
+          what: "At <b>N = 100</b>, Tiny-MLP scored <b>" + f3(m100) + "</b> and RBF-SVM <b>" + f3(s100) + "</b>, while the Quantum VQC reached <b>" + f3(v100) + "</b> and the Quantum Kernel only <b>" + f3(q100) + "</b>. By <b>N = 1,000</b> the kernel nearly catches up (<b>" + f3(q1k) + "</b> vs. <b>" + f3(s1k) + "</b>).",
+          so: "On HTRU2, small samples do not favor quantum models: the quantum kernel trails RBF-SVM by <b>" + f3(s100 - q100) + "</b> at N = 100 (hypothesis H4a, " + verdict("H4a").verdict + "). The VQC is the more stable quantum option when data is scarce." };
+      } },
+    { id: "gold_d", tab: "4 · Shot noise", title: "Experiment 4 · Measurement shot noise", short: "Shot-noise stability", q: "Is accuracy stable with few measurements?", grp: "Stress tests", render: function () {
+        var rows = D.gold_d.slice().reverse().map(function (r) {
+          return { label: r.label, family: "quantum", mean: r.mean, lo: r.mean - r.std, hi: r.mean + r.std, tip: { title: r.label, lines: [["PR-AUC", f4(r.mean) + " ± " + f4(r.std)], ["Seeds", String(r.n)]] } };
+        });
+        dotPlot($("ab-chart"), rows, { min: 0.895, max: 0.915, ticks: [0.895, 0.9, 0.905, 0.91, 0.915], tickFmt: function (t) { return t.toFixed(3); }, xLabel: "Average PR-AUC (strongly zoomed: total range is 0.02)", aria: "Gold D shot noise" });
+        var g = function (s) { return D.gold_d.filter(function (r) { return r.shots === s; })[0].mean; };
+        return { legend: legendHTML([{ c: PURPLE, t: "Q1-VQC (41p) measured with N shots" }]), note: "Axis spans only 0.02 PR-AUC. Line = mean ± 1 std over 10 seeds.",
+          what: "Measuring each circuit just <b>2,000</b> times gave <b>" + f3(g("2000")) + "</b> and <b>500</b> times gave <b>" + f3(g("500")) + "</b>, versus <b>" + f3(g("analytic")) + "</b> with perfect (exact) readout. Only <b>100</b> shots dipped, to <b>" + f3(g("100")) + "</b>.",
+          so: "From 500 shots upward the score is within about 0.002 of exact simulation, so realistic measurement budgets are enough. 100 shots shows mild sampling noise (" + sg(g("100") - g("analytic"), 4) + "). Hardware gate errors are not modeled here." };
+      } },
+    { id: "bonus_pqk", tab: "5 · Kernels", title: "Experiment 5 · Projected quantum kernels", short: "Projected kernels", q: "Can kernel cost drop without losing accuracy?", grp: "Cost and combination", render: function () {
+        var xs = D.pqk.map(function (p) { return p.alpha; });
+        var series = [
+          { label: "PQK (projected)", color: PURPLE, dash: "", marker: "circle", points: D.pqk.map(function (p, i) { return { i: i, x: p.alpha, y: p.pqk, err: p.pqk_std, tip: { title: "Projected Quantum Kernel", lines: [["Angle scale α", String(p.alpha)], ["PR-AUC", f4(p.pqk) + " ± " + f4(p.pqk_std)], ["Circuits", M.pqk_circuits.toLocaleString("en-US")]] } }; }) },
+          { label: "Fidelity kernel", color: PURPLE, dash: "7 5", marker: "square", points: D.pqk.map(function (p, i) { return { i: i, x: p.alpha, y: p.fqk, err: p.fqk_std, tip: { title: "Fidelity Quantum Kernel", lines: [["Angle scale α", String(p.alpha)], ["PR-AUC", f4(p.fqk) + " ± " + f4(p.fqk_std)], ["Circuits", M.fqk_circuits.toLocaleString("en-US")]] } }; }) }
+        ];
+        linePlot($("ab-chart"), series, { xs: xs, yMin: 0.45, yMax: 0.95, yTicks: [0.5, 0.6, 0.7, 0.8, 0.9], xLabel: "Input angle scale α (larger = bigger rotation angles)", yLabel: "Average PR-AUC", xFmt: function (v) { return "α = " + v; }, aria: "PQK versus fidelity kernel" });
+        var last = D.pqk[D.pqk.length - 1], first = D.pqk[0];
+        return { legend: legendHTML([{ c: PURPLE, t: "Both are quantum kernels (solid = PQK, dashed = fidelity kernel)" }]), note: "Vertical bars = ± 1 std over 10 seeds.",
+          what: "The projected kernel needs <b>" + M.pqk_circuits.toLocaleString("en-US") + "</b> circuits instead of <b>" + M.fqk_circuits.toLocaleString("en-US") + "</b>, which is <b>" + M.circuit_ratio + "× fewer</b>. At large angles (α = " + last.alpha + ") the fidelity kernel falls to <b>" + f3(last.fqk) + "</b> while PQK holds <b>" + f3(last.pqk) + "</b>.",
+          so: "Measuring small local pieces of the circuit avoids the loss of contrast (kernel concentration) that affects the full-overlap kernel, and it makes hardware cost grow linearly with data. At gentle angles (α = " + first.alpha + ") PQK is also ahead: <b>" + f3(first.pqk) + "</b> vs. <b>" + f3(first.fqk) + "</b>." };
+      } },
+    { id: "bonus_hyb", tab: "6 · Hybrid", title: "Experiment 6 · Hybrid quantum-classical blend", short: "Hybrid blend", q: "Do the two model types complement each other?", grp: "Cost and combination", render: function () {
+        var xs = D.hybrid.map(function (h) { return h.n; });
+        function mk(key, label, color, dash, marker) {
+          return { label: label, color: color, dash: dash, marker: marker, points: D.hybrid.map(function (h, i) { return { i: i, x: h.n, y: h[key], tip: { title: label, lines: [["Training samples", String(h.n)], ["PR-AUC", f4(h[key])]] } }; }) };
+        }
+        linePlot($("ab-chart"), [mk("mlp", "Tiny-MLP", BLUE, "", "circle"), mk("vqc", "Q1-VQC", PURPLE, "", "circle"), mk("blend", "50/50 blend", INK, "7 5", "diamond")],
+          { xs: xs, yMin: 0.88, yMax: 0.94, yTicks: [0.88, 0.90, 0.92, 0.94], xLabel: "Training samples (N)", yLabel: "Average PR-AUC", aria: "Hybrid blend" });
+        var h0 = D.hybrid[0], h2 = D.hybrid[2];
+        return { legend: legendHTML([{ c: BLUE, t: "Classical MLP" }, { c: PURPLE, t: "Quantum VQC" }, { c: INK, t: "Hybrid blend" }]), note: "Mean PR-AUC over 10 seeds.",
+          what: "At <b>N = 100</b>, averaging the two models' probabilities scored <b>" + f4(h0.blend) + "</b>, beating the MLP alone (<b>" + f4(h0.mlp) + "</b>) by <b>" + sg(h0.blend - h0.mlp, 4) + "</b> and the VQC alone (<b>" + f4(h0.vqc) + "</b>) by <b>" + sg(h0.blend - h0.vqc, 4) + "</b>.",
+          so: "The two models make different mistakes, so blending helps most when data is scarce. By N = 500 the MLP alone (<b>" + f4(h2.mlp) + "</b>) matches or beats the blend (<b>" + f4(h2.blend) + "</b>): a low-data technique rather than a general upgrade." };
+      } }
+  ];
+
+  var tabs = $("ab-tabs"), sel = $("ab-select");
+  tabs.innerHTML = STUDIES.map(function (s) { return "<button class='tab' role='tab' data-id='" + s.id + "' aria-selected='false'>" + s.tab + "</button>"; }).join("");
+  sel.innerHTML = STUDIES.map(function (s) { return "<option value='" + s.id + "'>" + esc(s.title) + "</option>"; }).join("");
+  function renderStudy() {
+    var s = STUDIES.filter(function (x) { return x.id === state.study; })[0], out = s.render();
+    setHTML("ab-legend", out.legend); $("ab-note").textContent = out.note; setHTML("ab-what", out.what); setHTML("ab-so", out.so);
+    sel.value = s.id;
+    Array.prototype.forEach.call($("ex-flow").querySelectorAll("button"), function (b) { b.setAttribute("aria-current", b.getAttribute("data-id") === s.id ? "true" : "false"); });
+    Array.prototype.forEach.call(tabs.children, function (b) { b.setAttribute("aria-selected", b.getAttribute("data-id") === s.id ? "true" : "false"); });
+  }
+  $("ex-flow").innerHTML = STUDIES.map(function (s, i) { return "<li><button data-id='" + s.id + "' aria-current='false'><span class='n'>EXPERIMENT " + (i + 1) + "</span><b>" + esc(s.short) + "</b><span class='q'>" + esc(s.q) + "</span><span class='grp'>" + esc(s.grp) + "</span></button></li>"; }).join("");
+  $("ex-flow").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { state.study = b.getAttribute("data-id"); renderStudy(); } });
+  tabs.addEventListener("click", function (e) { var b = e.target.closest(".tab"); if (b) { state.study = b.getAttribute("data-id"); renderStudy(); } });
+  sel.addEventListener("change", function () { state.study = sel.value; renderStudy(); });
+
+  /* ---------- SECTION 05: audit tables ---------- */
+  var best = D.htru2.filter(function (r) { return r.family !== "baseline"; }).sort(function (a, b) { return b.mean - a.mean; })[0].name;
+  var t1 = "<thead><tr><th>Model</th><th>Type</th><th class='num'>PR-AUC (mean ± std)</th><th class='num'>MCC</th><th class='num'>F1</th><th class='num'>Weights</th><th class='num'>Collapsed</th></tr></thead><tbody>";
+  D.htru2.slice().sort(function (a, b) { return b.mean - a.mean; }).forEach(function (r) {
+    t1 += "<tr class='" + r.family + (r.name === best ? " best" : "") + "'><td>" + esc(r.name) + (r.name === best ? " <span class='tag best'>TOP</span>" : "") + "</td><td>" + r.family + "</td><td class='num'>" + f4(r.mean) + " ± " + f4(r.std) + "</td><td class='num'>" + f3(r.mcc) + "</td><td class='num'>" + f3(r.f1) + "</td><td class='num'>" + Math.round(r.params || 0) + "</td><td class='num'>" + r.collapse + "/" + r.n + "</td></tr>";
+  });
+  $("t-main").innerHTML = t1 + "</tbody>";
+
+  var t2 = "<thead><tr><th>ID</th><th>Comparison (A vs. B)</th><th class='num'>Δ PR-AUC</th><th class='num'>95% CI</th><th class='num'>Wilcoxon p</th><th>Verdict</th></tr></thead><tbody>";
+  D.verdicts.forEach(function (v) {
+    var cls = "v-" + v.verdict.split(" ")[0];
+    t2 += "<tr><td><b>" + v.id + "</b></td><td>" + esc(v.comparison) + "</td><td class='num'>" + sg(v.delta, 4) + "</td><td class='num'>[" + sg(v.lo, 4) + ", " + sg(v.hi, 4) + "]</td><td class='num'>" + v.p.toFixed(4) + "</td><td><span class='chipv " + cls + "'>" + esc(v.verdict) + "</span></td></tr>";
+  });
+  $("t-verd").innerHTML = t2 + "</tbody>";
+
+  var t3 = "<thead><tr><th>Model</th><th class='num'>Qubits</th><th class='num'>Depth</th><th class='num'>Two-qubit gates</th><th class='num'>Weights</th><th>Circuits to train (N = 500)</th></tr></thead><tbody>";
+  D.hardware.forEach(function (h) {
+    var fam = h.model.indexOf("Q") === 0 ? "quantum" : "classical";
+    t3 += "<tr class='" + fam + "'><td>" + esc(h.model) + "</td><td class='num'>" + h.qubits + "</td><td class='num'>" + h.depth + "</td><td class='num'>" + h.two_qubit_gates + "</td><td class='num'>" + h.trainable_params + "</td><td>" + esc(h.qpu_circuits_train_N500) + "</td></tr>";
+  });
+  $("t-hw").innerHTML = t3 + "</tbody>";
+
+  /* ---------- go ---------- */
+  renderDataset();
+  renderStudy();
+})();
+</script>
+</body>
+</html>

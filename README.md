@@ -11,6 +11,32 @@
 3. **Engineering Fixes Eliminated VQC Training Collapse:** Our initial ring-entangled VQC (`Ring L=2, Fragile v1`) suffered from an even-parity symmetry trap ($f(-x) = f(x)$ from $\langle Z \rangle = \cos(\theta)$), stalling at `0.8860 ± 0.0062`. Adding a $\pi/2$ phase offset to break symmetry, reading out all 8 qubits linearly, and switching to sparse **bipartite entanglement** cut two-qubit CNOT gates in half (**8 vs. 16**), reduced circuit depth by $3\times$ (**7 vs. 21**), achieved **0/10 training collapses**, and boosted PR-AUC by **`+0.0242`**.
 4. **The Reversal on Genuinely Nonlinear Data (`ConcentricShell-8D`):** When we remove linear separability on an 8D spherical-shell dataset where Logistic Regression fails (`0.1165` PR-AUC), the exact same **41-weight Q1-VQC (`0.6602` PR-AUC)** beats the **41-weight Tiny-MLP (`0.4075` PR-AUC)** by **`+0.2527`**, and **Q2-QuantumKernel (`0.8832`)** beats **RBF-SVM (`0.8695`)**.
 
+<!-- dashboard-guide:start -->
+## How to View the Interactive Dashboard
+
+We built an interactive page that shows every result in this study as charts you can hover over, switch between datasets, and explore experiment by experiment. It uses the same numbers as the tables in this README; nothing is re-run.
+
+### Option 1: Open it in your browser (no installation, no internet needed)
+1. Download this repository (green **Code** button, then **Download ZIP**) and unzip it. Alternatively, open `dashboard/qhorizon_dashboard.html` on GitHub and click **Download raw file**.
+2. Double-click `qhorizon_dashboard.html`. It opens in any modern browser (Chrome, Edge, Firefox or Safari).
+
+### Option 2: Open the online version
+The same page is hosted with GitHub Pages: **https://zeyadmsn07.github.io/qhorizon-2026/**
+
+### What You Will See
+* **Overview:** the task, the 8 measurements per signal, and why we score models with PR-AUC instead of plain accuracy.
+* **Datasets:** a switch between the real pulsar survey (`HTRU2`) and a curved synthetic test (`Concentric Shell-8D`).
+* **Findings:** a dot-plot ranking every model. Blue marks classical models and purple marks quantum models.
+* **Experiments:** six short studies, each with a chart, a "What happened" box and a "What we can conclude" box.
+* **Audit tables:** the exact 10-seed numbers and the verdict on each hypothesis.
+
+### Optional: Refresh the Page From the Result Files
+Only needed if `results/full/` is regenerated. Requires Python and `pip install -r requirements.txt`.
+```bash
+python dashboard/serve.py     # rebuilds the data and opens http://localhost:8000
+```
+<!-- dashboard-guide:end -->
+
 ---
 
 ## 1. Fair Benchmark Protocol & Main Results (`N_train = 500`)
@@ -274,36 +300,3 @@ python run_all.py --mode full --tune-seeds 3
 * **Synthetic Nature of `ConcentricShell-8D`:** The nonlinear 8D reversal demonstrates geometric inductive bias under matched parameter budgets, not real-world astrophysical data.
 * **Idealized Gate Noise Model:** Finite-shot experiments (`Table D`) capture statistical multinomial sampling noise (`100–2,000` shots) but do not model hardware gate infidelity, readout bit-flip bias, or decoherence ($T_1/T_2$).
 * **AI Tool Disclosure:** AI coding assistants were used strictly for boilerplate scaffolding, plotting/table formatting, and test verification under human review; full prompts and verification logs are documented in `AI_USAGE_LOG.md`.
-
-## 6. Interactive Dashboard Guide
-
-An offline, publication-style dashboard sits on top of the committed `results/full/` files. It does not re-train anything: every number is read from the same 10-seed CSVs used in the tables above.
-
-### What You Get
-* **`dashboard/`**: a zero-dependency web page (plain HTML, CSS and JavaScript) with an overview of the task, a `HTRU2 Pulsars` vs. `Concentric Shell-8D` toggle, a zoomable PR-AUC dot-plot with hover tooltips, an Experiments section covering all six experiments, and audit tables with the code folded away.
-* **`dashboard/qhorizon_dashboard.html`**: the same page as one standalone file. Double-click it to open it offline, or send it to a judge.
-* **`Q_Horizon_Dashboard.ipynb`**: a companion notebook that embeds the dashboard and shows color-coded audit tables, with all code cells collapsed (`hide_input`).
-
-### How to Run It
-```bash
-# 1. Install dependencies (the dashboard itself only needs pandas and numpy)
-pip install -r requirements.txt
-
-# 2. Build the data and open the dashboard at http://localhost:8000
-python dashboard/serve.py
-
-# Optional: rebuild only the data and the standalone HTML file
-python dashboard/build_data.py
-
-# Optional: regenerate the companion notebook, then open it in Jupyter
-python dashboard/make_notebook.py
-jupyter notebook Q_Horizon_Dashboard.ipynb
-```
-On Windows PowerShell, use the same commands (`python` or `py`). Use `python dashboard/serve.py --port 9000 --no-browser` to change the port or skip opening the browser.
-
-### How to Read It
-* **Colors:** Cornflower Blue (`#6E8EEB`) is a classical model, Orchid Purple (`#B07CE8`) is a quantum model.
-* **Dot-plot:** each dot is a 10-seed average PR-AUC at `N = 500`. The HTRU2 axis is zoomed to `0.89`-`0.93` so small gaps are visible; use the axis button for the full `0`-`1` range.
-* **Experiments:** six experiments build on each other. Experiments 1 and 2 fix the circuit design (entanglement wiring, qubit compression and encoding), 3 and 4 stress it (low-data sweep, measurement shot noise), and 5 and 6 improve cost and role (projected quantum kernels, hybrid quantum-classical blend).
-* **Callouts:** every chart has a *What happened* box (the numbers) and a *What we can conclude* box (the plain-English meaning).
-* **Updating:** if `results/full/` is regenerated, run `python dashboard/build_data.py` and the dashboard updates itself.
