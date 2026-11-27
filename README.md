@@ -23,7 +23,6 @@
 ---
 
 ## Why Radio Pulsars on Eight Qubits
-<sub><samp>CONTEXT & DATASET SELECTION</samp></sub>
 
 Finding pulsars in modern radio-telescope surveys means separating rare, periodic neutron-star signals from heavy radio-frequency interference and background noise. We built this study around the **UCI HTRU2 Pulsar Candidate Dataset** (R. J. Lyon et al., 2016, ID `372`), which records 17,898 candidate detections from the High Time Resolution Universe Survey. Each candidate is represented by 8 continuous measurements: four from the folded pulse profile (mean, standard deviation, kurtosis, and skewness) and four from the dispersion-measure signal-to-noise (DM-SNR) curve.
 
@@ -36,7 +35,6 @@ We chose HTRU2 for three reasons:
 ---
 
 ## Explore & Run the Project
-<sub><samp>INTERACTIVE LANDING PAGE & EXECUTION MODES</samp></sub>
 
 To make our results intuitive and easy to explore without digging through raw CSV files, we built an interactive landing page where you can switch between datasets, hover over 10-seed confidence intervals, and inspect each experiment step by step. You can explore the results and run the full benchmark either online or offline.
 
@@ -89,7 +87,6 @@ python -m src.plot_results --results-dir results/full
 ---
 
 ## Key Findings at a Glance
-<sub><samp>TEN EVALUATION SEEDS · THREE DISJOINT TUNING SEEDS</samp></sub>
 
 > [!IMPORTANT]
 > Every tunable model shares an identical 20-configuration search budget on 3 disjoint validation seeds (`200..202`) before being scored across 10 independent evaluation seeds (`100..109`). Thresholds and Yeo-Johnson feature transforms never touch the locked 3,000-sample test split.
@@ -101,7 +98,6 @@ python -m src.plot_results --results-dir results/full
 ---
 
 ## 1. Fair Benchmark — Pulsar Classification at $N = 500$
-<sub><samp>WEIGHT-MATCHED PARAMETRIC & IDENTICAL-SOLVER KERNEL PAIRS</samp></sub>
 
 * `Q1-VQC (Bipartite_SignLinear_41p)` and `Tiny-MLP (41p)` both train 41 scalar weights with minibatch AdamW and binary cross-entropy early stopping, backed by MLP width checks (`21p` to `321p`) so parameter matching never hides a width bottleneck.
 * `Q2-QuantumKernel (8q)` and `RBF-SVM` use the exact same dual Support Vector Machine solver with zero gradient-trained weights; only the kernel matrix differs.
@@ -126,8 +122,7 @@ python -m src.plot_results --results-dir results/full
 
 ---
 
-## 2. Statistical Audit — Mechanical Verdict Ledger
-<sub><samp>TWO-LEVEL STRATIFIED BOOTSTRAP · ±0.01 PRACTICAL MARGIN</samp></sub>
+## 2. Statistical Audit (Mechanical Verdict Ledger)
 
 Every hypothesis is scored automatically by `analyze_results.py` using a **Mechanical Verdict** rule built on a $\pm 0.01$ PR-AUC practical margin and a 95% two-level bootstrap confidence interval (jointly resampling the 10 seeds and the 3,000 stratified test examples):
 
@@ -151,8 +146,7 @@ Every hypothesis is scored automatically by `analyze_results.py` using a **Mecha
 
 ---
 
-## 3. Circuit Studies — Topology, Encoding & Shot Noise
-<sub><samp>DISENTANGLING TUNING, SYMMETRY, DATA SCALE & MEASUREMENT SHOTS</samp></sub>
+## 3. Circuit Studies: Topology, Encoding & Shot Noise
 
 ### <samp>A //</samp> Entanglement Wiring, Readout & Training Stability
 
@@ -183,7 +177,6 @@ In our first single-seed-tuned baseline, `Ring L=2` picked a narrow input scale 
 ---
 
 ## 4. Deep Diagnostics — Geometry, Width & Hardware Cost
-<sub><samp>LINEARITY CEILING · KERNEL SPECTRUM · NONLINEAR 8D INNER BALL · QPU SCALING</samp></sub>
 
 ### <samp>A //</samp> HTRU2 Linearity & Quantum Kernel Concentration
 
@@ -227,7 +220,6 @@ On the full 13,398-sample training pool with validation-tuned hyperparameters, 9
 ---
 
 ## Credits & Attribution
-<sub><samp>DATASET · SOFTWARE STACK · TRANSPARENCY</samp></sub>
 
 * **Dataset** — UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, and J. D. Knowles (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; see [`DATA_LICENSE.md`](DATA_LICENSE.md)).
 * **Software** — Quantum circuits are simulated with **PennyLane** (`default.qubit`), and classical baselines are built with **PyTorch** and **scikit-learn**.
