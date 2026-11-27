@@ -1,5 +1,17 @@
-# Team Roles & Verification Record
+# Kubits Team — Contributions & Collaboration Notes
 
-| Member | Role | Verified Deliverables |
-| :--- | :--- | :--- |
-| **Zeyad Mohamed Nada** | Team Lead & QML Benchmark Architect | Verified train-only Yeo-Johnson splits (`src/data.py`), disjoint multi-seed tuning (`src/tuning.py`), VQC symmetry/readout ablations (`src/vqc_study.py`), two-level bootstrap CIs (`src/stats.py`), linearity/kernel/nonlinear-8D analyses, and clean-venv reproducibility |
+> **Note on Collaboration & Repository Activity:** We worked on this project collaboratively both in person and online, and every member completed their assigned tasks. All commits on the repository were pushed from Zeyad's GitHub account simply because our AI development tools and subscriptions were linked to his account.
+
+## Joint Team Work
+
+| Team | Shared Decisions & Setup |
+| :--- | :--- |
+| **Kubits Team**<br>*(Zeyad, Omar & Youssef)* | • Selected the radio pulsar dataset together after reviewing several candidate scientific problems (`data_cache/htru2.csv`, `DATA_LICENSE.md`).<br>• Decided on the overall project structure, experiment workflow, and fair comparison rules between quantum and classical models (`run_all.py`, `src/config.py`). |
+
+## Individual Contributions
+
+| Team Member | What Was Implemented |
+| :--- | :--- |
+| **Zeyad Mohamed Nada** | • Created the GitHub repository, organized the project layout, and pushed all finalized code and result files.<br>• Implemented the quantum classification models and resolved early training instability so the circuits learned consistently (`src/models_quantum.py`, `src/vqc_study.py`, `results/full/gold_a_entanglement.csv`).<br>• Built the data preparation and multi-run testing pipeline to ensure every model was evaluated under identical conditions (`src/data.py`, `src/tuning.py`, `src/stats.py`, `analyze_results.py`).<br>• Conducted deeper follow-up experiments to test dataset geometry, model size limits, and hybrid model combinations (`src/linearity_check.py`, `src/kernel_analysis.py`, `src/nonlinear_benchmark.py`, `scripts/run_diagnostic_checks.py`).<br>• Built the interactive results webpage, wrote the main project guide, and created automated checks to verify the final submission (`dashboard/`, `README.md`, `scripts/check_submission.py`). |
+| **Omar Eslam** | • Implemented the classical baseline models used as reference benchmarks throughout the study (`src/models_classical.py`, `verify_baselines.py`).<br>• Built the scoring and decision-threshold logic suited for detecting rare pulsar signals (`src/metrics.py`).<br>• Ran the data-scaling experiments to examine how each model behaved as the training set grew (`results/full/gold_c_sweep.csv`, `results/full/gold_c_sweep.png`).<br>• Drafted the problem motivation and classical benchmark sections for the report and presentation. |
+| **Youssef Sallam** | • Tested different methods for encoding numerical pulsar measurements into quantum circuits (`results/full/gold_b_encoding.csv`, `results/full/gold_b_encoding.png`).<br>• Evaluated how simulated measurement noise affected the predictions of trained quantum models (`results/full/table_d_shots.csv`, `results/full/table_d_shots.png`).<br>• Generated the visual comparison charts and the summary of quantum hardware resource requirements (`src/plot_results.py`, `src/hardware_cost.py`, `results/full/hardware_cost_table.csv`).<br>• Verified that the main notebook ran cleanly on Google Colab and reviewed the AI usage log for completeness (`Q_Horizon_Benchmark.ipynb`, `AI_USAGE_LOG.md`).<br>• Drafted the encoding, hardware trade-offs, and project limitations sections for the report and presentation. |

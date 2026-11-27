@@ -4,6 +4,8 @@ Engineering rules and initial workflow blueprints are archived in [`docs/ai/AGEN
 
 All major AI-assisted steps are logged here for transparency, as required by Q//Horizon 2026 rules.
 
+> **Team & Account Note (Kubits Team ? Zeyad Mohamed Nada, Omar Eslam, Youssef Sallam):** We worked on this project collaboratively in person and online, with every member completing their assigned tasks (see [`docs/TEAM.md`](docs/TEAM.md)). AI-assisted sessions and GitHub commits were run under Zeyad's account because our AI subscriptions were linked there.
+
 | Date | Phase/Branch | AI Tool | Purpose | Human Verification |
 |------|-------------|---------|---------|-------------------|
 | 2026-11-25 | Phase 0 & Phase 1 / `main` | Gemini, Claude Opus & Antigravity | Architecture planning, fairness rules design (`AGENTS.md`), repository configuration, portable `requirements.txt`, and leakage-free HTRU2 data pipeline (`src/config.py`, `src/data.py`) | Verified train-only Yeo-Johnson fit, locked stratified test/val splits, ~9.16% pulsar ratio, and `.venv/` exclusion in `.gitignore` |
