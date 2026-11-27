@@ -61,9 +61,9 @@
         <div class="trap" id="trap"></div>
       </div>
     </div>
-  <div class="card" style="margin-top:20px">
+    <div class="card" style="margin-top:20px">
       <h3>How to use this page</h3>
-      <p class="note" style="font-size:15px;margin-top:6px">Everything here is interactive and works offline. <b>Hover over or tab to any marker</b> to see its exact score. <b>Switch datasets</b> in Section 02 and the results update. In Section 04, <b>click an experiment</b> to see its chart and a plain-English summary. Each table in Section 06 has a &ldquo;show the code&rdquo; panel if you want to check how it was made.</p>
+      <p class="note" style="font-size:15px;margin-top:6px">Everything here is interactive and works offline. <b>Hover over or tab to any marker</b> to see its exact score. <b>Switch datasets</b> in Section 02 (and sample sizes on Concentric Shell-8D) and the results update. In Section 04, <b>select an experiment card or tab</b> to see its chart and a plain-English summary. Each table in Section 06 has a &ldquo;show the code&rdquo; panel if you want to check how it was made.</p>
     </div>
   </section>
 
@@ -74,8 +74,12 @@
     <p class="lede">Many quantum machine learning comparisons pit a tuned quantum circuit against an oversized classical network, or the reverse. We removed that bias. Each radio signal contains 8 physical measurements, which map one-to-one onto 8 qubits with no lossy compression. We then matched a variational quantum circuit (Q1-VQC) against a compact classical neural network (Tiny-MLP) with 41 trainable weights apiece, isolating architecture from raw model size. Select a dataset below to see both on real survey data and on a curved synthetic benchmark.</p>
     <div class="row">
       <div class="tabs" role="tablist" aria-label="Dataset" id="ds-tabs">
-        <button class="tab" role="tab" data-ds="htru2" aria-selected="true">HTRU2 Pulsars</button>
-        <button class="tab" role="tab" data-ds="shell" aria-selected="false">Concentric Shell-8D</button>
+        <button type="button" class="tab" role="tab" data-ds="htru2" aria-selected="true">HTRU2 Pulsars</button>
+        <button type="button" class="tab" role="tab" data-ds="shell" aria-selected="false">Concentric Shell-8D</button>
+      </div>
+      <div class="subtabs" id="shell-n-ds" hidden>
+        <span class="subtabs-label">Training samples</span>
+        <div class="tabs tabs-sm" id="shell-n-ds-btns" role="group" aria-label="Concentric Shell training samples"></div>
       </div>
     </div>
     <div class="split">
@@ -95,11 +99,17 @@
   <section class="block" id="glance" aria-labelledby="gl-title">
     <div class="eyebrow"><span class="pill">03 / WHAT WE FOUND</span></div>
     <h2 id="gl-title">Classical Models Still Lead on Straight Boundaries</h2>
-    <p class="lede">Each marker is a model&rsquo;s mean PR-AUC over 10 seeds at 500 training samples (higher is better). Hover over or focus a marker for details.</p>
+    <p class="lede" id="gl-lede">Each marker is a model&rsquo;s mean PR-AUC over 10 seeds at 500 training samples (higher is better). Hover over or focus a marker for details.</p>
     <div class="card">
       <div class="row">
-        <div class="legend grow" style="margin:0"><span><i style="background:var(--classical)"></i>Classical</span><span><i style="background:var(--quantum)"></i>Quantum</span><span id="gl-whisker"></span></div>
-        <button class="toggle" id="zoom" aria-pressed="true">Zoomed axis</button>
+        <div class="legend grow" style="margin:0">
+          <span><i style="background:var(--classical)"></i>Classical</span>
+          <span><i style="background:var(--quantum)"></i>Quantum</span>
+          <span><i style="background:var(--faint)"></i>Baseline</span>
+          <span id="gl-whisker"></span>
+        </div>
+        <button type="button" class="toggle" id="zoom" aria-pressed="true">Zoomed axis</button>
+        <div class="tabs tabs-sm" id="shell-n-gl" role="group" aria-label="Concentric Shell training samples" hidden></div>
       </div>
       <div class="chart" id="dotplot"></div>
     </div>
@@ -115,12 +125,16 @@
     <h2 id="ab-title">Six Experiments, One Question: Where Do Quantum Circuits Help?</h2>
     <p class="lede">Each experiment changes one design choice at a time. Together they follow the life of a quantum model: how it is built (Experiments 1 and 2), how it holds up under stress (3 and 4), and how its cost and role can be improved (5 and 6).</p>
     <ol class="flow" id="ex-flow"></ol>
-    <div class="row">
-      <div class="tabs" role="tablist" aria-label="Study" id="ab-tabs"></div>
-      <label class="grow" style="text-align:right;font-size:13px;color:var(--muted)">Experiment&nbsp;<select id="ab-select" aria-label="Choose a study"></select></label>
+    <div class="ab-bar">
+      <div class="tabs" role="tablist" aria-label="Experiments" id="ab-tabs"></div>
     </div>
-    <div class="split">
-      <div class="card"><div class="legend" id="ab-legend"></div><div class="chart" id="ab-chart"></div><p class="note" id="ab-note"></p></div>
+    <div class="split" id="ab-panel" role="tabpanel">
+      <div class="card">
+        <h3 class="ab-heading" id="ab-cur"></h3>
+        <div class="legend" id="ab-legend"></div>
+        <div class="chart" id="ab-chart"></div>
+        <p class="note" id="ab-note"></p>
+      </div>
       <div class="callouts">
         <div class="call what"><h4>What happened</h4><p id="ab-what"></p></div>
         <div class="call so"><h4>What we can conclude</h4><p id="ab-so"></p></div>
@@ -131,7 +145,7 @@
   <section class="block" id="takeaway" aria-labelledby="tk-title">
     <div class="eyebrow"><span class="pill">05 / THE TAKEAWAY</span></div>
     <h2 id="tk-title">No Hype, Just Clear Boundaries</h2>
-    <div class="card"><p style="margin:0;font-size:17px">An 8-qubit system (2<sup>8</sup> = 256 states) runs easily on a laptop, so we claim no hardware speedup today. What the benchmarks show is more practical. Lightweight classical networks remain the best default for well-separated tabular data. Compact quantum circuits add measurable value when labels are scarce, when circuit depth is kept shallow (8 two-qubit gates instead of 16), or when signals follow curved, nonlinear patterns.</p></div>
+    <div class="card"><p style="margin:0;font-size:17px">An 8-qubit system (2<sup>8</sup> = 256 states) runs easily on a laptop, so we claim no hardware speedup today. What the benchmarks show is more practical. Lightweight classical models remain the strongest standalone default for well-separated tabular data&mdash;including low-data regimes, where standalone quantum circuits trail classical baselines. Compact quantum circuits add measurable value in three targeted settings: when <b>blended with a matched neural network</b> under scarce labels (N = 100), when circuit wiring is kept shallow (8 two-qubit gates instead of 16), and when signals follow curved, nonlinear geometry.</p></div>
   </section>
 
   <section class="block" id="audit" aria-labelledby="au-title">
