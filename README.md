@@ -18,8 +18,6 @@
 
 </div>
 
-<br>
-
 ---
 
 ## Why Radio Pulsars on Eight Qubits
