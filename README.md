@@ -219,9 +219,9 @@ On the full 13,398-sample training pool with validation-tuned hyperparameters, 9
 
 ---
 
-## Credits & Attribution
+## Credits and References
 
-* **Dataset** — UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, and J. D. Knowles (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; see [`DATA_LICENSE.md`](DATA_LICENSE.md)).
-* **Software** — Quantum circuits are simulated with **PennyLane** (`default.qubit`), and classical baselines are built with **PyTorch** and **scikit-learn**.
-* **AI Transparency** — All AI-assisted scaffolding, diagnostic checks, and human verification steps are recorded in [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
-* **Author & Lead Architect** — **Zeyad Mohamed Nada** (leakage-free HTRU2 pipeline, disjoint multi-seed tuning, VQC stability ablations, two-level bootstrap statistics, diagnostics, and interactive dashboard; see [`docs/TEAM.md`](docs/TEAM.md)).
+* UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon, B. W. Stappers, S. Cooper, J. M. Brooke, and J. D. Knowles (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; see [`DATA_LICENSE.md`](DATA_LICENSE.md)).
+* Quantum circuits are simulated with **PennyLane** (`default.qubit`), and classical models are implemented with **PyTorch** and **scikit-learn**.
+* All AI-assisted code scaffolding, diagnostic checks, and human verification steps are logged in [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
+* Built by **Kubits Team** (Zeyad Mohamed Nada, Youssef, and Omar; see [`docs/TEAM.md`](docs/TEAM.md)).
