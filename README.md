@@ -174,7 +174,7 @@ In our first single-seed-tuned baseline, `Ring L=2` picked a narrow input scale 
 
 ---
 
-## 4. Deep Diagnostics — Geometry, Width & Hardware Cost
+## 4. Deep Diagnostics: Geometry, Width & Hardware Cost
 
 ### <samp>A //</samp> HTRU2 Linearity & Quantum Kernel Concentration
 
