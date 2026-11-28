@@ -5,17 +5,13 @@
 # Pulsar Signal Classification<br><sub>Variational Circuits & Quantum Kernels vs. Classical Baselines</sub>
 
 <p>
-  <a href="https://zeyadmsn07.github.io/qhorizon-2026/"><kbd>&nbsp;Interactive Landing Page ↗&nbsp;</kbd></a>
+  <a href="https://zeyadmsn07.github.io/qhorizon-2026/"><kbd>&nbsp;Interactive Landing Page ?&nbsp;</kbd></a>
   &nbsp;&nbsp;
   <a href="docs/QHorizon_Pulsar_Classification_Report_Kubits.pdf"><kbd>&nbsp;Final 4-Page Report (PDF)&nbsp;</kbd></a>
   &nbsp;&nbsp;
   <a href="docs/QHorizon2026_Presentation_Slides_Kubits.pptx"><kbd>&nbsp;Presentation Slides (PPTX)&nbsp;</kbd></a>
   &nbsp;&nbsp;
   <a href="Q_Horizon_Benchmark.ipynb"><kbd>&nbsp;Benchmark Notebook&nbsp;</kbd></a>
-  &nbsp;&nbsp;
-  <a href="results/full/summary_tables.md"><kbd>&nbsp;Full 10-Seed Tables&nbsp;</kbd></a>
-  &nbsp;&nbsp;
-  <a href="AI_USAGE_LOG.md"><kbd>&nbsp;AI Usage Log&nbsp;</kbd></a>
 </p>
 
 <sub><b>Dataset:</b> UCI HTRU2 (17,898 candidates, 9.16% pulsars) &nbsp;&middot;&nbsp; <b>Circuit Size:</b> Up to 8 qubits &nbsp;&middot;&nbsp; <b>Protocol:</b> 3 tune seeds / 10 test seeds &nbsp;&middot;&nbsp; <b>Stack:</b> PennyLane, PyTorch, scikit-learn</sub>
