@@ -177,8 +177,8 @@ The figures below show the kernel analysis and the `ConcentricShell-8D` results:
 ## 5. Limitations
 
 - All circuits use $\le 8$ qubits ($2^8 = 256$ amplitudes) and simulate quickly on a laptop CPU, so no quantum advantage is claimed in runtime or complexity.
-- HTRU2 is ~94% linearly separable, and `Q2-QuantumKernel` peaks at the small-$\alpha$ boundary ($\alpha \le 0.1$) where it mimics a low-rank classical kernel.
-- `ConcentricShell-8D` is synthetic with even symmetry ($f(-x) = f(x)$) tailored to $\cos(\cdot)$ rotations, and fixing `Tiny-MLP` to 4 hidden units bottlenecks radial closure (`h=32` reaches `0.7767`).
+- HTRU2 is ~94% linearly separable, and `Q2-QuantumKernel` peaks at the small $`\alpha`$ boundary ($`\alpha \le 0.1`$) where it mimics a low-rank classical kernel.
+- `ConcentricShell-8D` is synthetic with even symmetry, $`f(-x) = f(x)`$, tailored to $`\cos(\cdot)`$ rotations, and fixing `Tiny-MLP` to 4 hidden units bottlenecks radial closure (`h=32` reaches `0.7767`).
 - Shot-noise runs (`100`--`2,000` shots) capture multinomial measurement sampling only, not gate errors or decoherence ($T_1/T_2$).
 
 ---
