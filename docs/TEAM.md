@@ -1,6 +1,6 @@
 # Kubits Team — Contributions & Collaboration Notes
 
-> **Note on Collaboration & Repository Activity:** We worked on this project collaboratively both in person and online, and every member completed their assigned tasks. All commits on the repository were pushed from Zeyad's GitHub account simply because our AI development tools and subscriptions were linked to his account.
+> **Note on Collaboration & Repository Activity:** We worked on this project together both in person and online, and each of us completed our assigned parts. Since we relied heavily on AI coding and writing tools whose subscriptions were linked to Zeyad's account, all repository commits were pushed from his GitHub.
 
 ## Joint Team Work
 
