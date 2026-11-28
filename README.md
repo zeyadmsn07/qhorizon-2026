@@ -6,6 +6,8 @@
 
 <p>
   <a href="https://zeyadmsn07.github.io/qhorizon-2026/"><kbd>&nbsp;Interactive Landing Page ↗&nbsp;</kbd></a>
+
+- **Final 4-Page Report (PDF):** [`docs/QHorizon_Pulsar_Classification_Report_Kubits.pdf`](docs/QHorizon_Pulsar_Classification_Report_Kubits.pdf)
   &nbsp;&nbsp;
   <a href="Q_Horizon_Benchmark.ipynb"><kbd>&nbsp;Benchmark Notebook&nbsp;</kbd></a>
   &nbsp;&nbsp;
