@@ -1,6 +1,6 @@
-<div align="center">
+﻿<div align="center">
 
-<samp>Q // HORIZON 2026 &nbsp;·&nbsp; KUBITS TEAM: Zeyad Nada, Omar Eslam, Youssef Sallam</samp>
+<samp>Q // HORIZON 2026 &nbsp;·&nbsp; KUBITS TEAM: Zeyad Mohamed Nada, Omar Eslam, Youssef Sallam</samp>
 
 # Pulsar Signal Classification<br><sub>Variational Circuits & Quantum Kernels vs. Classical Baselines</sub>
 
@@ -173,4 +173,4 @@ Under 3-seed validation tuning, neither a $\pi/2$ sign shift (`0.8854`) nor an 8
 
 - **Dataset:** UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon et al. (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; [`DATA_LICENSE.md`](DATA_LICENSE.md)).
 - **Stack & AI Log:** **PennyLane** (`default.qubit`), **PyTorch**, and **scikit-learn**. AI assistance and human verification are logged in [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
-- **Team:** **Kubits Team** — Zeyad Nada, Omar Eslam, and Youssef Sallam ([`docs/TEAM.md`](docs/TEAM.md)).
+- **Team:** **Kubits Team** — Zeyad Mohamed Nada, Omar Eslam, and Youssef Sallam ([`docs/TEAM.md`](docs/TEAM.md)).
