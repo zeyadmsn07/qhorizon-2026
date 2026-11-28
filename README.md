@@ -9,6 +9,8 @@
   &nbsp;&nbsp;
   <a href="docs/QHorizon_Pulsar_Classification_Report_Kubits.pdf"><kbd>&nbsp;Final 4-Page Report (PDF)&nbsp;</kbd></a>
   &nbsp;&nbsp;
+  <a href="docs/QHorizon2026_Presentation_Slides_Kubits.pptx"><kbd>&nbsp;Presentation Slides (PPTX)&nbsp;</kbd></a>
+  &nbsp;&nbsp;
   <a href="Q_Horizon_Benchmark.ipynb"><kbd>&nbsp;Benchmark Notebook&nbsp;</kbd></a>
   &nbsp;&nbsp;
   <a href="results/full/summary_tables.md"><kbd>&nbsp;Full 10-Seed Tables&nbsp;</kbd></a>
