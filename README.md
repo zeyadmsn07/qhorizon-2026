@@ -146,7 +146,7 @@ Under 3-seed validation tuning, neither a $\pi/2$ sign shift (`0.8854`) nor an 8
 
 ### <samp>B //</samp> Encoding, Sample Sweep & Finite Shots
 
-3-qubit amplitude normalization erases signal strength (`0.6057`), whereas restoring the L2 norm on a 4th wire recovers `+0.2450` PR-AUC (`0.8507`). Standalone classical baselines lead across $N \in \{100, 200, 500, 1000\}$ (though a 20%--30% VQC + MLP blend nudges $N = 100$ to `0.9132`, `+0.0091` inside the tie band), and `Q1-VQC` stays practically tied with analytic readout down to `500` shots (`0.9091`). The plots below cover encoding, training-set size, finite-shot noise, and a linearity check on the full training pool (discussed in Section 4):
+3-qubit amplitude normalization erases signal strength (`0.6057`), whereas restoring the L2 norm on a 4th wire recovers `+0.2450` PR-AUC (`0.8507`). Standalone classical baselines lead across $`N \in \{100, 200, 500, 1000\}`$ (though a 20%–30% VQC + MLP blend nudges $`N = 100`$ to `0.9132`, `+0.0091` inside the tie band), and `Q1-VQC` stays practically tied with analytic readout down to `500` shots (`0.9091`). The plots below cover encoding, training-set size, finite-shot noise, and a linearity check on the full training pool (discussed in Section 4):
 
 | Feature Encoding & Norm (Gold B) | Sample Efficiency Sweep (Gold C) |
 | :---: | :---: |
@@ -179,12 +179,12 @@ The figures below show the kernel analysis and the `ConcentricShell-8D` results:
 - All circuits use $\le 8$ qubits ($2^8 = 256$ amplitudes) and simulate quickly on a laptop CPU, so no quantum advantage is claimed in runtime or complexity.
 - HTRU2 is ~94% linearly separable, and `Q2-QuantumKernel` peaks at the small $`\alpha`$ boundary ($`\alpha \le 0.1`$) where it mimics a low-rank classical kernel.
 - `ConcentricShell-8D` is synthetic with even symmetry, $`f(-x) = f(x)`$, tailored to $`\cos(\cdot)`$ rotations, and fixing `Tiny-MLP` to 4 hidden units bottlenecks radial closure (`h=32` reaches `0.7767`).
-- Shot-noise runs (`100`--`2,000` shots) capture multinomial measurement sampling only, not gate errors or decoherence ($T_1/T_2$).
+- Shot-noise runs (`100`–`2,000` shots) capture multinomial measurement sampling only, not gate errors or decoherence ($T_1/T_2$).
 
 ---
 
 ## Credits and References
 
-- **Dataset:** UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon et al. (2016), *MNRAS* 459(1), 1104--1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; [`DATA_LICENSE.md`](DATA_LICENSE.md)).
+- **Dataset:** UCI HTRU2 Pulsar Candidate Dataset (ID `372`), R. J. Lyon et al. (2016), *MNRAS* 459(1), 1104–1123 (`DOI: 10.24432/C5DK6R`, CC BY 4.0; [`DATA_LICENSE.md`](DATA_LICENSE.md)).
 - **Stack & AI Log:** **PennyLane** (`default.qubit`), **PyTorch**, and **scikit-learn**. AI assistance and human verification are logged in [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
 - **Team:** **Kubits Team** — Zeyad Mohamed Nada, Omar Eslam, and Youssef Sallam ([`docs/TEAM.md`](docs/TEAM.md)).
